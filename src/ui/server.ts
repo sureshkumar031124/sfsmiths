@@ -53,6 +53,10 @@ export async function startUi(opts: UiOptions = {}): Promise<{ url: string; clos
       if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/index.html")) {
         return sendFile(res, path.join(staticDir, "index.html"), "text/html; charset=utf-8");
       }
+      if (req.method === "GET" && url.pathname === "/favicon.ico") {
+        res.writeHead(200, { "Content-Type": "image/svg+xml", "Cache-Control": "public, max-age=86400" });
+        return res.end(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#4f8cff"/><text x="16" y="21" font-family="monospace" font-size="14" font-weight="700" text-anchor="middle" fill="#fff">SF</text></svg>`);
+      }
       if (url.pathname.startsWith("/api/")) {
         if (req.headers["x-sfsmiths-token"] !== token) throw new HttpError(401, "missing or wrong token — reopen the URL printed by `sfsmiths-human ui`");
         const body = req.method === "GET" ? undefined : await readBody(req);
