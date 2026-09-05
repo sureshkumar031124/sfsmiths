@@ -1,0 +1,32 @@
+# config/autonomy.yaml — where the system stops and asks you.
+# tiers: risk tier (from intake + risk-floor gate) × stage → ask | auto
+# agents: per-agent overlay from the UI: "ask" = always stop after this agent's stage, "inherit" = use the tier matrix
+# hard_floor: never automatic, whatever is configured here (enforced in code, listed for transparency)
+version: 1
+tiers:
+  LOW:
+    human_gates: { intake: auto, plan: auto, review: auto }
+  MEDIUM:
+    human_gates: { intake: auto, plan: ask, review: auto }
+  HIGH:
+    human_gates: { intake: ask, plan: ask, review: ask }
+agents:
+  conductor: inherit
+  a0-cartographer: inherit
+  a0b-baseline: inherit
+  a1-intake: inherit
+  a2-repro: inherit
+  a3-architect: inherit
+  a4-developer: inherit
+  a5-qa: inherit
+  a6-reviewer: inherit
+  a7-coach: inherit
+  a8-ui: inherit
+  a9-comms: inherit
+hard_floor:
+  - deploy to preprod or production is always a human action (Blue Canvas / your deploy tool)
+  - production is read-only for the system (identity-level user + masked evidence)
+  - tracker comments are drafts; the system never posts
+  - no email to any non-allowlisted address, ever
+  - agents cannot run sfsmiths-human verbs (approve, deployed, sync, org, lessons, learn, run)
+  - lessons that change process or safety need human approval

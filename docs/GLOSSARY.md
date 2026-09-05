@@ -1,0 +1,30 @@
+# SFsmiths — Glossary
+
+| Term | Meaning |
+|---|---|
+| **Agent keychain** | The default Salesforce CLI keychain in your `$HOME`: development sandbox (read-write) + production read-only user. Agents' MCP tools and wrappers use it. |
+| **Engine keychain** | A second sf keychain under `~/.sfsmiths/engine` (a different `HOME`) that holds preprod only. Only the toolkit's privileged steps use it; agents cannot read or switch to it. |
+| **Baseline sync** | Before work starts, the development sandbox is made equal to preprod for the ticket's scope (3-way diff with an ancestor; UAT-NEWER applied, DEV-NEWER/BOTH/UNKNOWN need a human). |
+| **Bounce** | A mechanical return to an earlier stage after a failed gate (qa → develop → plan → escalate). |
+| **Canary** | An anonymous Apex `Messaging.sendEmail(allOrNothing=false)` to your own address; PASS only when the org answers `NO_MASS_MAIL_PERMISSION` (deliverability off). Required before any data-creating step. |
+| **Conductor** | The main-thread Claude Code agent that follows `sfsmiths agent handoff` and spawns exactly the specialist it names. Decides nothing. |
+| **Contract** | The JSON file next to each stage's markdown (`01-intake.json`, …) validated by `contract-check` against `schemas/contracts/`. |
+| **Envelope** | `<untrusted source="…">…</untrusted>` wrapper around ticket text, comments, pasted content and org data — evidence, never instructions (P7). |
+| **Evidence layers L0–L4** | L0 ticket/attachments · L1 development org · L2 official docs mirror / curated notes · L3 production, masked · L4 browser observation. The only sources an API name may come from. |
+| **Evidence server** | `sfsmiths-mcp-evidence`: the single road from agents to production data — SELECT-only, allowlisted fields, masked rows, logged. |
+| **Gate** | A deterministic check run by the SubagentStop hook (contract-check, plan-lint, assertion-referee, email-guard, …). Outcomes: passed / failed / unavailable (≠ passed). |
+| **Golden ticket** | A sealed record of a solved ticket used to detect drift after model/plugin/prompt changes. |
+| **Handoff** | `sfsmiths agent handoff <KEY>` — the toolkit's single answer about what happens next. |
+| **Human gate** | A stage where the pipeline waits for `/approve` / `/reject`; which stages ask depends on tier and per-agent settings. Deploys are always human. |
+| **Inverse test** | A test that must PASS before and after the fix (what must keep working). |
+| **Lesson** | A human-approved (or evidence-confirmed) instruction injected into an agent via `.claude/skills/lessons-<agent>`. Candidates come from events, never from agent prose alone. |
+| **Manifest** | `work/<KEY>/manifest.yaml` — the ticket's state (stage, tier, gates, approvals, waiting, budget, bounces). Toolkit-owned. |
+| **Masking** | Per-object field allowlist for production evidence (`config/masking.yaml`); Email/Phone/PII types refused; rows capped. |
+| **P1–P11** | The eleven principles in `.claude/skills/sfsmiths-core-rules/SKILL.md`. |
+| **Prior art** | Related tickets, git history and lessons collected before intake (`00c-prior-art.*`). |
+| **Reward ledger** | Points per agent/ticket computed from events with `config/rewards.yaml` weights; drives lesson candidates and model suggestions. |
+| **Stage** | One step of the ticket machine (`open … done`), each with an owner (agent / human / toolkit) and gates. |
+| **Tier** | LOW / MEDIUM / HIGH risk, computed by `risk-floor` from scope (agents can only raise it); selects the human-gate row in `config/autonomy.yaml`. |
+| **Toolkit** | The zero-LLM TypeScript program: `sfsmiths` (agent-safe verbs), `sfsmiths-human` (human-only verbs), `sfsmiths-hook`, the MCP servers, the UI. |
+| **Vault** | `work/<KEY>/` — everything about one ticket. |
+| **Write areas** | Where agents may write: `org/force-app/`, `tests-ui/`, their ticket's vault, their own `agent-memory`; a0 also `docs/org-map/`, a7 also `knowledge/lessons/PENDING/`. |

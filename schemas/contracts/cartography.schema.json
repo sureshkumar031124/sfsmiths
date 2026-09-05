@@ -1,0 +1,279 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SFsmiths cartography contract (00d-cartography.json)",
+  "description": "Objects, fields, automation in order of execution, consumers, counts, drift \u2014 every item with evidence.",
+  "type": "object",
+  "required": [
+    "objects",
+    "automation",
+    "consumers",
+    "drift",
+    "unknowns"
+  ],
+  "properties": {
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "api_name",
+          "evidence"
+        ],
+        "properties": {
+          "api_name": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,200}$"
+          },
+          "sharing_model": {
+            "type": "string"
+          },
+          "record_types": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "api_name",
+                "type"
+              ],
+              "properties": {
+                "api_name": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,200}$"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "required": {
+                  "type": "boolean"
+                },
+                "calculated": {
+                  "type": "boolean"
+                },
+                "updateable": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "row_count_prod": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "row_count_dev": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/evidence"
+            },
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "automation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "object",
+          "layer",
+          "api_name",
+          "evidence"
+        ],
+        "properties": {
+          "object": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,200}$"
+          },
+          "layer": {
+            "type": "string",
+            "enum": [
+              "before_save_flow",
+              "before_trigger",
+              "validation_rule",
+              "duplicate_rule",
+              "after_save_flow",
+              "after_trigger",
+              "workflow",
+              "process_builder",
+              "assignment_rule",
+              "escalation_rule",
+              "async",
+              "other"
+            ]
+          },
+          "api_name": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,200}$"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "order": {
+            "type": "integer"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/evidence"
+            },
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "consumers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "component",
+          "used_by"
+        ],
+        "properties": {
+          "component": {
+            "type": "string"
+          },
+          "used_by": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/evidence"
+            },
+            "minItems": 0
+          }
+        }
+      }
+    },
+    "drift": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "component",
+          "status"
+        ],
+        "properties": {
+          "component": {
+            "type": "string"
+          },
+          "dev_modified": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "prod_modified": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "preprod_baseline": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "identical",
+              "dev_newer",
+              "prod_newer",
+              "unknown",
+              "missing_dev",
+              "missing_prod"
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/evidence"
+            },
+            "minItems": 0
+          }
+        }
+      }
+    },
+    "conventions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      },
+      "minItems": 0
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "evidence": {
+      "$id": "evidence-ref",
+      "type": "object",
+      "required": [
+        "source",
+        "ref"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "L0",
+            "L1",
+            "L2",
+            "L3",
+            "L4",
+            "vault",
+            "tracker",
+            "git",
+            "human"
+          ]
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "verified_at": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

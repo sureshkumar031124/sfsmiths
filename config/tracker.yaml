@@ -1,0 +1,11 @@
+# config/tracker.yaml — READ-ONLY tracker access. post_draft is disabled and cannot be enabled (hard floor).
+version: 1
+adapter: file                          # file | jira   (file = inbox/<KEY>.md; great for the first DEMO ticket)
+project_key: DEMO                      # your Jira project key, e.g. SFS
+jira:
+  base_url: "https://your-site.atlassian.net"
+  email_env: SFSMITHS_JIRA_EMAIL       # env var holding the Jira account email
+  token_env: SFSMITHS_JIRA_TOKEN       # env var holding a READ-ONLY API token
+  prior_art_jql: 'project = {project} AND updated >= -365d AND (text ~ "{keywords}") ORDER BY updated DESC'
+  max_results: 25
+post_draft: disabled

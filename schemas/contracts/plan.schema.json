@@ -1,0 +1,410 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SFsmiths plan contract (03-plan.json)",
+  "description": "Grounded fix plan \u2014 plan-lint resolves every api_name; semantic-check reads fields/flows/api_version; checklist reads checklist_answers; prodVerify reads prod_verification/remediation.",
+  "type": "object",
+  "required": [
+    "root_cause",
+    "confidence",
+    "components",
+    "fields",
+    "soql",
+    "objects",
+    "touches",
+    "tests",
+    "rollback",
+    "remediation",
+    "prod_verification",
+    "options",
+    "checklist_answers",
+    "unknowns"
+  ],
+  "properties": {
+    "root_cause": {
+      "type": "string",
+      "minLength": 20
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "api_name",
+          "action",
+          "evidence"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 60
+          },
+          "api_name": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,200}$"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "create",
+              "modify",
+              "delete",
+              "reference"
+            ]
+          },
+          "object": {
+            "type": "string"
+          },
+          "why": {
+            "type": "string"
+          },
+          "evidence": {
+            "$ref": "#/$defs/evidence"
+          }
+        }
+      }
+    },
+    "fields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "object",
+          "api_name",
+          "action"
+        ],
+        "properties": {
+          "object": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,200}$"
+          },
+          "api_name": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,200}$"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "create",
+              "modify",
+              "read",
+              "write"
+            ]
+          },
+          "evidence": {
+            "$ref": "#/$defs/evidence"
+          }
+        }
+      }
+    },
+    "soql": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "flows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "api_name"
+        ],
+        "properties": {
+          "api_name": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,200}$"
+          },
+          "type": {
+            "type": "string"
+          },
+          "trigger": {
+            "type": "string"
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dml": {
+            "type": "boolean"
+          },
+          "action": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "api_version": {
+      "type": "string",
+      "pattern": "^\\d{2,3}\\.0$"
+    },
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,200}$"
+      }
+    },
+    "touches": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "order_of_execution": {
+      "type": "string"
+    },
+    "consumers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "bulk_and_limits": {
+      "type": "string"
+    },
+    "tests": {
+      "type": "object",
+      "required": [
+        "new"
+      ],
+      "properties": {
+        "existing": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "new": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "flow_tests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "distribution": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "query": {
+                "type": "string"
+              },
+              "expected": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "ui": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "rollback": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "kill_switch": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "remediation": {
+      "type": "object",
+      "required": [
+        "needed"
+      ],
+      "properties": {
+        "needed": {
+          "type": "boolean"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "script": {
+          "type": "string"
+        },
+        "batch_size": {
+          "type": "integer"
+        },
+        "verification": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "description",
+              "query",
+              "expected"
+            ],
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "query": {
+                "type": "string"
+              },
+              "expected": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "prod_verification": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "description",
+          "query",
+          "expected"
+        ],
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "query": {
+            "type": "string"
+          },
+          "expected": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "options": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "tradeoff"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "tradeoff": {
+            "type": "string"
+          },
+          "chosen": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "checklist_answers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "answer"
+        ],
+        "properties": {
+          "answer": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no",
+              "n/a",
+              "Yes",
+              "No",
+              "N/A"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      },
+      "minItems": 0
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "evidence": {
+      "$id": "evidence-ref",
+      "type": "object",
+      "required": [
+        "source",
+        "ref"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "L0",
+            "L1",
+            "L2",
+            "L3",
+            "L4",
+            "vault",
+            "tracker",
+            "git",
+            "human"
+          ]
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "verified_at": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

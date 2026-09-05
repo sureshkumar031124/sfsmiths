@@ -1,0 +1,17 @@
+# config/models.yaml — model alias per agent. Edited by the UI (Agents screen). `sfsmiths-human sync` writes it into .claude/agents/*.md.
+# Values: opus | sonnet | haiku | fable | inherit | <full model id>
+version: 1
+agents:
+  conductor: sonnet
+  a0-cartographer: haiku
+  a0b-baseline: sonnet
+  a1-intake: opus
+  a2-repro: opus
+  a3-architect: opus
+  a4-developer: opus
+  a5-qa: sonnet
+  a6-reviewer: fable          # a different alias than a4 (fresh eyes); if your plan lacks this alias set opus here — A6 writes a same-alias warning into 06-review.md
+  a7-coach: sonnet
+  a8-ui: opus
+  a9-comms: sonnet
+fallback: sonnet

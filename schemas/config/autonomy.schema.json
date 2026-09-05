@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "version",
+    "tiers",
+    "agents",
+    "hard_floor"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "tiers": {
+      "type": "object",
+      "required": [
+        "LOW",
+        "MEDIUM",
+        "HIGH"
+      ],
+      "properties": {
+        "LOW": {
+          "type": "object",
+          "required": [
+            "human_gates"
+          ],
+          "properties": {
+            "human_gates": {
+              "type": "object",
+              "additionalProperties": {
+                "enum": [
+                  "ask",
+                  "auto"
+                ]
+              }
+            }
+          }
+        },
+        "MEDIUM": {
+          "type": "object",
+          "required": [
+            "human_gates"
+          ],
+          "properties": {
+            "human_gates": {
+              "type": "object",
+              "additionalProperties": {
+                "enum": [
+                  "ask",
+                  "auto"
+                ]
+              }
+            }
+          }
+        },
+        "HIGH": {
+          "type": "object",
+          "required": [
+            "human_gates"
+          ],
+          "properties": {
+            "human_gates": {
+              "type": "object",
+              "additionalProperties": {
+                "enum": [
+                  "ask",
+                  "auto"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "agents": {
+      "type": "object",
+      "additionalProperties": {
+        "enum": [
+          "ask",
+          "auto",
+          "inherit"
+        ]
+      }
+    },
+    "hard_floor": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "title": "config/autonomy.yaml"
+}

@@ -1,0 +1,17 @@
+# config/learning.yaml — how the system learns (P11). Auto-promotion is OFF until Phase 3.
+version: 1
+inject_cap: 15                         # max approved lessons injected per agent (reward-ranked)
+auto_promote:
+  enabled: false                       # Phase 1-2: every lesson needs human approval
+  types: [org-fact, convention, reuse-hint]
+  min_confirmations: 2                 # human-approved outputs where the lesson was active
+  max_negatives: 0
+  live_reverify: true                  # org-facts are re-verified against describe/Tooling before promotion and nightly
+mechanical_promotion:
+  min_hits: 3                          # same lesson hit 3× → propose PMD rule / gate (human approves)
+  max_cumulative_score: -6
+negative_streak_tickets: 3             # agent net-negative on 3 tickets → Slack alert
+golden:
+  min_fail_to_pass: 0.6                # repro FAIL→PASS rate floor on golden replay
+  max_nonexistent_components: 0        # R4: zero hallucinated components, always
+weekly_review_day: friday

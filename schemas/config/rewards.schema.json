@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "version",
+    "events"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "events": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "weights": {
+      "type": "object"
+    }
+  },
+  "title": "config/rewards.yaml"
+}

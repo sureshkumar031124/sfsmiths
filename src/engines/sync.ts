@@ -1,0 +1,158 @@
+/**
+ * sync.ts — config → generated files. Run after any config change (UI does it automatically).
+ *   config/models.yaml   → .claude/agents/*.md  (model: line)
+ *   config/orgs.yaml     → .mcp.json (sf-dev bound to the development alias only), .sfsmiths/policy.compiled.json
+ *   config/policy.yaml   → .sfsmiths/policy.compiled.json (fast hooks read this)
+ *   knowledge/lessons    → .claude/skills/lessons-<agent>/SKILL.md (via learnSync)
+ * Changes take effect in the NEXT Claude Code session (agents/MCP servers load at start).
+ */
+import fs from "node:fs";
+import path from "node:path";
+import { loadConfig, devOrg, preprodOrg, evidenceOrg, type AllConfig } from "../core/config.js";
+import { homePaths, projectPaths, type ProjectPaths } from "../core/paths.js";
+import { AGENT_NAMES } from "../core/state-machine.js";
+import { exists, nowIso, readText, writeJsonAtomic, writeTextAtomic } from "../core/util.js";
+import { DEFAULT_POLICY } from "../hooks/fast.js";
+import { learnSync } from "./learn.js";
+
+export const SF_MCP_VERSION = "0.30.15"; // verified on npm 2026-09-05; bump deliberately, never `latest`
+export const SF_MCP_TOOLSETS = "orgs,data,metadata,testing,code-analysis";
+
+export interface SyncResult { agents_updated: string[]; mcp_written: boolean; policy_written: boolean; skills: string[]; warnings: string[] }
+
+export function syncAll(p: ProjectPaths = projectPaths(), opts: { skipSkills?: boolean } = {}): SyncResult {
+  const cfg = loadConfig(p, { fresh: true });
+  const warnings: string[] = [];
+  const agents_updated = syncAgentModels(p, cfg, warnings);
+  const mcp_written = writeMcpJson(p, cfg, warnings);
+  const policy_written = writeCompiledPolicy(p, cfg);
+  syncSettingsDenies(p, cfg, warnings);
+  const skills = opts.skipSkills ? [] : learnSync(p);
+  if (!exists(path.join(p.claude, "settings.json"))) warnings.push(".claude/settings.json missing — hooks are not wired");
+  else {
+    // parse, don't grep: the command strings carry escaped quotes in the file
+    let commands = "";
+    try {
+      const settings = JSON.parse(readText(path.join(p.claude, "settings.json"))) as { hooks?: Record<string, { hooks?: { command?: string }[] }[]> };
+      commands = Object.values(settings.hooks ?? {}).flat().flatMap((h) => h.hooks ?? []).map((h) => h.command ?? "").join("\n");
+    } catch { warnings.push(".claude/settings.json is not valid JSON"); }
+    for (const h of ["agent-gate", "policy", "write-guard", "data-guard", "prompt-router", "stage-gate", "stop-guard", "tokens"]) if (!new RegExp(`sfsmiths-hook"? ${h}(\\s|$)`).test(commands)) warnings.push(`.claude/settings.json does not wire hook "${h}"`);
+  }
+  return { agents_updated, mcp_written, policy_written, skills, warnings };
+}
+
+export function syncAgentModels(p: ProjectPaths, cfg: AllConfig, warnings: string[]): string[] {
+  const updated: string[] = [];
+  for (const agent of AGENT_NAMES) {
+    const f = path.join(p.agents, `${agent}.md`);
+    if (!exists(f)) { warnings.push(`agent file missing: .claude/agents/${agent}.md`); continue; }
+    const model = cfg.models.agents[agent] ?? cfg.models.fallback ?? "sonnet";
+    const txt = readText(f);
+    const m = txt.match(/^---\n([\s\S]*?)\n---/);
+    if (!m) { warnings.push(`${agent}.md has no frontmatter`); continue; }
+    let fm = m[1];
+    if (/^model:\s*.*$/m.test(fm)) fm = fm.replace(/^model:\s*.*$/m, `model: ${model}`);
+    else fm += `\nmodel: ${model}`;
+    const next = txt.replace(m[0], `---\n${fm}\n---`);
+    if (next !== txt) { writeTextAtomic(f, next); updated.push(`${agent} → ${model}`); }
+  }
+  return updated;
+}
+
+export function writeMcpJson(p: ProjectPaths, cfg: AllConfig, warnings: string[]): boolean {
+  const dev = devOrg(cfg);
+  const hp = homePaths();
+  // installed copy first (the launcher IS the command: a sh/.cmd script that execs node on the installed JS);
+  // fallback to the repo's bin/*.js run with node (fresh clone before install:toolkit)
+  const server = (name: string): { command: string; args: string[] } => {
+    const installedJs = path.join(hp.toolkit, "node_modules", "sfsmiths", "bin", `${name}.js`);
+    if (exists(installedJs)) return { command: "node", args: [installedJs] };
+    warnings.push(`installed toolkit not found (${installedJs}) — using repo bin/ for ${name}; run \`npm run install:toolkit\``);
+    return { command: "node", args: [path.join(p.root, "bin", `${name}.js`)] };
+  };
+  const mcp = {
+    mcpServers: {
+      "sf-dev": {
+        type: "stdio",
+        command: "npx",
+        args: ["-y", `@salesforce/mcp@${SF_MCP_VERSION}`, "--orgs", dev.alias, "--toolsets", SF_MCP_TOOLSETS, "--no-telemetry"],
+      },
+      "sfsmiths-evidence": { type: "stdio", ...server("sfsmiths-mcp-evidence"), env: { SFSMITHS_PROJECT_DIR: "${CLAUDE_PROJECT_DIR:-.}" } },
+      "sfsmiths-ui": { type: "stdio", ...server("sfsmiths-mcp-ui"), env: { SFSMITHS_PROJECT_DIR: "${CLAUDE_PROJECT_DIR:-.}" } },
+    },
+    _sfsmiths: { generated_at: nowIso(), note: "generated by sfsmiths-human sync from config/orgs.yaml — preprod has NO MCP server (engine-only); production only via sfsmiths-evidence (masked)" },
+  };
+  writeJsonAtomic(path.join(p.root, ".mcp.json"), mcp);
+  return true;
+}
+
+export function writeCompiledPolicy(p: ProjectPaths, cfg: AllConfig): boolean {
+  const lower = (s: string) => s.toLowerCase();
+  const dev = [...new Set([...cfg.orgs.orgs.filter((o) => o.role === "development").map((o) => lower(o.alias)), ...(cfg.policy.allowed_deploy_targets ?? []).map(lower)])]
+    .filter((a) => !cfg.orgs.orgs.some((o) => o.role !== "development" && lower(o.alias) === a)); // a non-dev alias can never be a deploy target
+  const pre = cfg.orgs.orgs.filter((o) => o.role === "preprod").map((o) => lower(o.alias));
+  const ev = cfg.orgs.orgs.filter((o) => o.role === "evidence").map((o) => lower(o.alias));
+  const aliasMap: Record<string, string> = {};
+  for (const [k, v] of Object.entries(cfg.policy.alias_map)) aliasMap[k] = v;
+  for (const o of cfg.orgs.orgs) { if (o.readonly_user) aliasMap[o.readonly_user] = o.alias; if (o.instance_url) aliasMap[o.instance_url] = o.alias; }
+  const compiled = {
+    ...DEFAULT_POLICY,
+    compiled_at: nowIso(),
+    dev_aliases: dev.length ? dev : DEFAULT_POLICY.dev_aliases,
+    preprod_aliases: [...new Set([...pre, ...DEFAULT_POLICY.preprod_aliases])],
+    evidence_aliases: [...new Set([...ev, ...DEFAULT_POLICY.evidence_aliases])],
+    alias_map: aliasMap,
+    bluecanvas_patterns: cfg.policy.bluecanvas_remote_patterns.length ? cfg.policy.bluecanvas_remote_patterns.map(lower) : DEFAULT_POLICY.bluecanvas_patterns,
+    engine_home: homePaths().engineHome,
+    canary_max_age_minutes: cfg.safety.canary_max_age_minutes,
+    require_canary: cfg.safety.require_canary_before_data_stages,
+  };
+  writeJsonAtomic(path.join(p.state, "policy.compiled.json"), compiled);
+  return true;
+}
+
+/**
+ * Static permission denies in .claude/settings.json for every NON-development alias (preprod + evidence) — belt to the
+ * policy hook's braces: static rules apply even if a hook times out. Managed block = entries matching SF_ALIAS_DENY_RE.
+ */
+const SF_ALIAS_DENY_RE = /^Bash\(sf (project deploy|project delete|data (query|create|update|delete|upsert|import|bulk|tree import)|apex run|org (open|delete)) \* (-o|--target-org) .+\)$/;
+export function syncSettingsDenies(p: ProjectPaths, cfg: AllConfig, warnings: string[]): boolean {
+  const file = path.join(p.claude, "settings.json");
+  if (!exists(file)) return false;
+  let settings: { permissions?: { deny?: string[] } } & Record<string, unknown>;
+  try { settings = JSON.parse(readText(file)); } catch { warnings.push(".claude/settings.json is not valid JSON — alias deny rules not refreshed"); return false; }
+  const deny = (settings.permissions?.deny ?? []).filter((r) => !SF_ALIAS_DENY_RE.test(r));
+  const nonDev = cfg.orgs.orgs.filter((o) => o.role !== "development");
+  for (const o of nonDev) {
+    for (const flag of ["-o", "--target-org"]) {
+      deny.push(`Bash(sf project deploy * ${flag} ${o.alias}*)`);
+      deny.push(`Bash(sf data query * ${flag} ${o.alias}*)`);
+      deny.push(`Bash(sf apex run * ${flag} ${o.alias}*)`);
+      deny.push(`Bash(sf data create * ${flag} ${o.alias}*)`);
+      deny.push(`Bash(sf data update * ${flag} ${o.alias}*)`);
+      deny.push(`Bash(sf data delete * ${flag} ${o.alias}*)`);
+      deny.push(`Bash(sf data upsert * ${flag} ${o.alias}*)`);
+      deny.push(`Bash(sf data import * ${flag} ${o.alias}*)`);
+    }
+  }
+  settings.permissions = { ...(settings.permissions ?? {}), deny: [...new Set(deny)] };
+  const next = JSON.stringify(settings, null, 2) + "\n";
+  if (next !== readText(file)) { writeTextAtomic(file, next); return true; }
+  return false;
+}
+
+export function describeOrgs(cfg: AllConfig): string {
+  return cfg.orgs.orgs.map((o) => `${o.alias} (${o.role}, ${o.keychain} keychain${o.write ? ", RW" : ", RO"})`).join(" · ");
+}
+
+export function orgRoles(cfg: AllConfig) {
+  return { dev: devOrg(cfg), preprod: preprodOrg(cfg), evidence: evidenceOrg(cfg) };
+}
+
+export function ensureRuntimeDirs(p: ProjectPaths): void {
+  for (const d of [p.work, p.state, p.metrics, path.join(p.state, "sessions"), path.join(p.state, "cache"), path.join(p.state, "canary"), p.baseline, path.join(p.knowledge, "lessons", "PENDING"), path.join(p.knowledge, "lessons", "RETIRED"), path.join(p.agentMemory)]) fs.mkdirSync(d, { recursive: true });
+  for (const agent of AGENT_NAMES) {
+    const f = path.join(p.agentMemory, agent, "MEMORY.md");
+    if (!exists(f)) writeTextAtomic(f, `# ${agent} — notes (UNVERIFIED)\n\nThese are the agent's own notes. They are evidence for the coach, never rules. Approved lessons live in .claude/skills/lessons-${agent}/SKILL.md.\n`);
+  }
+}

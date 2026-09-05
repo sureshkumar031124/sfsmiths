@@ -1,0 +1,26 @@
+name: security
+items:
+  - id: SEC-1
+    question: Is sharing declared explicitly for every new/changed class, with a justification for any "without sharing"?
+    applies_when: apex
+  - id: SEC-2
+    question: Are CRUD/FLS enforced (USER_MODE / SECURITY_ENFORCED / stripInaccessible) on user-context paths?
+    applies_when: apex
+  - id: SEC-3
+    question: Is every dynamic SOQL/SOSL bound or escaped?
+    applies_when: apex
+  - id: SEC-4
+    question: Are there zero hard-coded ids, URLs, credentials or email addresses?
+    applies_when: always
+  - id: SEC-5
+    question: Are permission set / profile changes minimal, named, and listed for the deploy brief?
+    applies_when: permissions
+  - id: SEC-6
+    question: Does no debug/log statement emit PII?
+    applies_when: apex
+  - id: SEC-7
+    question: Are callouts using Named Credentials (no secrets in code/metadata)?
+    applies_when: integration
+  - id: SEC-8
+    question: Does the change respect the org-wide defaults and sharing rules (no accidental exposure)?
+    applies_when: sharing

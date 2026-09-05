@@ -1,0 +1,30 @@
+# config/rewards.yaml — the reward ledger (computed by CODE from events.jsonl; agents never see or set scores).
+version: 1
+events:
+  gate.passed.first_try: 2
+  gate.failed: -2
+  stage.retry: -1
+  bounce.qa_to_develop: -3
+  bounce.qa_to_plan: -5
+  human.approved: 3
+  human.approved_with_edits: -4
+  human.rejected: -6
+  escalation.honest: 1
+  escalation.weak: -4
+  deploy_brief.accepted: 2
+  comms.posted_unedited: 2
+  test_quality.zero_assertion: -2
+  naming.fail: -1
+  comment.fail: -1
+  email_guard.blocked: -8
+  policy.denied: -10
+  write.denied: -5
+  agent.spawn_denied: -3
+  budget.exceeded: -3
+  escaped_defect: -20
+  prod.verified_clean_7d: 5
+  lesson.approved: 3
+  lesson.rejected: -2
+  stop.cap_hit: -2
+weights:
+  escaped_defect_stage_split: { a3-architect: 0.4, a4-developer: 0.3, a5-qa: 0.2, a6-reviewer: 0.1 }

@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "version",
+    "ticket_key_regex",
+    "forbid_ticket_only_names",
+    "rules"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "ticket_key_regex": {
+      "type": "string"
+    },
+    "forbid_ticket_only_names": {
+      "type": "boolean"
+    },
+    "rules": {
+      "type": "object",
+      "required": [
+        "apex_class",
+        "apex_test_class",
+        "apex_trigger",
+        "flow",
+        "custom_field",
+        "custom_object",
+        "validation_rule",
+        "test_record",
+        "permission_set"
+      ],
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "pattern"
+        ],
+        "properties": {
+          "pattern": {
+            "type": "string"
+          },
+          "min_words": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "examples_good": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "examples_bad": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "title": "config/naming.yaml"
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "version",
+    "per_ticket",
+    "daily_usd",
+    "on_exceed",
+    "pipeline_max_budget_usd"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "per_ticket": {
+      "type": "object",
+      "required": [
+        "tokens",
+        "usd",
+        "wall_minutes"
+      ],
+      "properties": {
+        "tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "usd": {
+          "type": "number"
+        },
+        "wall_minutes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "daily_usd": {
+      "type": "number"
+    },
+    "on_exceed": {
+      "const": "park"
+    },
+    "pipeline_max_budget_usd": {
+      "type": "number"
+    }
+  },
+  "title": "config/budgets.yaml"
+}

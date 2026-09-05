@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "version",
+    "inject_cap",
+    "auto_promote",
+    "mechanical_promotion",
+    "negative_streak_tickets",
+    "golden",
+    "weekly_review_day"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "inject_cap": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "auto_promote": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "types",
+        "min_confirmations",
+        "max_negatives",
+        "live_reverify"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "min_confirmations": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_negatives": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "live_reverify": {
+          "type": "boolean"
+        }
+      }
+    },
+    "mechanical_promotion": {
+      "type": "object",
+      "required": [
+        "min_hits",
+        "max_cumulative_score"
+      ],
+      "properties": {
+        "min_hits": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_cumulative_score": {
+          "type": "number"
+        }
+      }
+    },
+    "negative_streak_tickets": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "golden": {
+      "type": "object",
+      "required": [
+        "min_fail_to_pass",
+        "max_nonexistent_components"
+      ],
+      "properties": {
+        "min_fail_to_pass": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max_nonexistent_components": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "weekly_review_day": {
+      "type": "string"
+    }
+  },
+  "title": "config/learning.yaml"
+}

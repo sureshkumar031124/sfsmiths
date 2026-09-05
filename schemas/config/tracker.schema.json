@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "version",
+    "adapter",
+    "project_key",
+    "jira",
+    "post_draft"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "adapter": {
+      "enum": [
+        "jira",
+        "file"
+      ]
+    },
+    "project_key": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]{0,15}$"
+    },
+    "jira": {
+      "type": "object",
+      "required": [
+        "base_url",
+        "email_env",
+        "token_env",
+        "prior_art_jql",
+        "max_results"
+      ],
+      "properties": {
+        "base_url": {
+          "type": "string"
+        },
+        "email_env": {
+          "type": "string"
+        },
+        "token_env": {
+          "type": "string"
+        },
+        "prior_art_jql": {
+          "type": "string"
+        },
+        "max_results": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
+    "post_draft": {
+      "const": "disabled"
+    }
+  },
+  "title": "config/tracker.yaml \u2014 read-only; post_draft is hard-coded disabled"
+}

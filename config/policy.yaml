@@ -1,0 +1,20 @@
+# config/policy.yaml — the PreToolUse(Bash) policy hook reads this. deny.* are the hard floor and must stay true.
+version: 1
+allowed_deploy_targets: [DevSandbox]   # aliases agents may deploy / write data to (development role)
+alias_map: {}                          # legacy alias or username → canonical alias, e.g. { dev-old: DevSandbox }
+deny:
+  prod_raw_soql: true                  # raw `sf data query` against the evidence org — use sfsmiths-evidence (masked)
+  bluecanvas_git_push: true            # `git push` to any Blue Canvas remote (P1b)
+  home_override: true                  # HOME=... prefix (keychain switching)
+  sf_env_override: true                # SF_*/SFDX_* env prefixes that could redirect auth or config
+  engine_home_access: true             # any command touching ~/.sfsmiths/engine
+  human_verbs_from_agent: true         # sfsmiths-human * from an agent
+bluecanvas_remote_patterns:
+  - "bluecanvas"
+  - "blue-canvas"
+baseline_sync:
+  uat_newer: apply_and_notify       # preprod is newer & dev untouched → bring preprod version into dev, notify you
+  dev_newer: manual                 # dev has work preprod does not → STOP and ask (hard)
+  both_changed: manual              # hard
+  unknown_ancestor: manual          # hard
+  max_components: 60                # scope larger than this → ask before syncing

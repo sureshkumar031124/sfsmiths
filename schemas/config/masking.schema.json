@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "version",
+    "on_unlisted",
+    "refuse_field_types",
+    "refuse_field_name_patterns",
+    "default_max_rows",
+    "objects"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "on_unlisted": {
+      "const": "refuse"
+    },
+    "refuse_field_types": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "refuse_field_name_patterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "default_max_rows": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2000
+    },
+    "objects": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "allow"
+        ],
+        "properties": {
+          "allow": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "summarise_long_text": {
+            "type": "boolean"
+          },
+          "max_rows": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  },
+  "title": "config/masking.yaml"
+}

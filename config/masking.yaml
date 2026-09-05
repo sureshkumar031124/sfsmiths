@@ -1,0 +1,19 @@
+# config/masking.yaml — what production evidence may contain (FERPA/PII). Unlisted field → REFUSED. Email/Phone types → refused even if listed.
+version: 1
+on_unlisted: refuse
+refuse_field_types: [Email, Phone]
+refuse_field_name_patterns: ["(?i)ssn", "(?i)social", "(?i)passport", "(?i)dob", "(?i)birth", "(?i)tax"]
+default_max_rows: 200
+objects:
+  Case:
+    allow: [Id, CaseNumber, Status, Priority, Origin, Type, Reason, CreatedDate, ClosedDate, LastModifiedDate, IsClosed, IsEscalated, OwnerId, RecordTypeId, AccountId]
+    summarise_long_text: true
+    max_rows: 200
+  Account:
+    allow: [Id, Name, Type, Industry, CreatedDate, OwnerId, RecordTypeId]
+  Contact:
+    allow: [Id, AccountId, CreatedDate, RecordTypeId]     # no names/emails/phones by default
+  User:
+    allow: [Id, Username, Name, Profile.Name, IsActive]   # Username is needed to identify the read-only user
+  Opportunity:
+    allow: [Id, Name, StageName, Amount, CloseDate, CreatedDate, OwnerId, AccountId, RecordTypeId]

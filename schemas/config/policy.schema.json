@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "version",
+    "allowed_deploy_targets",
+    "alias_map",
+    "deny",
+    "bluecanvas_remote_patterns"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "allowed_deploy_targets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "alias_map": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "deny": {
+      "type": "object",
+      "required": [
+        "prod_raw_soql",
+        "bluecanvas_git_push",
+        "home_override",
+        "sf_env_override",
+        "engine_home_access",
+        "human_verbs_from_agent"
+      ],
+      "properties": {
+        "prod_raw_soql": {
+          "const": true
+        },
+        "bluecanvas_git_push": {
+          "const": true
+        },
+        "home_override": {
+          "const": true
+        },
+        "sf_env_override": {
+          "const": true
+        },
+        "engine_home_access": {
+          "const": true
+        },
+        "human_verbs_from_agent": {
+          "const": true
+        }
+      }
+    },
+    "bluecanvas_remote_patterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "baseline_sync": {
+      "type": "object",
+      "properties": {
+        "uat_newer": {
+          "enum": [
+            "apply_and_notify",
+            "ask"
+          ]
+        },
+        "dev_newer": {
+          "const": "manual"
+        },
+        "both_changed": {
+          "const": "manual"
+        },
+        "unknown_ancestor": {
+          "const": "manual"
+        },
+        "max_components": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        }
+      },
+      "required": [
+        "uat_newer",
+        "dev_newer",
+        "both_changed",
+        "unknown_ancestor"
+      ]
+    }
+  },
+  "title": "config/policy.yaml \u2014 deny flags are hard floor (must stay true)"
+}

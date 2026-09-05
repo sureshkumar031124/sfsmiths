@@ -1,0 +1,4 @@
+# config/approvers.yaml — who may approve which stage (informational for the UI/notifications; the CLI/UI records who typed it).
+version: 1
+approvers: []
+#  - { name: "Your Name", role: "developer", stages: [intake, plan, review] }

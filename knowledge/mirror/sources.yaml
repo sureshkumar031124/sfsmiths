@@ -1,0 +1,5 @@
+# knowledge/mirror/sources.yaml — official documentation mirrors (grounding layer L2). Edit to add/remove.
+sources:
+  - { name: llms.txt, url: https://developer.salesforce.com/docs/llms.txt, kind: llms-index, min_bytes: 1000 }
+  - { name: llms-product-docs.txt, url: https://developer.salesforce.com/docs/llms-product-docs.txt, kind: product-docs, min_bytes: 100000 }
+  - { name: llms-lwc.txt, url: https://developer.salesforce.com/docs/llms-lwc.txt, kind: lwc, min_bytes: 1000 }

@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "version",
+    "allowed_test_emails",
+    "refuse_field_types",
+    "require_canary_before_data_stages",
+    "canary_max_age_minutes",
+    "canary_recipient_env",
+    "test_tag_field",
+    "test_tag_prefix",
+    "ui"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "allowed_test_emails": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "refuse_field_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "require_canary_before_data_stages": {
+      "type": "boolean"
+    },
+    "canary_max_age_minutes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "canary_recipient_env": {
+      "type": "string"
+    },
+    "test_tag_field": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*(__c)?$"
+    },
+    "test_tag_prefix": {
+      "type": "string"
+    },
+    "ui": {
+      "type": "object",
+      "required": [
+        "prod_refuse",
+        "deny_url_patterns",
+        "uat_test_user_only"
+      ],
+      "properties": {
+        "prod_refuse": {
+          "const": true
+        },
+        "deny_url_patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uat_test_user_only": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "title": "config/safety.yaml"
+}

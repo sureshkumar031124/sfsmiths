@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SFsmiths repro contract (02-repro.json)",
+  "description": "The failing/inverse tests, predicted distribution and data created \u2014 read by assertion-referee and the golden replay.",
+  "type": "object",
+  "required": [
+    "failing_tests",
+    "inverse_tests",
+    "predicted_distribution",
+    "data_created",
+    "root_cause_hypothesis",
+    "confidence",
+    "evidence"
+  ],
+  "properties": {
+    "failing_tests": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z][A-Za-z0-9_]*$"
+      }
+    },
+    "inverse_tests": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z][A-Za-z0-9_]*$"
+      }
+    },
+    "predicted_distribution": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "description",
+          "query",
+          "expected"
+        ],
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "query": {
+            "type": "string",
+            "pattern": "^\\s*SELECT\\s+COUNT\\(\\)"
+          },
+          "expected": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "data_created": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "object",
+          "count",
+          "tag"
+        ],
+        "properties": {
+          "object": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,200}$"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "tag": {
+            "type": "string"
+          },
+          "script": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ui_repro": {
+      "type": "object",
+      "properties": {
+        "report": {
+          "type": "string"
+        },
+        "spec": {
+          "type": "string"
+        }
+      }
+    },
+    "root_cause_hypothesis": {
+      "type": "string"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "escalation": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      },
+      "minItems": 1
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "evidence": {
+      "$id": "evidence-ref",
+      "type": "object",
+      "required": [
+        "source",
+        "ref"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "L0",
+            "L1",
+            "L2",
+            "L3",
+            "L4",
+            "vault",
+            "tracker",
+            "git",
+            "human"
+          ]
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "verified_at": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

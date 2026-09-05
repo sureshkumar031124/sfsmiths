@@ -1,0 +1,15 @@
+# EML-1..4 — the zero-real-email rules (P9) as plan questions. Applies whenever the ticket touches notifications.
+name: email
+items:
+  - id: EML-1
+    question: Has the email canary proven that deliverability in the development sandbox is off (or system-only) before any data was created?
+    applies_when: always
+  - id: EML-2
+    question: Are all recipients in the change template/field-driven — no literal addresses in code, metadata, tests or data?
+    applies_when: email
+  - id: EML-3
+    question: Does the plan state which notifications the change can trigger (alerts, workflow emails, flow actions, Apex Messaging) and how tests assert they do NOT fire when they should not?
+    applies_when: email
+  - id: EML-4
+    question: Does the remediation/data fix run with notifications bypassed or with deliverability confirmed off for the target org?
+    applies_when: email

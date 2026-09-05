@@ -1,0 +1,9 @@
+# config/budgets.yaml — hard stops. on_exceed: park = stop, notify, keep the vault resumable.
+version: 1
+per_ticket:
+  tokens: 1500000
+  usd: 25
+  wall_minutes: 180
+daily_usd: 120
+on_exceed: park
+pipeline_max_budget_usd: 20        # passed to `claude -p --max-budget-usd` in pipeline mode

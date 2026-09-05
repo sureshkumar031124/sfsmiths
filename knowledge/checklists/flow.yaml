@@ -1,0 +1,20 @@
+name: flow
+items:
+  - id: FLOW-1
+    question: Is it clear why a flow (not Apex) and why this context (before-save vs after-save)?
+    applies_when: flow
+  - id: FLOW-2
+    question: Is there exactly one record-triggered flow per object per context, or is the org's convention followed?
+    applies_when: flow
+  - id: FLOW-3
+    question: Are Get Records / DML outside loops and are collections used for bulk?
+    applies_when: flow
+  - id: FLOW-4
+    question: Does every element that can fail have a fault path that logs?
+    applies_when: flow
+  - id: FLOW-5
+    question: Is the flow (and each non-obvious element) described, and does the name follow the naming rules?
+    applies_when: flow
+  - id: FLOW-6
+    question: Is a Flow Test or an Apex test planned that exercises the flow's trigger path in bulk?
+    applies_when: flow

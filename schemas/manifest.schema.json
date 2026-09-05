@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sfsmiths/manifest",
+  "title": "SFsmiths ticket manifest (work/<TICKET>/manifest.yaml)",
+  "type": "object",
+  "required": ["version", "product", "ticket", "tracker", "status", "tier", "stage", "next_allowed_stages", "stages", "gates", "approvals", "budget", "created_at", "updated_at"],
+  "properties": {
+    "version": { "const": 1 },
+    "product": { "const": "sfsmiths" },
+    "ticket": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{0,15}-[0-9]{1,8}$" },
+    "tracker": { "type": "string" },
+    "title": { "type": ["string", "null"] },
+    "status": { "enum": ["running", "waiting_human", "on_hold", "escalated", "parked", "done", "failed"] },
+    "tier": { "enum": ["LOW", "MEDIUM", "HIGH", "UNSET"] },
+    "tier_source": { "enum": ["risk-floor", "human", "provisional"] },
+    "stage": { "type": "string" },
+    "next_allowed_stages": { "type": "array", "items": { "type": "string" } },
+    "stages": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status", "attempts", "blocks"],
+        "properties": {
+          "status": { "enum": ["pending", "running", "done", "failed", "skipped"] },
+          "agent": { "type": ["string", "null"] },
+          "attempts": { "type": "integer", "minimum": 0 },
+          "blocks": { "type": "integer", "minimum": 0 },
+          "started_at": { "type": ["string", "null"] },
+          "ended_at": { "type": ["string", "null"] },
+          "outputs": { "type": "array", "items": { "type": "string" } },
+          "note": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "gates": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["name", "status", "at"],
+          "properties": {
+            "name": { "type": "string" },
+            "status": { "enum": ["passed", "failed", "unavailable"] },
+            "reason": { "type": ["string", "null"] },
+            "artifact_hash": { "type": ["string", "null"] },
+            "at": { "type": "string" },
+            "details_file": { "type": ["string", "null"] }
+          }
+        }
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["stage", "decision", "by", "at", "origin"],
+        "properties": {
+          "stage": { "type": "string" },
+          "decision": { "enum": ["approved", "approved_with_edits", "rejected"] },
+          "by": { "type": "string" },
+          "at": { "type": "string" },
+          "origin": { "enum": ["user_prompt_submit", "cli", "ui"] },
+          "answer": { "type": ["string", "null"] },
+          "reason": { "type": ["string", "null"] },
+          "edits": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "waiting": {
+      "type": ["object", "null"],
+      "required": ["kind", "stage", "prompt", "since"],
+      "properties": {
+        "kind": { "enum": ["approval", "question", "deploy", "remediation", "budget", "canary", "baseline"] },
+        "stage": { "type": "string" },
+        "prompt": { "type": "string" },
+        "since": { "type": "string" }
+      }
+    },
+    "fingerprints": { "type": "object" },
+    "baseline": { "type": ["object", "null"] },
+    "budget": {
+      "type": "object",
+      "required": ["tokens", "usd", "wall_ms", "started_at"],
+      "properties": {
+        "tokens": { "type": "number", "minimum": 0 },
+        "usd": { "type": "number", "minimum": 0 },
+        "wall_ms": { "type": "number", "minimum": 0 },
+        "started_at": { "type": "string" }
+      }
+    },
+    "resumes": { "type": "array" },
+    "bounces": { "type": "array" },
+    "locks": { "type": "array", "items": { "type": "string" } },
+    "history": { "type": "array", "items": { "type": "string" } },
+    "created_at": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "held": { "type": ["object", "null"] },
+    "escalation": { "type": ["object", "null"] },
+    "session_ids": { "type": "array", "items": { "type": "string" } },
+    "flags": { "type": "object" }
+  }
+}

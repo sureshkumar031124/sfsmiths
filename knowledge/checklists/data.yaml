@@ -1,0 +1,17 @@
+name: data
+items:
+  - id: DATA-1
+    question: Is the volume of affected production records known (COUNT via evidence), and is a remediation planned or explicitly ruled out?
+    applies_when: data
+  - id: DATA-2
+    question: Is the remediation script idempotent, batched, and verifiable by a SOQL count before/after?
+    applies_when: data
+  - id: DATA-3
+    question: Will the remediation trigger automation (flows/triggers/emails)? Is bypass planned where needed?
+    applies_when: data
+  - id: DATA-4
+    question: Is a backup/export of affected records planned before the data fix (who, where)?
+    applies_when: data
+  - id: DATA-5
+    question: Are test data names meaningful, tagged, and free of real customer values?
+    applies_when: always

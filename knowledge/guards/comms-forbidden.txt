@@ -1,0 +1,23 @@
+# knowledge/guards/comms-forbidden.txt — one term per line; comms-lint fails a CLIENT-VISIBLE draft that contains any of them
+# (word-boundary, case-insensitive). Internal names, agent jargon, sandbox aliases, blame words. Edit for your org.
+sandbox
+preprod
+conductor
+subagent
+a1-intake
+a2-repro
+a3-architect
+a4-developer
+a5-qa
+a6-reviewer
+SFsmiths
+hotfix
+root cause analysis pending
+blame
+fault of
+Apex
+trigger
+SOQL
+flow interview
+stack trace
+governor limit

@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SFsmiths prior-art contract (00c-prior-art.json)",
+  "description": "Related tickets, tracker hits, git history and lessons with how each applies. Empty arrays are valid.",
+  "type": "object",
+  "required": [
+    "ticket",
+    "related",
+    "tracker_hits",
+    "history",
+    "lessons",
+    "digest"
+  ],
+  "properties": {
+    "ticket": {
+      "type": "string"
+    },
+    "searched": {
+      "type": "object",
+      "properties": {
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "related": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "ticket",
+          "applies",
+          "summary"
+        ],
+        "properties": {
+          "ticket": {
+            "type": "string"
+          },
+          "similarity": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 3
+          },
+          "solution": {
+            "type": "string"
+          },
+          "retro": {
+            "type": "string"
+          },
+          "applies": {
+            "type": "string",
+            "enum": [
+              "reuse",
+              "warning",
+              "irrelevant"
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/evidence"
+            },
+            "minItems": 0
+          }
+        }
+      }
+    },
+    "tracker_hits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "key"
+        ],
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "applies": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "sha"
+        ],
+        "properties": {
+          "sha": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "lessons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "digest": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      },
+      "minItems": 0
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "evidence": {
+      "$id": "evidence-ref",
+      "type": "object",
+      "required": [
+        "source",
+        "ref"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "L0",
+            "L1",
+            "L2",
+            "L3",
+            "L4",
+            "vault",
+            "tracker",
+            "git",
+            "human"
+          ]
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "verified_at": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

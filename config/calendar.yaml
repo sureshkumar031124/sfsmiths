@@ -1,0 +1,5 @@
+# config/calendar.yaml — release/freeze windows the deploy brief must respect.
+version: 1
+timezone: UTC
+freeze_windows: []
+#  - { name: "Term start", from: "2026-08-20", to: "2026-09-05", note: "no production deploys" }

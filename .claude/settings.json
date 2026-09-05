@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "_sfsmiths": "Project settings — hooks + permissions ARE the enforcement layer. Agents cannot edit this file (deny below + write-guard). Hooks call the INSTALLED toolkit copy in ~/.sfsmiths/bin (npm run install:toolkit), never the repo source, so an agent editing src/ changes nothing at runtime.",
+
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" session-start", "timeout": 15 } ] }
+    ],
+    "UserPromptSubmit": [
+      { "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" prompt-router", "timeout": 180 } ] }
+    ],
+    "PreToolUse": [
+      { "matcher": "Agent", "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" agent-gate", "timeout": 5 } ] },
+      { "matcher": "Bash", "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" policy", "timeout": 5 } ] },
+      { "matcher": "Edit|Write|MultiEdit|NotebookEdit", "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" write-guard", "timeout": 5 } ] },
+      { "matcher": "mcp__sf-dev__.*", "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" data-guard", "timeout": 5 } ] }
+    ],
+    "PostToolUse": [
+      { "matcher": "Agent", "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" tokens", "timeout": 30 } ] },
+      { "matcher": "Edit|Write|MultiEdit", "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" post-edit", "timeout": 60 } ] }
+    ],
+    "SubagentStop": [
+      { "matcher": "a0-cartographer|a0b-baseline|a1-intake|a2-repro|a3-architect|a4-developer|a5-qa|a6-reviewer|a7-coach|a8-ui|a9-comms", "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" stage-gate", "timeout": 540 } ] }
+    ],
+    "Stop": [
+      { "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" stop-guard", "timeout": 30 } ] }
+    ],
+    "PreCompact": [
+      { "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" precompact", "timeout": 15 } ] }
+    ]
+  },
+
+  "permissions": {
+    "allow": [
+      "Bash(sfsmiths agent *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git add org/force-app*)",
+      "Bash(git add tests-ui*)",
+      "Bash(git commit *)",
+      "Edit(/org/force-app/**)",
+      "Edit(/tests-ui/**)",
+      "Edit(/work/**)",
+      "Edit(/inbox/**)",
+      "Edit(/.claude/agent-memory/**)",
+      "Edit(/docs/org-map/**)",
+      "Edit(/knowledge/lessons/PENDING/**)",
+      "Edit(/knowledge/lessons/MEMORY-AUDIT-*.md)",
+      "mcp__sf-dev__get_username",
+      "mcp__sf-dev__retrieve_metadata",
+      "mcp__sf-dev__run_soql_query",
+      "mcp__sf-dev__run_apex_test",
+      "mcp__sf-dev__deploy_metadata",
+      "mcp__sf-dev__run_code_analyzer",
+      "mcp__sf-dev__query_code_analyzer_results",
+      "mcp__sf-dev__list_code_analyzer_rules",
+      "mcp__sf-dev__describe_code_analyzer_rule",
+      "mcp__sfsmiths-evidence__*",
+      "mcp__sfsmiths-ui__*",
+      "mcp__plugin_salesforce-development_salesforce-lsp__*"
+    ],
+    "deny": [
+      "Bash(sfsmiths-human *)",
+      "Bash(npx sfsmiths-human *)",
+      "Bash(sf org login *)",
+      "Bash(sf org logout *)",
+      "Bash(sf org delete *)",
+      "Bash(sf org create *)",
+      "Bash(sf project deploy * -o Production*)",
+      "Bash(sf project deploy * --target-org Production*)",
+      "Bash(sf data query * -o Production*)",
+      "Bash(sf data query * --target-org Production*)",
+      "Bash(git push *)",
+      "Bash(git remote add *)",
+      "Bash(git remote set-url *)",
+      "Bash(claude *)",
+      "Bash(* ~/.sfsmiths/*)",
+      "Bash(* .sfsmiths/engine*)",
+      "Bash(export HOME=*)",
+      "Read(~/.sfsmiths/**)",
+      "Edit(~/.sfsmiths/**)",
+      "Read(~/.sfdx/**)",
+      "Read(~/.sf/**)",
+      "Read(~/.claude/.credentials.json)",
+      "Read(~/.claude/settings.json)",
+      "Read(~/.claude/settings.local.json)",
+      "Read(~/.claude/projects/**)",
+      "Read(~/.claude/history.jsonl)",
+      "Read(~/.claude/shell-snapshots/**)",
+      "Edit(~/.claude/**)",
+      "Edit(/.sfsmiths/**)",
+      "Edit(/src/**)",
+      "Edit(/bin/**)",
+      "Edit(/dist/**)",
+      "Edit(/scripts/**)",
+      "Edit(/schemas/**)",
+      "Edit(/templates/**)",
+      "Edit(/package.json)",
+      "Edit(/package-lock.json)",
+      "Edit(/tsconfig.json)",
+      "Edit(/.mcp.json)",
+      "Edit(/.claude-plugin/**)",
+      "Edit(/.github/**)",
+      "Edit(/.claude/settings.json)",
+      "Edit(/.claude/settings.local.json)",
+      "Edit(/.claude/agents/**)",
+      "Edit(/.claude/skills/**)",
+      "Edit(/.claude/rules/**)",
+      "Edit(/.claude/commands/**)",
+      "Edit(/CLAUDE.md)",
+      "Edit(/config/**)",
+      "Edit(/knowledge/lessons/L-*.md)",
+      "Edit(/knowledge/lessons/INDEX.md)",
+      "Edit(/knowledge/lessons/RETIRED/**)",
+      "Edit(/knowledge/checklists/**)",
+      "Edit(/knowledge/curated/**)",
+      "Edit(/knowledge/guards/**)",
+      "Edit(/knowledge/mirror/**)",
+      "Edit(/knowledge/ticket-index.json)",
+      "Edit(/knowledge/rewards.jsonl)",
+      "Edit(/metrics/**)",
+      "Edit(/work/*/manifest.yaml)",
+      "Edit(/work/*/.state.json)",
+      "Edit(/work/*/events.jsonl)",
+      "Edit(/work/*/validations/**)",
+      "Edit(/work/*/approvals/**)",
+      "Edit(/org/.baseline/**)",
+      "mcp__sf-dev__delete_org",
+      "mcp__sf-dev__create_scratch_org",
+      "mcp__sf-dev__create_org_snapshot",
+      "mcp__sf-dev__open_org",
+      "mcp__sf-dev__assign_permission_set",
+      "Agent(salesforce-dev)",
+      "Agent(salesforce-development:salesforce-dev)",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "additionalDirectories": []
+  },
+
+  "env": {
+    "SF_DISABLE_TELEMETRY": "true",
+    "SF_AUTOUPDATE_DISABLE": "true"
+  }
+}

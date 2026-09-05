@@ -1,0 +1,9 @@
+# Spike 4 findings — baseline by hand · <date>
+
+| Component | dev LastModified | preprod LastModified | files differ? | Your classification | Toolkit classification |
+|---|---|---|---|---|---|
+
+Retrieve time dev: … s · preprod: … s · scope size: … components
+**Drift pattern in this org:** mostly UAT-newer / DEV-newer / both — …
+**Policy choice (config/policy.yaml → baseline_sync):** …
+**HOME override for the engine keychain worked? ([U])** yes / no — notes: …

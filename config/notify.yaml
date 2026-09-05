@@ -1,0 +1,6 @@
+# config/notify.yaml — Slack webhook (optional). The webhook URL lives in an env var, never here.
+version: 1
+slack:
+  enabled: false
+  webhook_env: SFSMITHS_SLACK_WEBHOOK
+  on: [gate_manual, escalation, budget, ready_for_deploy, negative_streak, canary_fail, stop_cap]

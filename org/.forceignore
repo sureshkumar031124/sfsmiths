@@ -1,0 +1,17 @@
+# org/.forceignore — never retrieve/deploy these through SFsmiths
+package.xml
+**/jsconfig.json
+**/.eslintrc.json
+**/__tests__/**
+# profiles are deployed by humans (deploy brief "by hand" section) — never by agents
+**/profiles/**
+# settings and connected apps carry secrets/org-specific values
+**/settings/**
+**/connectedApps/**
+**/namedCredentials/**
+**/authproviders/**
+**/samlssoconfigs/**
+**/remoteSiteSettings/**
+**/cspTrustedSites/**
+# baseline snapshots are not source
+.baseline/**

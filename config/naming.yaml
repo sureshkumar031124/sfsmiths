@@ -1,0 +1,44 @@
+# config/naming.yaml — meaningful names (G9). naming-lint fails names that are only a ticket number.
+# Regenerate from your org's CONVENTIONS.md with `sfsmiths-human conventions build`.
+version: 1
+ticket_key_regex: "[A-Z][A-Z0-9_]{0,15}-[0-9]{1,8}"
+forbid_ticket_only_names: true
+rules:
+  apex_class:
+    pattern: "^[A-Z][A-Za-z0-9]{5,60}$"
+    min_words: 2
+    examples_good: ["CaseAutoCloseGuard", "OpportunityLineItemService"]
+    examples_bad: ["Fix1234", "Test_PROJ1234", "TempClass"]
+  apex_test_class:
+    pattern: "^[A-Z][A-Za-z0-9]{5,60}Test$"
+    min_words: 2
+    examples_good: ["CaseAutoCloseGuardTest"]
+    examples_bad: ["Test1234"]
+  apex_trigger:
+    pattern: "^[A-Z][A-Za-z0-9]{3,40}Trigger$"
+    examples_good: ["CaseTrigger"]
+  flow:
+    pattern: "^[A-Z][A-Za-z0-9]+(_[A-Za-z0-9]+){1,6}$"
+    min_words: 2
+    examples_good: ["Case_AfterSave_RecentReplyGuard", "Opportunity_BeforeSave_SetRegion"]
+    examples_bad: ["Flow_1234", "PROJ1234"]
+  custom_field:
+    pattern: "^[A-Z][A-Za-z0-9_]{2,38}__c$"
+    min_words: 1
+    examples_good: ["Last_Customer_Reply_At__c"]
+    examples_bad: ["Field1__c", "PROJ1234__c"]
+  custom_object:
+    pattern: "^[A-Z][A-Za-z0-9_]{2,38}__c$"
+    min_words: 1
+  validation_rule:
+    pattern: "^[A-Z][A-Za-z0-9_]{5,80}$"
+    min_words: 2
+    examples_good: ["Case_Cannot_Close_With_Open_Tasks"]
+  test_record:
+    pattern: "^.{12,255}$"
+    min_words: 3
+    examples_good: ["Escalated case with recent reply — auto-close repro"]
+    examples_bad: ["Test", "PROJ-1234", "record 1"]
+  permission_set:
+    pattern: "^[A-Z][A-Za-z0-9_]{5,80}$"
+    min_words: 2

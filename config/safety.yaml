@@ -1,0 +1,22 @@
+# config/safety.yaml — P9 zero real email + test-data hygiene. The email-guard gate scans every test-data payload against this.
+version: 1
+allowed_test_emails:                 # glob-style; ONLY these may appear in test data / scripts / Apex test setup
+  - "*@example.com"
+  - "*@example.org"
+  - "*.invalid"
+  - "*@sfsmiths.invalid"
+refuse_field_types:                  # prod fields of these types are NEVER copied into evidence, even if allowlisted
+  - Email
+  - Phone
+require_canary_before_data_stages: true
+canary_max_age_minutes: 30           # canary must be fresher than this before A2/A5/preprod data steps
+canary_recipient_env: SFSMITHS_CANARY_EMAIL   # your own address for the canary send (env var, not config)
+test_tag_field: Test_Tag__c          # custom text field holding "[SFSMITHS PROJ-123]" on every test record
+test_tag_prefix: "[SFSMITHS"
+ui:
+  prod_refuse: true                  # sfsmiths-ui (Playwright) refuses production hosts — hard
+  deny_url_patterns:
+    - "/lightning/setup/*"
+    - "/setup/*"
+    - "/_ui/system/*"
+  uat_test_user_only: true           # preprod UI runs only as the least-privilege test user

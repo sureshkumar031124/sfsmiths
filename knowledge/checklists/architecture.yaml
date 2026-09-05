@@ -1,0 +1,34 @@
+# knowledge/checklists/architecture.yaml — the plan (03-plan.json → checklist_answers) must answer every applicable item.
+# applies_when: always | apex | flow | data | email | ui | permissions | sharing | integration | reports | lwc
+name: architecture
+items:
+  - id: ARCH-1
+    question: Is this the smallest change that fixes the root cause (no scope creep, no "while I'm here")?
+    applies_when: always
+  - id: ARCH-2
+    question: Does the change live in the right layer (before-save flow vs trigger vs Apex service), and is the reason stated?
+    applies_when: always
+  - id: ARCH-3
+    question: Are all consumers of the changed components listed and their behaviour confirmed unchanged?
+    applies_when: always
+  - id: ARCH-4
+    question: Does the plan reuse existing utilities / trigger framework / factories instead of duplicating them?
+    applies_when: always
+  - id: ARCH-5
+    question: Is there a kill switch or fast rollback for any behaviour change, and is the rollback verifiable?
+    applies_when: always
+  - id: ARCH-6
+    question: Is the 200-record bulk path analysed (SOQL/DML counts, CPU, async needs)?
+    applies_when: apex
+  - id: ARCH-7
+    question: Is recursion between flows and triggers on the same object impossible or guarded?
+    applies_when: apex
+  - id: ARCH-8
+    question: Do the new/changed flows have entry conditions and fault paths on every DML/action?
+    applies_when: flow
+  - id: ARCH-9
+    question: Does any change alter report/dashboard semantics (field meaning, picklist values, formulas)?
+    applies_when: reports
+  - id: ARCH-10
+    question: Are LWC changes covered by Jest tests and reviewed for LWS/locker constraints?
+    applies_when: lwc

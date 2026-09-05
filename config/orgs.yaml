@@ -1,0 +1,24 @@
+# config/orgs.yaml — your Salesforce orgs. Default 3 (development · preprod · evidence). Add more via `sfsmiths-human org add`.
+# Credentials are NEVER here: they live in the sf CLI keychains (agent = your default sf keychain, engine = ~/.sfsmiths/engine).
+version: 1
+default_count: 3
+orgs:
+  - alias: DevSandbox            # sf CLI alias in the AGENT keychain
+    role: development            # the ONLY org agents may deploy to
+    keychain: agent
+    write: true
+    email_deliverability: unknown        # set by `sfsmiths-human doctor --email-canary` / setup wizard
+    deliverability_verified_on: null
+    deliverability_verified_by: null
+  - alias: PartialUAT
+    role: preprod                # baseline source + preprod tests; ENGINE keychain only (agents have no auth)
+    keychain: engine
+    write: false
+    email_deliverability: unknown
+    deliverability_verified_on: null
+    deliverability_verified_by: null
+  - alias: Production
+    role: evidence               # READ-ONLY user; reached only through sfsmiths-evidence (masked)
+    keychain: agent
+    write: false
+    readonly_user: ""            # username of the read-only integration user (doctor #1 verifies its permissions)
