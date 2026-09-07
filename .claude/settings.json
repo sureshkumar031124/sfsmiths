@@ -1,35 +1,128 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "_sfsmiths": "Project settings — hooks + permissions ARE the enforcement layer. Agents cannot edit this file (deny below + write-guard). Hooks call the INSTALLED toolkit copy in ~/.sfsmiths/bin (npm run install:toolkit), never the repo source, so an agent editing src/ changes nothing at runtime.",
-
   "hooks": {
     "SessionStart": [
-      { "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" session-start", "timeout": 15 } ] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" session-start",
+            "timeout": 15
+          }
+        ]
+      }
     ],
     "UserPromptSubmit": [
-      { "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" prompt-router", "timeout": 180 } ] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" prompt-router",
+            "timeout": 180
+          }
+        ]
+      }
     ],
     "PreToolUse": [
-      { "matcher": "Agent", "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" agent-gate", "timeout": 5 } ] },
-      { "matcher": "Bash", "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" policy", "timeout": 5 } ] },
-      { "matcher": "Edit|Write|MultiEdit|NotebookEdit", "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" write-guard", "timeout": 5 } ] },
-      { "matcher": "mcp__sf-dev__.*", "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" data-guard", "timeout": 5 } ] }
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" agent-gate",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" policy",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" write-guard",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__sf-dev__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" data-guard",
+            "timeout": 5
+          }
+        ]
+      }
     ],
     "PostToolUse": [
-      { "matcher": "Agent", "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" tokens", "timeout": 30 } ] },
-      { "matcher": "Edit|Write|MultiEdit", "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" post-edit", "timeout": 60 } ] }
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" tokens",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" post-edit",
+            "timeout": 60
+          }
+        ]
+      }
     ],
     "SubagentStop": [
-      { "matcher": "a0-cartographer|a0b-baseline|a1-intake|a2-repro|a3-architect|a4-developer|a5-qa|a6-reviewer|a7-coach|a8-ui|a9-comms", "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" stage-gate", "timeout": 540 } ] }
+      {
+        "matcher": "a0-cartographer|a0b-baseline|a1-intake|a2-repro|a3-architect|a4-developer|a5-qa|a6-reviewer|a7-coach|a8-ui|a9-comms",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" stage-gate",
+            "timeout": 540
+          }
+        ]
+      }
     ],
     "Stop": [
-      { "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" stop-guard", "timeout": 30 } ] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" stop-guard",
+            "timeout": 30
+          }
+        ]
+      }
     ],
     "PreCompact": [
-      { "hooks": [ { "type": "command", "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" precompact", "timeout": 15 } ] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.sfsmiths/bin/sfsmiths-hook\" precompact",
+            "timeout": 15
+          }
+        ]
+      }
     ]
   },
-
   "permissions": {
     "allow": [
       "Bash(sfsmiths agent *)",
@@ -68,10 +161,6 @@
       "Bash(sf org logout *)",
       "Bash(sf org delete *)",
       "Bash(sf org create *)",
-      "Bash(sf project deploy * -o Production*)",
-      "Bash(sf project deploy * --target-org Production*)",
-      "Bash(sf data query * -o Production*)",
-      "Bash(sf data query * --target-org Production*)",
       "Bash(git push *)",
       "Bash(git remote add *)",
       "Bash(git remote set-url *)",
@@ -135,11 +224,42 @@
       "Agent(salesforce-dev)",
       "Agent(salesforce-development:salesforce-dev)",
       "WebFetch",
-      "WebSearch"
+      "WebSearch",
+      "Bash(sf project deploy * -o Production*)",
+      "Bash(sf data query * -o Production*)",
+      "Bash(sf apex run * -o Production*)",
+      "Bash(sf data create * -o Production*)",
+      "Bash(sf data update * -o Production*)",
+      "Bash(sf data delete * -o Production*)",
+      "Bash(sf data upsert * -o Production*)",
+      "Bash(sf data import * -o Production*)",
+      "Bash(sf project deploy * --target-org Production*)",
+      "Bash(sf data query * --target-org Production*)",
+      "Bash(sf apex run * --target-org Production*)",
+      "Bash(sf data create * --target-org Production*)",
+      "Bash(sf data update * --target-org Production*)",
+      "Bash(sf data delete * --target-org Production*)",
+      "Bash(sf data upsert * --target-org Production*)",
+      "Bash(sf data import * --target-org Production*)",
+      "Bash(sf project deploy * -o PartialUAT*)",
+      "Bash(sf data query * -o PartialUAT*)",
+      "Bash(sf apex run * -o PartialUAT*)",
+      "Bash(sf data create * -o PartialUAT*)",
+      "Bash(sf data update * -o PartialUAT*)",
+      "Bash(sf data delete * -o PartialUAT*)",
+      "Bash(sf data upsert * -o PartialUAT*)",
+      "Bash(sf data import * -o PartialUAT*)",
+      "Bash(sf project deploy * --target-org PartialUAT*)",
+      "Bash(sf data query * --target-org PartialUAT*)",
+      "Bash(sf apex run * --target-org PartialUAT*)",
+      "Bash(sf data create * --target-org PartialUAT*)",
+      "Bash(sf data update * --target-org PartialUAT*)",
+      "Bash(sf data delete * --target-org PartialUAT*)",
+      "Bash(sf data upsert * --target-org PartialUAT*)",
+      "Bash(sf data import * --target-org PartialUAT*)"
     ],
     "additionalDirectories": []
   },
-
   "env": {
     "SF_DISABLE_TELEMETRY": "true",
     "SF_AUTOUPDATE_DISABLE": "true"

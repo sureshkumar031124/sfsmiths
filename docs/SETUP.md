@@ -81,6 +81,9 @@ sfsmiths-human org list
 ```
 
 Agents cannot switch keychains: `HOME=` / `SF_*` overrides, the engine path, `sf org login/logout` are denied by hooks and static rules.
+Your default keychain usually holds more than the configured orgs (other sandboxes, an admin production login): the policy hook
+refuses every `sf` target that is not the configured development alias, and `sfsmiths-human sync` writes matching static denies
+for each of those orgs (alias + username) into the gitignored `.claude/settings.local.json` — re-run `sync` after any `sf org login/logout`.
 
 ## 5. Claude Code pieces
 

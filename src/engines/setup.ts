@@ -41,10 +41,20 @@ export async function askAll(defaults: Partial<SetupAnswers>, nonInteractive: bo
     const emailsRaw = await q("Allowed TEST email patterns, comma separated (your own address pattern too, e.g. you+*@company.com)", (defaults.emails?.length ? defaults.emails : ["*@example.com", "*.invalid"]).join(","));
     const tagField = await q("Custom text field on test records that holds the ticket tag", defaults.tagField ?? "Test_Tag__c");
     const slack = /^y/i.test(await q("Enable Slack notifications (webhook URL via env SFSMITHS_SLACK_WEBHOOK)? y/n", defaults.slack ? "y" : "n"));
-    return { dev, preprod: preprod || undefined, evidence: evidence || undefined, readonlyUser: readonlyUser || undefined, tracker, projectKey, jiraUrl, emails: emailsRaw.split(",").map((s) => s.trim()).filter(Boolean), tagField, slack };
+    return { dev, preprod: preprod || undefined, evidence: evidence || undefined, readonlyUser: readonlyUser || undefined, tracker, projectKey, jiraUrl, emails: sanitizeEmailPatterns(emailsRaw.split(",")), tagField, slack };
   } finally {
     rl.close();
   }
+}
+
+/** A pasted default such as `[*@example.com,*.invalid]` must not become the patterns `[*@example.com` and `*.invalid]`. */
+export function sanitizeEmailPatterns(raw: string[]): string[] {
+  const out: string[] = [];
+  for (const r of raw) {
+    const s = r.trim().replace(/^[\[\]"'\s]+|[\[\]"'\s]+$/g, "");
+    if (s && !out.includes(s)) out.push(s);
+  }
+  return out;
 }
 
 export function applyAnswers(a: SetupAnswers, p: ProjectPaths = projectPaths()): string[] {
@@ -57,7 +67,7 @@ export function applyAnswers(a: SetupAnswers, p: ProjectPaths = projectPaths()):
   tracker.adapter = a.tracker; tracker.project_key = a.projectKey; if (a.jiraUrl) tracker.jira.base_url = a.jiraUrl;
   writeConfigFile("tracker", tracker, p); written.push("config/tracker.yaml");
   const safety = loadConfigFile("safety", p) as SafetyConfig;
-  safety.allowed_test_emails = a.emails; safety.test_tag_field = a.tagField;
+  safety.allowed_test_emails = sanitizeEmailPatterns(a.emails); safety.test_tag_field = a.tagField;
   writeConfigFile("safety", safety, p); written.push("config/safety.yaml");
   const notify = loadConfigFile("notify", p) as NotifyConfig;
   notify.slack.enabled = a.slack;
@@ -66,7 +76,8 @@ export function applyAnswers(a: SetupAnswers, p: ProjectPaths = projectPaths()):
   policy.allowed_deploy_targets = [a.dev];
   writeConfigFile("policy", policy, p); written.push("config/policy.yaml");
   ensureRuntimeDirs(p);
-  syncAll(p);
+  const r = syncAll(p, { keychainDenies: true });
   written.push(".mcp.json", ".sfsmiths/policy.compiled.json", ".claude/agents/*.md (model lines)");
+  if (!r.warnings.some((w) => /keychain denies/.test(w))) written.push(".claude/settings.local.json (keychain denies)");
   return written;
 }

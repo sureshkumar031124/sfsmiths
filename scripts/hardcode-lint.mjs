@@ -23,7 +23,7 @@ const FORBIDDEN = [
   ...(local.forbidden ?? []).map((s) => ({ re: new RegExp(s, "i"), why: "local rule" })),
 ];
 const SKIP_DIRS = new Set(["node_modules", "dist", ".git", "work", "config", "inbox", "metrics", ".sfsmiths", "org", "knowledge", "test"]); // test/ holds deliberate negative fixtures (fake emails/hosts the guards must reject)
-const SKIP_FILES = new Set(["package-lock.json", ".hardcode-lint.json"]);
+const SKIP_FILES = new Set(["package-lock.json", ".hardcode-lint.json", "settings.local.json", ".mcp.json"]); // settings.local.json + .mcp.json are gitignored, machine-specific (keychain denies, dev alias)
 const ALLOW_DIRS = ["docs/org-map"]; // org facts are allowed to be specific — they are generated per clone
 const TEXT_EXT = /\.(ts|mjs|js|json|md|yaml|yml|txt|apex|cls|xml|html|css|sh|cmd|toml)$/;
 

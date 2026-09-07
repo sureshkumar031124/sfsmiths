@@ -12,7 +12,7 @@ import { run, which } from "../core/shell.js";
 import { exists, readJsonOr, readText } from "../core/util.js";
 import { runCanary } from "../privileged/index.js";
 import { evidenceDescribe } from "../engines/evidence/query.js";
-import { SF_MCP_VERSION } from "../engines/sync.js";
+import { SF_MCP_VERSION, keychainDenyRules, KEYCHAIN_DENY_RE } from "../engines/sync.js";
 
 export type Level = "ok" | "warn" | "fail" | "skip";
 export interface Check { id: string; title: string; level: Level; detail: string }
@@ -40,7 +40,8 @@ export async function doctor(opts: DoctorOptions = {}): Promise<{ checks: Check[
   add("2c", "git", (await which("git")) ? "ok" : "fail", (await which("git")) ?? "not found");
   for (const tool of ["python3", "jq"]) add(`2d-${tool}`, `${tool} (needed by the sf-skills plugin scripts)`, (await which(tool)) ? "ok" : "warn", (await which(tool)) ?? "not found — plugin hooks/skills will degrade");
   const ca = await run("sf", ["plugins"], { timeoutMs: 60_000 });
-  add("2e", "sf plugins: code-analyzer + plugin-flow", /code-analyzer/.test(ca.stdout) ? (/plugin-flow|@salesforce\/plugin-flow/.test(ca.stdout) ? "ok" : "warn") : "warn", ca.code === 0 ? ca.stdout.split(/\r?\n/).filter((l) => /code-analyzer|plugin-flow/.test(l)).join("; ") || "install: sf plugins install code-analyzer @salesforce/plugin-flow" : "could not list plugins");
+  const plugins = parseSfPlugins(ca.stdout);
+  add("2e", "sf plugins: code-analyzer + plugin-flow", plugins.codeAnalyzer && plugins.flow ? "ok" : "warn", ca.code === 0 ? [plugins.codeAnalyzer ? `code-analyzer ${plugins.codeAnalyzer}` : "code-analyzer missing (sf plugins install code-analyzer)", plugins.flow ? `flow ${plugins.flow}` : "plugin-flow missing (sf plugins install @salesforce/plugin-flow)"].join("; ") : "could not list plugins");
   if (process.env.SFDX_AUTO_DEPLOY === "1") add("2f", "SFDX_AUTO_DEPLOY", "fail", "SFDX_AUTO_DEPLOY=1 makes the sf-skills plugin auto-deploy on every edit — unset it (deploys must be explicit sfsmiths steps)");
 
   // 2g default target-org: agents' bare `sf` commands would hit it — it must be unset or the development org
@@ -123,6 +124,15 @@ export async function doctor(opts: DoctorOptions = {}): Promise<{ checks: Check[
   const repoPkg = readJsonOr<{ version?: string }>(path.join(p.root, "package.json"), {});
   add("9e", "installed toolkit copy (~/.sfsmiths/bin) matches repo version", !installedPkg.version ? "fail" : installedPkg.version === repoPkg.version ? "ok" : "warn", !installedPkg.version ? `not installed — npm run install:toolkit (hooks call ${hp.bin})` : `installed ${installedPkg.version} · repo ${repoPkg.version}`);
   if (!exists(path.join(p.state, "policy.compiled.json"))) add("9f", "compiled policy for fast hooks", "warn", "missing — run sfsmiths-human sync (hooks fall back to built-in defaults)");
+  // 9g machine-specific static denies: every non-development org in the agent keychain must be denied in settings.local.json
+  if (sfv && cfg.orgs && agentOrgs.length) {
+    const devAliases = cfg.orgs.orgs.filter((o) => o.role === "development").map((o) => o.alias);
+    const want = keychainDenyRules(agentOrgs, devAliases);
+    const local = readJsonOr<{ permissions?: { deny?: string[] } }>(path.join(p.claude, "settings.local.json"), {});
+    const have = new Set((local.permissions?.deny ?? []).filter((r) => KEYCHAIN_DENY_RE.test(r)));
+    const missing = want.rules.filter((r) => !have.has(r));
+    add("9g", "static denies cover every non-development org in the AGENT keychain (.claude/settings.local.json)", want.targets.length === 0 ? "ok" : missing.length ? "warn" : "ok", want.targets.length === 0 ? "keychain holds only the development org" : missing.length ? `${missing.length} rule(s) missing for ${want.targets.join(", ")} — run sfsmiths-human sync` : `${want.targets.length} target(s) denied: ${want.targets.join(", ")}`);
+  }
 
   // 10 canary
   if (opts.emailCanary && dev) {
@@ -193,4 +203,14 @@ export function formatChecks(checks: Check[]): string {
 
 export function readSettingsJsonSafe(p: ProjectPaths): unknown {
   try { return JSON.parse(readText(path.join(p.claude, "settings.json"))); } catch { return undefined; }
+}
+
+/** `sf plugins` lists installed plugins by short name (`flow 2.0.1`), then an "Uninstalled JIT Plugins" section that must not count. */
+export function parseSfPlugins(stdout: string): { codeAnalyzer?: string; flow?: string } {
+  const installed = stdout.split(/uninstalled jit plugins/i)[0] ?? "";
+  const pick = (re: RegExp) => installed.match(re)?.[1];
+  return {
+    codeAnalyzer: pick(/^(?:@salesforce\/(?:plugin-)?)?code-analyzer\s+(\S+)/m),
+    flow: pick(/^(?:@salesforce\/plugin-)?flow\s+(\S+)/m),
+  };
 }

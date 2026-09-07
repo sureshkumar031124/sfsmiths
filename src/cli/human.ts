@@ -91,7 +91,7 @@ async function main(): Promise<void> {
       say(`decisions saved for ${t}: ${Object.entries(d).map(([k, v]) => `${v}:${k}`).join(", ")}\nnext (conductor session): sfsmiths agent handoff ${t}`);
       return;
     }
-    case "sync": { const r = syncAll(p); say(`agents: ${r.agents_updated.join(", ") || "no model changes"}\n.mcp.json: ${r.mcp_written ? "written" : "-"} · policy: ${r.policy_written ? "compiled" : "-"}\nskills: ${r.skills.join(", ")}`); for (const w of r.warnings) say(`⚠ ${w}`); return; }
+    case "sync": { const r = syncAll(p, { keychainDenies: true }); say(`agents: ${r.agents_updated.join(", ") || "no model changes"}\n.mcp.json: ${r.mcp_written ? "written" : "-"} · policy: ${r.policy_written ? "compiled" : "-"}\nskills: ${r.skills.join(", ")}`); for (const w of r.warnings) say(`⚠ ${w}`); return; }
     case "org": {
       const sub = a.positional[1];
       const cfg = loadConfig(p);
@@ -121,7 +121,7 @@ async function main(): Promise<void> {
         if (orgs.orgs.some((o) => o.alias.toLowerCase() === alias.toLowerCase())) fail(`${alias} already configured`);
         orgs.orgs.push({ alias, role, keychain: kc, write: role === "development", readonly_user: a.str("readonly-user") ?? (role === "evidence" ? "" : undefined), email_deliverability: "unknown" });
         writeConfigFile("orgs", orgs, p);
-        const r = syncAll(p);
+        const r = syncAll(p, { keychainDenies: true });
         say(`added ${alias} (${role}, ${kc}). Regenerated .mcp.json + policy${r.warnings.length ? `; warnings: ${r.warnings.join("; ")}` : ""}.\nNow: sfsmiths-human org login --alias ${alias} --keychain ${kc}  → sfsmiths-human doctor`);
         return;
       }
@@ -129,7 +129,7 @@ async function main(): Promise<void> {
         const alias = a.str("alias"); if (!alias) fail("org remove --alias X");
         const orgs = loadConfigFile("orgs", p) as OrgsConfig;
         orgs.orgs = orgs.orgs.filter((o) => o.alias.toLowerCase() !== alias.toLowerCase());
-        writeConfigFile("orgs", orgs, p); syncAll(p); say(`removed ${alias} from config (sf keychain login untouched: sf org logout -o ${alias})`); return;
+        writeConfigFile("orgs", orgs, p); syncAll(p, { keychainDenies: true }); say(`removed ${alias} from config (sf keychain login untouched: sf org logout -o ${alias})`); return;
       }
       fail("org list|login|add|remove");
     }
