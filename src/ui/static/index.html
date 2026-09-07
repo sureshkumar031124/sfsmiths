@@ -153,7 +153,7 @@
           <div class="muted" style="margin-top:4px">${usd(d.today.usd)} ${d.today.budget_usd ? 'of ' + usd(d.today.budget_usd) + ' daily budget' : '(no prices.json → cost unknown)'}</div>
           <div class="bar"><i class="${budgetPct >= 100 ? 'over' : ''}" style="width:${budgetPct}%"></i></div></div>
         <div class="card"><h3>Safety</h3><div class="kpi">${d.denials_last_7d}<small>denials in 7 days</small></div>
-          <div class="muted" style="margin-top:4px">${Object.entries(d.canary || {}).map(([a, s]) => `<span class="dot ${s.status === 'pass' ? 'ok' : s.status === 'never' ? 'warn' : 'bad'}"></span>canary ${esc(a)}: ${esc(s.status || 'unknown')}${s.checked_at ? ' · ' + esc(ago(s.checked_at)) : ''}`).join('<br>') || 'no development org configured'}</div></div>
+          <div class="muted" style="margin-top:4px">${Object.entries(d.canary || {}).map(([a, s]) => `<span class="dot ${s.result === 'pass' ? (s.fresh ? 'ok' : 'warn') : s.result === 'never' ? 'warn' : 'bad'}"></span>canary ${esc(a)}: ${esc(s.result || 'unknown')}${s.at ? ' · ' + esc(ago(s.at)) : ''}${s.result === 'pass' && !s.fresh ? ' (stale — agents re-run it before creating data)' : ''}`).join('<br>') || 'no development org configured'}</div></div>
       </div>
       <div class="grid g2" style="margin-top:14px">
         <div class="card"><h3>Needs a decision</h3>${d.needs_you.length ? `<table><tr><th>Ticket</th><th>Status</th><th>Stage</th><th>Waiting for</th><th></th></tr>${d.needs_you.map((t) => `

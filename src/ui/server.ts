@@ -207,7 +207,7 @@ function dashboard(p: ProjectPaths) {
   const rewards = rewardsSummary(p);
   const events = readAllEvents(p);
   const denials = events.filter((e) => ["policy.denied", "write.denied", "agent.spawn_denied", "email_guard.blocked"].includes(e.type));
-  const canary = readCanaryState(p, cfg.orgs);
+  const canary = readCanaryState(p, cfg.orgs, cfg.safety?.canary_max_age_minutes ?? 30);
   return {
     generated_at: nowIso(),
     config_errors: errors,
@@ -349,12 +349,16 @@ function rewardsSummary(p: ProjectPaths): { total: number; by_agent: Record<stri
   try { const cfg = loadConfig(p); const s = computeRewards(readAllEvents(p), cfg); return { total: s.total, by_agent: s.by_agent, by_ticket: s.by_ticket }; } catch { return undefined; }
 }
 
-function readCanaryState(p: ProjectPaths, orgs?: OrgsConfig) {
-  const out: Record<string, unknown> = {};
+/** Canary state per development org, in the shape `runCanary` writes (`result`, `at`, `detail`) plus freshness for the data-guard. */
+function readCanaryState(p: ProjectPaths, orgs?: OrgsConfig, maxAgeMinutes = 30) {
+  const out: Record<string, { result: string; at?: string; detail?: string; fresh: boolean; note?: string }> = {};
   for (const o of orgs?.orgs ?? []) {
     if (o.role !== "development") continue;
     const f = path.join(p.state, "canary", `${o.alias}.json`);
-    out[o.alias] = readJsonOr(f, { status: "never", note: "run: sfsmiths-human canary" });
+    const st = readJsonOr<{ result?: string; at?: string; detail?: string } | undefined>(f, undefined);
+    if (!st) { out[o.alias] = { result: "never", fresh: false, note: "run: sfsmiths agent canary --org " + o.alias }; continue; }
+    const ageMin = st.at ? (Date.now() - Date.parse(st.at)) / 60_000 : Infinity;
+    out[o.alias] = { result: st.result ?? "unknown", at: st.at, detail: st.detail, fresh: st.result === "pass" && ageMin <= maxAgeMinutes };
   }
   return out;
 }

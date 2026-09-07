@@ -34,6 +34,13 @@ test("UI server: 127.0.0.1 only, token required, Host/Origin checked, config wri
     // happy path
     r = await api("GET", "dashboard"); assert.equal(r.status, 200);
     const d = await r.json(); assert.equal(d.counts.tickets, 1); assert.ok(d.recent[0].ticket === "DEMO-101");
+    // canary card reads the state file runCanary writes (result/at), never a phantom `status`; stale passes are marked
+    assert.equal(d.canary.DevSandbox.result, "never");
+    fs.mkdirSync(path.join(root, ".sfsmiths", "canary"), { recursive: true });
+    fs.writeFileSync(path.join(root, ".sfsmiths", "canary", "DevSandbox.json"), JSON.stringify({ at: new Date().toISOString(), org: "DevSandbox", result: "pass", detail: "NO_SINGLE_MAIL_PERMISSION" }));
+    let cs = (await (await api("GET", "dashboard")).json()).canary.DevSandbox; assert.equal(cs.result, "pass"); assert.equal(cs.fresh, true);
+    fs.writeFileSync(path.join(root, ".sfsmiths", "canary", "DevSandbox.json"), JSON.stringify({ at: new Date(Date.now() - 3 * 3600_000).toISOString(), org: "DevSandbox", result: "pass", detail: "x" }));
+    cs = (await (await api("GET", "dashboard")).json()).canary.DevSandbox; assert.equal(cs.result, "pass"); assert.equal(cs.fresh, false, "a 3-hour-old pass is stale");
     r = await api("GET", "tickets/DEMO-101"); assert.equal(r.status, 200); const t = await r.json(); assert.equal(t.manifest.ticket, "DEMO-101"); assert.ok(Array.isArray(t.stage_defs));
     r = await api("GET", "agents"); const ag = await r.json(); assert.equal(ag.agents.length, 12); assert.ok(ag.agents.every((a) => a.agent_file_exists), "all 12 agent files present");
     r = await api("GET", "orgs"); assert.equal(r.status, 200); const o = await r.json(); assert.equal(o.config.orgs.length, 3);
