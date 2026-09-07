@@ -13,27 +13,30 @@ jobs:
         node: [20, 22]
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
-        with: { node-version: ${{ matrix.node }}, cache: npm }
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
       - run: npm ci
       - run: npm run build
-      - run: node --test "test/**/*.test.mjs"
+      # explicit file list — Node 20 has no glob support in `node --test`
+      - run: node scripts/run-tests.mjs
+      # nothing company-specific outside config/
       - run: node scripts/hardcode-lint.mjs
+      # settings.json hooks wired, marketplace pinned, agent frontmatter valid
+      - run: node scripts/repo-checks.mjs
+      # CI runners are slower than laptops (local default budget is 1500 ms)
       - run: node scripts/hooks-latency.mjs
-        env: { SFSMITHS_HOOK_BUDGET_MS: "3000" }   # CI runners are slower than laptops
-      - name: settings.json + marketplace.json are valid JSON and reference every hook
-        run: |
-          node -e "const s=require('./.claude/settings.json'); for (const h of ['agent-gate','policy','write-guard','data-guard','prompt-router','stage-gate','stop-guard','tokens','post-edit','session-start','precompact']) { if (!JSON.stringify(s).includes('sfsmiths-hook\\\" '+h)) { console.error('hook not wired: '+h); process.exit(1);} } console.log('hooks wired')"
-          node -e "require('./.claude-plugin/marketplace.json'); console.log('marketplace ok')"
-      - name: every agent file has frontmatter with name/description/model
-        run: |
-          for f in .claude/agents/*.md; do n=$(basename "$f" .md); grep -q "^name: $n$" "$f" || { echo "bad name in $f"; exit 1; }; grep -q "^description:" "$f" || { echo "no description in $f"; exit 1; }; grep -q "^model:" "$f" || { echo "no model in $f"; exit 1; }; done; echo "agents ok"
+        env:
+          SFSMITHS_HOOK_BUDGET_MS: "3000"
   secrets:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with:
+          fetch-depth: 0
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

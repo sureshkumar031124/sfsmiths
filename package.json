@@ -16,11 +16,12 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist",
-    "test": "npm run build && node --test \"test/**/*.test.mjs\"",
+    "test": "npm run build && node scripts/run-tests.mjs",
     "lint:hardcode": "node scripts/hardcode-lint.mjs",
+    "check:repo": "node scripts/repo-checks.mjs",
     "hooks:latency": "node scripts/hooks-latency.mjs",
     "install:toolkit": "node scripts/install-toolkit.mjs",
-    "verify": "npm run build && node --test \"test/**/*.test.mjs\" && node scripts/hardcode-lint.mjs && node scripts/hooks-latency.mjs"
+    "verify": "npm run build && node scripts/run-tests.mjs && node scripts/hardcode-lint.mjs && node scripts/repo-checks.mjs && node scripts/hooks-latency.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.30.0",

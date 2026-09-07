@@ -298,8 +298,18 @@ export async function prodVerify(key: string, opts: { remediation?: boolean; p?:
   const { evidenceQuery } = await import("./evidence/query.js");
   const results: { description: string; query: string; expected: string; actual?: string; pass: boolean; note?: string }[] = [];
   const ev = evidenceOrg(cfg);
+  const stage = opts.remediation ? "remediation" : "prod_verify";
+  const file = opts.remediation ? "08b-remediation-verify.md" : "08-prod-verify.md";
+  if (!ev) {
+    // no production (evidence) org configured — a config choice, not a failed check: record the skip and move on
+    writeTextAtomic(path.join(vault, file), [`# ${stage} — ${m.ticket}`, ``, `_Skipped ${nowIso()}: no org with role=evidence in config/orgs.yaml — add one with \`sfsmiths-human org add --alias Production --role evidence --readonly-user <user>\`, then \`sfsmiths-human verify ${m.ticket}\` re-runs these ${checks.length} check(s)._`].join("\n"));
+    writeJsonAtomic(path.join(vault, "validations", `${stage}.json`), { at: nowIso(), skipped: "no evidence org configured", results: [] });
+    if (m.stage === stage) { markStageDone(m, stage, [file]); stageRecord(m, stage).note = "skipped — no evidence org configured"; if (m.waiting?.kind === "remediation") { m.waiting = null; m.status = "running"; } }
+    saveManifest(m, p);
+    emitEvent({ ticket: m.ticket, type: opts.remediation ? "remediation.verified" : "prod.verified", stage, data: { skipped: true, total: checks.length } }, p);
+    return { manifest: m, results };
+  }
   for (const c of checks) {
-    if (!ev) { results.push({ ...c, pass: false, note: "no evidence org configured" }); continue; }
     try {
       const r = await evidenceQuery(c.query, { cfg, p, purpose: opts.remediation ? "remediation-verify" : "prod-verify", ticket: m.ticket });
       const actual = r.aggregate ?? String(r.totalSize);
@@ -308,8 +318,6 @@ export async function prodVerify(key: string, opts: { remediation?: boolean; p?:
       results.push({ ...c, pass: false, note: (e as Error).message });
     }
   }
-  const stage = opts.remediation ? "remediation" : "prod_verify";
-  const file = opts.remediation ? "08b-remediation-verify.md" : "08-prod-verify.md";
   writeTextAtomic(path.join(vault, file), [`# ${stage} — ${m.ticket}`, ``, `Checked ${nowIso()} against the evidence org (read-only, masked).`, ``, `| Check | Expected | Actual | Result |`, `|---|---|---|---|`, ...results.map((r) => `| ${r.description} | ${r.expected} | ${r.actual ?? r.note ?? "—"} | ${r.pass ? "✅" : "❌"} |`), ``, checks.length ? "" : "_plan declared no verification queries — nothing to check_"].join("\n"));
   writeJsonAtomic(path.join(vault, "validations", `${stage}.json`), { at: nowIso(), results });
   if (m.stage === stage) { markStageDone(m, stage, [file]); if (m.waiting?.kind === "remediation") { m.waiting = null; m.status = "running"; } }

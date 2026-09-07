@@ -33,7 +33,10 @@ yourself: `npm run install:toolkit` again (doctor #9e warns when the versions di
 
 ## 2. Configure — `sfsmiths-human setup`
 
-The wizard writes `config/*.yaml` (all schema-validated; the UI edits the same files later):
+The wizard writes `config/*.yaml` (all schema-validated; the UI edits the same files later). Enter keeps the shown default;
+type `none` to skip an optional org. **A development-sandbox-only first run is supported** (preprod = `none`, production =
+`none`, tracker `file`): baseline sync, the preprod deploy/QA stages and production verify are skipped and recorded as
+such; add the other orgs later with `sfsmiths-human org add` + `org login` (or the UI → Orgs).
 
 | File | What you decide |
 |---|---|

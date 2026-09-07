@@ -35,7 +35,9 @@ export const STAGES: StageDef[] = [
   { id: "qa_dev",      title: "QA (Dev)",        kind: "agent", agent: "a5-qa",            gates: ["assertion-referee", "test-quality", "contract-check"], output: "05-test-report.md" },
   { id: "review",      title: "Review",          kind: "agent", agent: "a6-reviewer",      gates: ["security", "contract-check"], human_gate: "review", output: "06-review.md" },
   { id: "comms",       title: "Comms drafts",    kind: "agent", agent: "a9-comms",         gates: ["comms-lint"], output: "10-comms/" },
-  { id: "deploy_uat",  title: "Deploy to preprod (human)", kind: "human", gates: [], always_human: true },
+  // no preprod org configured (flag set by the baseline engine) → nothing to deploy to or test in: both preprod stages are skipped
+  { id: "deploy_uat",  title: "Deploy to preprod (human)", kind: "human", gates: [], always_human: true,
+    optional: (m) => m.flags["no_preprod"] === true },
   { id: "qa_uat",      title: "QA (preprod)",    kind: "agent", agent: "a5-qa",            gates: ["assertion-referee", "contract-check"], output: "07-uat-report.md",
     optional: (m) => m.flags["no_preprod"] === true },
   { id: "deploy_prod", title: "Deploy to production (human)", kind: "human", gates: [], always_human: true },
