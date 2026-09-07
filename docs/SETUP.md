@@ -89,12 +89,16 @@ for each of those orgs (alias + username) into the gitignored `.claude/settings.
 
 ## 5. Claude Code pieces
 
+```bash
+# from the repo root, in your shell (no interactive dialogs):
+claude plugin validate .                                              # marketplace.json is well-formed
+claude plugin marketplace add ./                                      # local paths must start with ./
+claude plugin install salesforce-development@sfsmiths-pinned --scope local
+claude plugin list
 ```
-# inside a Claude Code session in the repo
-/plugin marketplace add .
-/plugin install salesforce-development@sfsmiths-pinned
-/salesforce-development:setup
-```
+Or inside a Claude Code session in the repo: `/plugin marketplace add ./` then `/plugin install salesforce-development@sfsmiths-pinned`
+(type the whole line at the prompt — `/plugin` alone opens the interactive manager). If a stale `sfsmiths-pinned` marketplace exists,
+`claude plugin marketplace remove sfsmiths-pinned` first.
 
 `sfsmiths-human doctor` checks the plugin is present; `.claude/settings.json` (hooks + permissions) and the agent files
 ship with the repo. The three project MCP servers in the generated `.mcp.json` (`sf-dev`, `sfsmiths-evidence`, `sfsmiths-ui`) are

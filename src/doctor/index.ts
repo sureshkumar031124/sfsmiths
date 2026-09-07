@@ -117,7 +117,7 @@ export async function doctor(opts: DoctorOptions = {}): Promise<{ checks: Check[
   add("9b", "static deny rules present", settings.permissions?.deny?.some((d) => d.includes("sfsmiths-human")) ? "ok" : "fail", settings.permissions?.deny?.length ? `${settings.permissions.deny.length} deny rules` : "no deny rules");
   const pluginDir = path.join(os.homedir(), ".claude", "plugins");
   const pluginFound = exists(pluginDir) && findDir(pluginDir, "salesforce-development", 4);
-  add("9c", "sf-skills plugin (salesforce-development) installed", pluginFound ? "ok" : "warn", pluginFound ? pluginFound : "not found under ~/.claude/plugins — in Claude Code: /plugin marketplace add .  →  /plugin install salesforce-development@sfsmiths-pinned");
+  add("9c", "sf-skills plugin (salesforce-development) installed", pluginFound ? "ok" : "warn", pluginFound ? pluginFound : "not found under ~/.claude/plugins — in Claude Code: /plugin marketplace add ./  →  /plugin install salesforce-development@sfsmiths-pinned");
   const userSettings = readJsonOr<{ autoMemoryEnabled?: boolean }>(path.join(os.homedir(), ".claude", "settings.json"), {});
   add("9d", "autoMemoryEnabled (agent notes channel)", userSettings.autoMemoryEnabled === false ? "warn" : "ok", userSettings.autoMemoryEnabled === false ? "off — agent MEMORY.md notes will not load; approved lessons still inject via skills" : "on/default");
   const hp = homePaths();

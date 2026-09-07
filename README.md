@@ -43,7 +43,7 @@ sfsmiths-human org login --alias Production  --keychain agent     # as the READ-
 sfsmiths-human org login --alias PartialUAT  --keychain engine    # preprod, engine keychain only
 sfsmiths-human sync && sfsmiths-human doctor  # generated files + boot conditions must be green
 
-# in Claude Code, once:  /plugin marketplace add .  →  /plugin install salesforce-development@sfsmiths-pinned
+# in Claude Code, once:  /plugin marketplace add ./  →  /plugin install salesforce-development@sfsmiths-pinned
 sfsmiths-human start                          # conductor session → /ticket PROJ-123
 sfsmiths-human ui                             # local control room (127.0.0.1 + token): dashboard, agents/models, orgs, tickets, lessons, config
 ```
