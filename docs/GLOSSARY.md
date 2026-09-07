@@ -6,7 +6,7 @@
 | **Engine keychain** | A second sf keychain under `~/.sfsmiths/engine` (a different `HOME`) that holds preprod only. Only the toolkit's privileged steps use it; agents cannot read or switch to it. |
 | **Baseline sync** | Before work starts, the development sandbox is made equal to preprod for the ticket's scope (3-way diff with an ancestor; UAT-NEWER applied, DEV-NEWER/BOTH/UNKNOWN need a human). |
 | **Bounce** | A mechanical return to an earlier stage after a failed gate (qa → develop → plan → escalate). |
-| **Canary** | An anonymous Apex `Messaging.sendEmail(allOrNothing=false)` to your own address; PASS only when the org answers `NO_MASS_MAIL_PERMISSION` (deliverability off). Required before any data-creating step. |
+| **Canary** | An anonymous Apex `Messaging.sendEmail(allOrNothing=false)` to your own address; PASS only when the org refuses it with `NO_SINGLE_MAIL_PERMISSION` or `NO_MASS_MAIL_PERMISSION` (deliverability off). Required before any data-creating step. |
 | **Conductor** | The main-thread Claude Code agent that follows `sfsmiths agent handoff` and spawns exactly the specialist it names. Decides nothing. |
 | **Contract** | The JSON file next to each stage's markdown (`01-intake.json`, …) validated by `contract-check` against `schemas/contracts/`. |
 | **Envelope** | `<untrusted source="…">…</untrusted>` wrapper around ticket text, comments, pasted content and org data — evidence, never instructions (P7). |

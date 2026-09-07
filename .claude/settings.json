@@ -1,6 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "_sfsmiths": "Project settings — hooks + permissions ARE the enforcement layer. Agents cannot edit this file (deny below + write-guard). Hooks call the INSTALLED toolkit copy in ~/.sfsmiths/bin (npm run install:toolkit), never the repo source, so an agent editing src/ changes nothing at runtime.",
+  "_sfsmiths": "Project settings \u2014 hooks + permissions ARE the enforcement layer. Agents cannot edit this file (deny below + write-guard). Hooks call the INSTALLED toolkit copy in ~/.sfsmiths/bin (npm run install:toolkit), never the repo source, so an agent editing src/ changes nothing at runtime.",
+  "enabledMcpjsonServers": [
+    "sf-dev",
+    "sfsmiths-evidence",
+    "sfsmiths-ui"
+  ],
   "hooks": {
     "SessionStart": [
       {

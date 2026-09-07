@@ -68,6 +68,21 @@ export function canaryFresh(cfg: AllConfig, p: ProjectPaths, alias: string): { f
   return { fresh: true, state: st, reason: `canary pass ${Math.round(ageMin)} min ago` };
 }
 
+export interface CanaryApexResult { success: boolean; errors: { status: string; message: string }[] }
+
+/**
+ * Status codes that mean "this org refuses to send user-initiated e-mail" — observed on real sandboxes (Spike 5):
+ * a SingleEmailMessage under "System email only" / "No access" fails with NO_SINGLE_MAIL_PERMISSION; mass mail with
+ * NO_MASS_MAIL_PERMISSION. Either is a PASS. success:true means the mail left the org → FAIL. Anything else → unknown (P11).
+ */
+export const CANARY_BLOCKED_STATUSES = ["NO_SINGLE_MAIL_PERMISSION", "NO_MASS_MAIL_PERMISSION"];
+export function classifyCanaryResult(res: CanaryApexResult): { result: CanaryState["result"]; detail: string } {
+  if (res.success) return { result: "fail", detail: "email SENT — deliverability is All email (or your address is allowlisted in the org). UNSAFE for test data." };
+  const blocked = res.errors.find((e) => CANARY_BLOCKED_STATUSES.includes(e.status));
+  if (blocked) return { result: "pass", detail: `${blocked.status} — the org blocks outbound e-mail (System email only / No access) confirmed` };
+  return { result: "unknown", detail: `unexpected: ${res.errors.map((e) => `${e.status}: ${e.message}`).join("; ") || "no errors, not success"}` };
+}
+
 export async function runCanary(alias: string, opts: { p?: ProjectPaths; cfg?: AllConfig } = {}): Promise<CanaryState> {
   const p = opts.p ?? projectPaths();
   const cfg = opts.cfg ?? loadConfig(p);
@@ -78,7 +93,7 @@ export async function runCanary(alias: string, opts: { p?: ProjectPaths; cfg?: A
   if (!recipient) throw new SfsmithsError(`set ${cfg.safety.canary_recipient_env} to your own address (the canary's only allowed recipient)`, "CANARY_RECIPIENT");
   if (!emailAllowed(recipient, [...cfg.safety.allowed_test_emails, recipient])) throw new SfsmithsError("recipient rejected", "CANARY_RECIPIENT");
   const apex = `
-// SFsmiths email canary — proves sandbox deliverability blocks outbound mail (expects NO_MASS_MAIL_PERMISSION)
+// SFsmiths email canary — proves sandbox deliverability blocks outbound mail (expects NO_SINGLE_MAIL_PERMISSION / NO_MASS_MAIL_PERMISSION)
 Messaging.SingleEmailMessage m = new Messaging.SingleEmailMessage();
 m.setToAddresses(new String[]{ '${recipient.replace(/'/g, "")}' });
 m.setSubject('[SFSMITHS canary] deliverability probe ${nowIso()}');
@@ -108,10 +123,9 @@ System.debug('SFSMITHS_CANARY_RESULT:' + JSON.serialize(new Map<String,Object>{ 
     if (!r.ok && !m) state = { at: nowIso(), org: org.alias, result: "unknown", detail: `anonymous Apex failed: ${r.error ?? r.data?.exceptionMessage ?? "unknown"}`, recipient_masked: masked };
     else if (!m) state = { at: nowIso(), org: org.alias, result: "unknown", detail: "canary marker not found in debug log", recipient_masked: masked };
     else {
-      const res = JSON.parse(m[1]) as { success: boolean; errors: { status: string; message: string }[] };
-      if (res.success) state = { at: nowIso(), org: org.alias, result: "fail", detail: "email SENT — deliverability is All email (or your address is allowlisted in the org). UNSAFE for test data.", recipient_masked: masked };
-      else if (res.errors.some((e) => e.status === "NO_MASS_MAIL_PERMISSION")) state = { at: nowIso(), org: org.alias, result: "pass", detail: "NO_MASS_MAIL_PERMISSION — System email only confirmed", recipient_masked: masked };
-      else state = { at: nowIso(), org: org.alias, result: "unknown", detail: `unexpected: ${res.errors.map((e) => `${e.status}: ${e.message}`).join("; ") || "no errors, not success"}`, recipient_masked: masked };
+      const res = JSON.parse(m[1]) as CanaryApexResult;
+      const c = classifyCanaryResult(res);
+      state = { at: nowIso(), org: org.alias, result: c.result, detail: c.detail, recipient_masked: masked };
     }
   } finally {
     try { fs.unlinkSync(tmp); } catch { /* ignore */ }

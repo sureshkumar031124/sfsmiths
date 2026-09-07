@@ -91,13 +91,15 @@ for each of those orgs (alias + username) into the gitignored `.claude/settings.
 
 ```
 # inside a Claude Code session in the repo
-/plugin marketplace add ./.claude-plugin
+/plugin marketplace add .
 /plugin install salesforce-development@sfsmiths-pinned
 /salesforce-development:setup
 ```
 
 `sfsmiths-human doctor` checks the plugin is present; `.claude/settings.json` (hooks + permissions) and the agent files
-ship with the repo. Auto memory stays on (agents keep notes in `.claude/agent-memory/<agent>/MEMORY.md` — unverified until
+ship with the repo. The three project MCP servers in the generated `.mcp.json` (`sf-dev`, `sfsmiths-evidence`, `sfsmiths-ui`) are
+pre-approved by name (`enabledMcpjsonServers` in `.claude/settings.json`), so the first `claude` in the folder only asks the
+workspace-trust question. If you ever answered an MCP dialog wrongly: `claude mcp reset-project-choices`. Auto memory stays on (agents keep notes in `.claude/agent-memory/<agent>/MEMORY.md` — unverified until
 the coach confirms them).
 
 ## 6. Boot conditions — `sfsmiths-human doctor`
@@ -111,7 +113,7 @@ no Blue Canvas remote reachable by agents · `.mcp.json` consistent · hooks wir
 
 ```bash
 cp templates/inbox-ticket.md inbox/DEMO-101.md      # tracker.adapter: file
-sfsmiths agent canary --org DevSandbox              # must PASS (NO_MASS_MAIL_PERMISSION) — Setup → Email → Deliverability = No access / System only
+sfsmiths agent canary --org DevSandbox              # must PASS (NO_SINGLE_MAIL_PERMISSION or NO_MASS_MAIL_PERMISSION) — Setup → Email → Deliverability = No access / System only
 sfsmiths-human start
 > /ticket DEMO-101
 ```

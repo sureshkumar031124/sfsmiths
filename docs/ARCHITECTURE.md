@@ -88,7 +88,7 @@ no decision in Claude Code, so speed is safety and the hard cases are duplicated
   human decisions via `sfsmiths-human baseline decide` or `/approve … --answer "keep-dev:… take-uat:…"`.
 - **evidence** — SOQL parser (SELECT-only, no subqueries), allowlist + field-type refusal, row cap, masking, logging to
   `.sfsmiths/evidence.log.jsonl`, vault copies; Tooling allowlist; describe.
-- **privileged** — canary (`Messaging.sendEmail(allOrNothing=false)` → pass only on `NO_MASS_MAIL_PERMISSION`), test runs
+- **privileged** — canary (`Messaging.sendEmail(allOrNothing=false)` → pass only on `NO_SINGLE_MAIL_PERMISSION` / `NO_MASS_MAIL_PERMISSION`), test runs
   (Apex + SOQL assertions + Flow tests) with hashes, preprod dry-run (engine), dev deploy, anonymous Apex with email scan,
   Code Analyzer, oracle cache refresh.
 - **priorart, learn, tokens, approvals, notify, sync, setup, orgmap, mirror, conventions, golden, pipeline** — see the

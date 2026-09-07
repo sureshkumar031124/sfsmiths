@@ -33,7 +33,7 @@ risky step waits for **you**.
 
 ```bash
 git clone <your-fork> sfsmiths && cd sfsmiths
-npm ci && npm run build && npm test           # 51 offline tests: state machine, gates, hooks, lifecycle, UI, MCP, scripts, config layers
+npm ci && npm run build && npm test           # 52 offline tests: state machine, gates, hooks, lifecycle, UI, MCP, scripts, config layers
 npm run install:toolkit                       # installs ~/.sfsmiths/bin (hooks call this copy, never the repo)
 export PATH="$HOME/.sfsmiths/bin:$PATH"
 
@@ -43,7 +43,7 @@ sfsmiths-human org login --alias Production  --keychain agent     # as the READ-
 sfsmiths-human org login --alias PartialUAT  --keychain engine    # preprod, engine keychain only
 sfsmiths-human sync && sfsmiths-human doctor  # generated files + boot conditions must be green
 
-# in Claude Code, once:  /plugin marketplace add ./.claude-plugin  →  /plugin install salesforce-development@sfsmiths-pinned
+# in Claude Code, once:  /plugin marketplace add .  →  /plugin install salesforce-development@sfsmiths-pinned
 sfsmiths-human start                          # conductor session → /ticket PROJ-123
 sfsmiths-human ui                             # local control room (127.0.0.1 + token): dashboard, agents/models, orgs, tickets, lessons, config
 ```
@@ -75,7 +75,7 @@ Deep dive: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · daily operations: [do
 
 ## Status
 
-**v0.1.0 — complete design implementation, verified offline.** Build, 51 tests (state machine, 12 gates, hook denials,
+**v0.1.0 — complete design implementation, verified offline.** Build, 52 tests (state machine, 12 gates, hook denials,
 full ticket lifecycle incl. rejection and support-agent flows, UI, MCP servers), hardcode-lint and hook latency pass in CI. What still needs *your* orgs is
 listed in [docs/SETUP.md → Phase 0 spikes](docs/SETUP.md#phase-0-spikes) (≈3½ days): sf-skills plugin coexistence,
 read-only-user Tooling rights, email canary result shape, baseline drift patterns, live hook behaviour. Run them before

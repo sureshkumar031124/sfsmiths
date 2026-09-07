@@ -6,7 +6,7 @@
 Install (once, in a Claude Code session inside this repo):
 
 ```
-/plugin marketplace add ./.claude-plugin
+/plugin marketplace add .
 /plugin install salesforce-development@sfsmiths-pinned
 /salesforce-development:setup        # the plugin's own setup (human runs it)
 ```

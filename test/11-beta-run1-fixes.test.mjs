@@ -99,3 +99,15 @@ test("sanitizeEmailPatterns strips a pasted bracketed default and duplicates", (
   assert.deepEqual(sanitizeEmailPatterns(["*@example.com", "*.invalid", "me@example.com", "me+*@example.com", "[*@example.com", "*.invalid]"]), ["*@example.com", "*.invalid", "me@example.com", "me+*@example.com"]);
   assert.deepEqual(sanitizeEmailPatterns([" '*@example.com' ", ""]), ["*@example.com"]);
 });
+
+test("canary classification (Spike 5, real sandbox shapes): single-mail block = PASS, mass-mail block = PASS, sent = FAIL, anything else = unknown", async () => {
+  const { classifyCanaryResult } = await import("../dist/privileged/index.js");
+  // observed with Deliverability = System email only (SingleEmailMessage)
+  assert.equal(classifyCanaryResult({ success: false, errors: [{ status: "NO_SINGLE_MAIL_PERMISSION", message: "Single email is not enabled for your organization or profile." }] }).result, "pass");
+  assert.equal(classifyCanaryResult({ success: false, errors: [{ status: "NO_MASS_MAIL_PERMISSION", message: "…" }] }).result, "pass");
+  // observed with Deliverability = All email: the probe mail really left the org (to the operator's own address)
+  assert.equal(classifyCanaryResult({ success: true, errors: [] }).result, "fail");
+  const u = classifyCanaryResult({ success: false, errors: [{ status: "INVALID_EMAIL_ADDRESS", message: "x" }] });
+  assert.equal(u.result, "unknown"); assert.match(u.detail, /INVALID_EMAIL_ADDRESS/);
+  assert.equal(classifyCanaryResult({ success: false, errors: [] }).result, "unknown");
+});
