@@ -63,7 +63,7 @@ Outcomes are `passed | failed | unavailable`; **unavailable is never passed**. E
 | Event | Hook | Behaviour |
 |---|---|---|
 | PreToolUse Agent | `agent-gate` (fast, ≤50 ms) | deny agents not in `next_allowed_stages`, denied names, when waiting/on hold/parked/done |
-| PreToolUse Bash | `policy` (fast) | R1 human verbs · R2 HOME/SF_* / engine home · R3 git push / Blue Canvas · R4 nested claude · R5 direct HTTP to Salesforce · R6 protected paths (write targets only) · R7 sf targets (preprod raw deny, prod SOQL deny, writes need explicit dev target, org login deny) |
+| PreToolUse Bash | `policy` (fast) | R1 human verbs · R2 HOME/SF_* / engine home · R3 git push / Blue Canvas · R4 nested claude · R5 direct HTTP to Salesforce · R6 protected paths (write targets only) · R7 sf targets (any explicit target that is not a configured development alias is denied — reads included, bare usernames included; preprod/prod get specific messages; writes need an explicit dev target; org login deny) |
 | PreToolUse Edit/Write/… | `write-guard` (fast) | write areas only; own ticket vault; own agent memory; role exceptions (a0 → docs/org-map, a7 → lessons/PENDING) |
 | PreToolUse mcp__sf-dev__.* | `data-guard` (fast) | side-effect tools need a fresh PASS email canary |
 | PostToolUse Agent | `tokens` | per agent/model/ticket accounting (payload shape defensive; transcript fallback) |

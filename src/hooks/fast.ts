@@ -235,13 +235,13 @@ export function decidePolicy(input: HookInput, root: string, policy: CompiledPol
       const looksProd = t ? /prod/.test(t) && !isDev : false;
       if (isPreprod) return deny(`raw sf commands against preprod "${tRaw}" are engine-only — use \`sfsmiths agent privileged …\``, "R7-preprod");
       if (/^sf data query\b/.test(p) && (isEvidence || looksProd)) return deny("raw SOQL against production bypasses masking — use `sfsmiths agent evidence soql …`", "R7-prod-soql");
+      if (WRITE_VERBS.test(p) && !/^sf data query\b/.test(p) && (isEvidence || looksProd)) return deny(`"${part.slice(0, 60)}" targets production — production is read-only`, "R7-prod-write");
+      // Any explicit target that is not a configured development alias is denied — reads included. The human's own keychain may
+      // hold other sandboxes or an admin production login under an arbitrary alias or a bare username; agents never touch those.
+      if (t && !isDev) return deny(`target "${tRaw}" is not a configured development org (${policy.dev_aliases.join(", ")}) — agents run sf only against the development org by its alias; preprod goes through \`sfsmiths agent privileged …\`, production through \`sfsmiths agent evidence …\``, "R7-non-dev-target");
       if (/^sf (data query|data export|apex run|project deploy|project retrieve)\b/.test(p) && !t) return deny("name the development org explicitly (-o <dev alias>) — the default target-org is not trusted", "R7-no-target");
       if (WRITE_VERBS.test(p) && !/^sf data query\b/.test(p)) {
-        if (isEvidence || looksProd) return deny(`"${part.slice(0, 60)}" targets production — production is read-only`, "R7-prod-write");
-        if (/^sf (project deploy|project delete|data (create|update|delete|upsert|import|bulk|tree import)|apex run(?! test)|org (create|delete))/.test(p)) {
-          if (!t) return deny("write-type sf command without an explicit --target-org — always name the development org", "R7-no-target");
-          if (!isDev) return deny(`target "${tRaw}" is not an allowed development org (${policy.dev_aliases.join(", ")})`, "R7-non-dev-target");
-        }
+        if (/^sf (project deploy|project delete|data (create|update|delete|upsert|import|bulk|tree import)|apex run(?! test)|org (create|delete))/.test(p) && !t) return deny("write-type sf command without an explicit --target-org — always name the development org", "R7-no-target");
       }
       if (/^sf org (login|logout)\b/.test(p)) return deny("org logins are done by the human (sfsmiths-human org login)", "R7-org-login");
     }

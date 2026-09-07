@@ -20,7 +20,7 @@ careless operator. Not in scope: a malicious operator with shell access to their
 
 | # | Threat | Controls |
 |---|---|---|
-| T1 | Agent writes to production | L-A (read-only user), no prod MCP write tool, L-C denies `sf … -o Production*`, L-D R7, prod evidence server is SELECT-only |
+| T1 | Agent writes to production | L-A (read-only user), no prod MCP write tool, L-C denies `sf … -o Production*`, L-D R7 (only configured development aliases may be targeted at all — an admin production login left in the keychain under another alias or reached by username is unreachable for agents), prod evidence server is SELECT-only |
 | T2 | Agent reads PII from production | masking allowlist per object (`config/masking.yaml`), field-type refusal (Email/Phone), row caps, FLS mirrors allowlist (doctor #12), every query logged |
 | T3 | Real email sent from a sandbox | canary must PASS (`NO_MASS_MAIL_PERMISSION`) before data stages (`data-guard`, `privileged apex-run`), `email-guard` scans artifacts, UI `ui_fill` refuses non-allowlisted addresses, EML checklist in every plan |
 | T4 | Agent deploys to preprod/production | preprod only via engine keychain (agents cannot read it: L-C `Read(~/.sfsmiths/**)`, R2), deploys are human stages, `git push` denied, Blue Canvas remotes denied |
