@@ -1,7 +1,7 @@
 /**
  * sync.ts — config → generated files. Run after any config change (UI does it automatically).
  *   config/models.yaml   → .claude/agents/*.md  (model: line)
- *   config/orgs.yaml     → .mcp.json (sf-dev bound to the development alias only), .sfsmiths/policy.compiled.json
+ *   config/orgs.yaml     → .mcp.json (sf-dev bound to the development alias only), .sfsmiths/policy.compiled.json, .claude/settings.local.json (alias + keychain denies)
  *   config/policy.yaml   → .sfsmiths/policy.compiled.json (fast hooks read this)
  *   knowledge/lessons    → .claude/skills/lessons-<agent>/SKILL.md (via learnSync)
  * Changes take effect in the NEXT Claude Code session (agents/MCP servers load at start).
@@ -114,38 +114,40 @@ export function writeCompiledPolicy(p: ProjectPaths, cfg: AllConfig): boolean {
 }
 
 /**
- * Static permission denies in .claude/settings.json for every NON-development alias (preprod + evidence) — belt to the
- * policy hook's braces: static rules apply even if a hook times out. Managed block = entries matching SF_ALIAS_DENY_RE.
+ * Static permission denies for every configured NON-development alias (preprod + evidence) — belt to the policy hook's
+ * braces: static rules apply even if a hook times out. They live in the gitignored .claude/settings.local.json (managed
+ * block = entries matching SF_ALIAS_DENY_RE), so a user's aliases never reach git; .claude/settings.json ships static
+ * `Production*` / `PartialUAT*` rules and is never rewritten by the toolkit.
  */
-const SF_ALIAS_DENY_RE = /^Bash\(sf (project deploy|project delete|data (query|create|update|delete|upsert|import|bulk|tree import)|apex run|org (open|delete)) \* (-o|--target-org) .+\)$/;
-export function syncSettingsDenies(p: ProjectPaths, cfg: AllConfig, warnings: string[]): boolean {
-  const file = path.join(p.claude, "settings.json");
-  if (!exists(file)) return false;
-  let settings: { permissions?: { deny?: string[] } } & Record<string, unknown>;
-  try { settings = JSON.parse(readText(file)); } catch { warnings.push(".claude/settings.json is not valid JSON — alias deny rules not refreshed"); return false; }
-  const deny = (settings.permissions?.deny ?? []).filter((r) => !SF_ALIAS_DENY_RE.test(r));
-  // configured non-development aliases PLUS the conventional names — a protective rule is never removed just because the
-  // matching org is not (yet) configured; a development alias that happens to use one of these names wins
+export const SF_ALIAS_DENY_RE = /^Bash\(sf (project deploy|project delete|data (query|create|update|delete|upsert|import|bulk|tree import)|apex run|org (open|delete)) \* (-o|--target-org) .+\)$/;
+export function aliasDenyRules(cfg: AllConfig): string[] {
   const devNames = new Set(cfg.orgs.orgs.filter((o) => o.role === "development").map((o) => o.alias.toLowerCase()));
-  const names = new Set<string>(["Production", "PartialUAT"]);
-  for (const o of cfg.orgs.orgs) if (o.role !== "development") names.add(o.alias);
-  for (const alias of [...names].filter((n) => !devNames.has(n.toLowerCase()))) {
+  const rules: string[] = [];
+  for (const o of cfg.orgs.orgs) {
+    if (o.role === "development" || devNames.has(o.alias.toLowerCase())) continue;
     for (const flag of ["-o", "--target-org"]) {
-      deny.push(`Bash(sf project deploy * ${flag} ${alias}*)`);
-      deny.push(`Bash(sf data query * ${flag} ${alias}*)`);
-      deny.push(`Bash(sf apex run * ${flag} ${alias}*)`);
-      deny.push(`Bash(sf data create * ${flag} ${alias}*)`);
-      deny.push(`Bash(sf data update * ${flag} ${alias}*)`);
-      deny.push(`Bash(sf data delete * ${flag} ${alias}*)`);
-      deny.push(`Bash(sf data upsert * ${flag} ${alias}*)`);
-      deny.push(`Bash(sf data import * ${flag} ${alias}*)`);
+      for (const verb of ["project deploy", "data query", "apex run", "data create", "data update", "data delete", "data upsert", "data import"]) rules.push(`Bash(sf ${verb} * ${flag} ${o.alias}*)`);
     }
   }
-  settings.permissions = { ...(settings.permissions ?? {}), deny: [...new Set(deny)] };
-  const next = JSON.stringify(settings, null, 2) + "\n";
-  if (next !== readText(file)) { writeTextAtomic(file, next); return true; }
+  return rules;
+}
+export function syncSettingsDenies(p: ProjectPaths, cfg: AllConfig, warnings: string[]): boolean {
+  return writeLocalDenyBlock(p, warnings, SF_ALIAS_DENY_RE, aliasDenyRules(cfg), "alias denies");
+}
+
+/** Replace one managed block (entries matching `re`) inside .claude/settings.local.json, keeping everything else. */
+function writeLocalDenyBlock(p: ProjectPaths, warnings: string[], re: RegExp, rules: string[], what: string): boolean {
+  const file = path.join(p.claude, "settings.local.json");
+  let local: { permissions?: { deny?: string[]; allow?: string[] } } & Record<string, unknown> = {};
+  if (exists(file)) { try { local = JSON.parse(readText(file)); } catch { warnings.push(`.claude/settings.local.json is not valid JSON — ${what} not written`); return false; } }
+  const kept = (local.permissions?.deny ?? []).filter((r) => !re.test(r));
+  local._sfsmiths = LOCAL_SETTINGS_NOTE;
+  local.permissions = { ...(local.permissions ?? {}), deny: [...new Set([...kept, ...rules])] };
+  const next = JSON.stringify(local, null, 2) + "\n";
+  if (!exists(file) || next !== readText(file)) { fs.mkdirSync(p.claude, { recursive: true }); writeTextAtomic(file, next); return true; }
   return false;
 }
+export const LOCAL_SETTINGS_NOTE = "machine-specific, gitignored — managed blocks are rewritten by `sfsmiths-human sync`: deny rules for the configured preprod/evidence aliases and for every org in this machine's agent keychain that is not a configured development org (alias + username). Re-run sync after `sf org login/logout` or config changes.";
 
 /**
  * Machine-specific static denies in .claude/settings.local.json (gitignored): every org the AGENT keychain knows that is
@@ -154,7 +156,6 @@ export function syncSettingsDenies(p: ProjectPaths, cfg: AllConfig, warnings: st
  * Best effort: needs the sf CLI; skipped silently when it is missing (tests, fresh machines).
  */
 export const KEYCHAIN_DENY_RE = /^Bash\(sf \* (-o|--target-org)[ =]\S+\)$/;
-export const KEYCHAIN_DENY_NOTE = "generated by `sfsmiths-human sync` — every org in this machine's agent keychain that is not a configured development org (by alias and username); re-run sync after `sf org login/logout`";
 
 export function keychainDenyRules(entries: { alias?: string; aliases?: string[]; username?: string }[], devAliases: string[]): { rules: string[]; targets: string[] } {
   const dev = new Set(devAliases.map((a) => a.toLowerCase()));
@@ -184,15 +185,8 @@ export function syncKeychainDenies(p: ProjectPaths, cfg: AllConfig, warnings: st
   if (!list) { warnings.push("sf org list unavailable — machine-specific keychain denies (.claude/settings.local.json) not refreshed"); return { written: false, targets: [] }; }
   const devAliases = cfg.orgs.orgs.filter((o) => o.role === "development").map((o) => o.alias);
   const { rules, targets } = keychainDenyRules(list, devAliases);
-  const file = path.join(p.claude, "settings.local.json");
-  let local: { permissions?: { deny?: string[]; allow?: string[] } } & Record<string, unknown> = {};
-  if (exists(file)) { try { local = JSON.parse(readText(file)); } catch { warnings.push(".claude/settings.local.json is not valid JSON — keychain denies not written"); return { written: false, targets }; } }
-  const kept = (local.permissions?.deny ?? []).filter((r) => !KEYCHAIN_DENY_RE.test(r));
-  local._sfsmiths_keychain_denies = KEYCHAIN_DENY_NOTE;
-  local.permissions = { ...(local.permissions ?? {}), deny: [...new Set([...kept, ...rules])] };
-  const next = JSON.stringify(local, null, 2) + "\n";
-  if (!exists(file) || next !== readText(file)) { writeTextAtomic(file, next); return { written: true, targets }; }
-  return { written: false, targets };
+  const written = writeLocalDenyBlock(p, warnings, KEYCHAIN_DENY_RE, rules, "keychain denies");
+  return { written, targets };
 }
 
 export function describeOrgs(cfg: AllConfig): string {

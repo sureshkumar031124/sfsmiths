@@ -69,7 +69,7 @@ export function projectRoot(input: HookInput): string {
   if (env) return env;
   let dir = input.cwd || process.cwd();
   for (let i = 0; i < 10; i++) {
-    if (fs.existsSync(path.join(dir, "config", "orgs.yaml")) && fs.existsSync(path.join(dir, ".claude"))) return dir;
+    if ((fs.existsSync(path.join(dir, "config", "defaults", "orgs.yaml")) || fs.existsSync(path.join(dir, "config", "orgs.yaml"))) && fs.existsSync(path.join(dir, ".claude"))) return dir;
     const parent = path.dirname(dir);
     if (parent === dir) break;
     dir = parent;

@@ -41,9 +41,10 @@ test("UI server: 127.0.0.1 only, token required, Host/Origin checked, config wri
     r = await api("GET", "tokens"); assert.equal(r.status, 200);
     r = await api("GET", "config"); const c = await r.json(); assert.equal(c.files.length, 14);
     // config write: invalid → 400 and unchanged; valid → 200 + sync
-    const before = fs.readFileSync(path.join(root, "config/budgets.yaml"), "utf8");
+    const before = fs.readFileSync(path.join(root, "config/defaults/budgets.yaml"), "utf8");
+    assert.ok(!fs.existsSync(path.join(root, "config/budgets.yaml")), "no personal copy before the first edit");
     r = await api("PUT", "config/budgets", { yaml: "version: 1\nper_ticket: { tokens: -1, usd: 1, wall_minutes: 1 }\ndaily_usd: 1\non_exceed: park\npipeline_max_budget_usd: 1\n" });
-    assert.equal(r.status, 400); assert.equal(fs.readFileSync(path.join(root, "config/budgets.yaml"), "utf8"), before);
+    assert.equal(r.status, 400); assert.ok(!fs.existsSync(path.join(root, "config/budgets.yaml")), "an invalid edit writes nothing");
     r = await api("PUT", "config/budgets", { yaml: before.replace(/daily_usd: \d+/, "daily_usd: 77") });
     assert.equal(r.status, 200); assert.match(fs.readFileSync(path.join(root, "config/budgets.yaml"), "utf8"), /daily_usd: 77/);
     // unknown config name → 404; path traversal in file view → 400

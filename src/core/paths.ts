@@ -4,7 +4,7 @@
  * Project root resolution order:
  *   1. SFSMITHS_PROJECT_DIR (explicit override, used by tests)
  *   2. CLAUDE_PROJECT_DIR   (set by Claude Code for hooks)
- *   3. walk up from cwd until a directory containing `config/orgs.yaml` AND `.claude/`
+ *   3. walk up from cwd until a directory containing `config/defaults/orgs.yaml` (or a personal `config/orgs.yaml`) AND `.claude/`
  *
  * Nothing here is company-specific. Every location can be overridden by env vars so a
  * user can relocate the runtime state without touching code (hardcode-lint checked).
@@ -43,7 +43,7 @@ export interface HomePaths {
 }
 
 function isRoot(dir: string): boolean {
-  return fs.existsSync(path.join(dir, "config", "orgs.yaml")) && fs.existsSync(path.join(dir, ".claude"));
+  return (fs.existsSync(path.join(dir, "config", "defaults", "orgs.yaml")) || fs.existsSync(path.join(dir, "config", "orgs.yaml"))) && fs.existsSync(path.join(dir, ".claude"));
 }
 
 export function findProjectRoot(start?: string): string {

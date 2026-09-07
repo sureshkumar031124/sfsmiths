@@ -1,4 +1,5 @@
-# SFsmiths — runtime and secrets never enter git
+# SFsmiths — runtime, secrets and PERSONAL config never enter git (tracked defaults live in config/defaults/)
+config/*.yaml
 node_modules/
 dist/
 work/*

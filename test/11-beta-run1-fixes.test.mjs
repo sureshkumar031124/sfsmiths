@@ -46,7 +46,7 @@ test("syncKeychainDenies writes .claude/settings.local.json (gitignored), keeps 
     const local = JSON.parse(fs.readFileSync(file, "utf8"));
     assert.ok(local.permissions.allow.includes("Bash(ls *)") && local.permissions.deny.includes("Bash(rm -rf *)"), "foreign entries survive");
     assert.ok(local.permissions.deny.includes("Bash(sf * -o acme-prod)"));
-    assert.ok(typeof local._sfsmiths_keychain_denies === "string");
+    assert.ok(typeof local._sfsmiths === "string", "managed-file note present");
     // second run: nothing changes; a removed org disappears from the managed block
     assert.equal(syncKeychainDenies(p, cfg, warnings, KEYCHAIN).written, false);
     syncKeychainDenies(p, cfg, warnings, KEYCHAIN.filter((e) => e.alias !== "advcomm"));
@@ -62,18 +62,26 @@ test("syncKeychainDenies writes .claude/settings.local.json (gitignored), keeps 
   }
 });
 
-test("syncSettingsDenies keeps Production*/PartialUAT* denies even when no such org is configured", () => {
+test("configured-alias denies go to settings.local.json; settings.json is never rewritten and keeps its static Production*/PartialUAT* rules", () => {
   const root = makeProject();
   try {
     const p = projectPaths(root);
+    const settingsFile = path.join(root, ".claude", "settings.json");
+    const beforeSettings = fs.readFileSync(settingsFile, "utf8");
     const orgs = loadConfigFile("orgs", p);
-    orgs.orgs = [{ ...orgs.orgs[0], alias: "devsbx" }];
+    orgs.orgs = [{ ...orgs.orgs[0], alias: "devsbx" }, { alias: "uat", role: "preprod", keychain: "engine", write: false, email_deliverability: "unknown", deliverability_verified_on: null, deliverability_verified_by: null }];
     writeConfigFile("orgs", orgs, p);
     const cfg = loadConfig(p, { fresh: true });
-    syncSettingsDenies(p, cfg, []);
-    const deny = JSON.parse(fs.readFileSync(path.join(root, ".claude", "settings.json"), "utf8")).permissions.deny;
-    assert.ok(deny.includes("Bash(sf project deploy * -o Production*)") && deny.includes("Bash(sf data query * --target-org PartialUAT*)"));
-    assert.ok(!deny.some((d) => /devsbx/.test(d)));
+    assert.equal(syncSettingsDenies(p, cfg, []), true);
+    assert.equal(fs.readFileSync(settingsFile, "utf8"), beforeSettings, "tracked settings.json untouched");
+    const staticDeny = JSON.parse(beforeSettings).permissions.deny;
+    assert.ok(staticDeny.includes("Bash(sf project deploy * -o Production*)") && staticDeny.includes("Bash(sf data query * --target-org PartialUAT*)"));
+    const local = JSON.parse(fs.readFileSync(path.join(root, ".claude", "settings.local.json"), "utf8")).permissions.deny;
+    assert.ok(local.includes("Bash(sf project deploy * -o uat*)") && local.includes("Bash(sf data query * --target-org uat*)"));
+    assert.ok(!local.some((d) => /devsbx/.test(d)));
+    // the personal config never touches git: it is ignored, the defaults are tracked
+    assert.match(fs.readFileSync(path.join(REPO, ".gitignore"), "utf8"), /^config\/\*\.yaml$/m);
+    assert.ok(fs.existsSync(path.join(REPO, "config", "defaults", "orgs.yaml")));
   } finally {
     cleanup(root);
   }

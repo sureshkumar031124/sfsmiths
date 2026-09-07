@@ -4,7 +4,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { tryLoadConfig, type AllConfig, type OrgConfig } from "../core/config.js";
+import { tryLoadConfig, configFilePath, CONFIG_FILES, type AllConfig, type OrgConfig } from "../core/config.js";
 import { homePaths, projectPaths, packageRoot, type ProjectPaths } from "../core/paths.js";
 import { orgList, orgDisplay, soql, sfVersion, type OrgListEntry } from "../core/sf.js";
 import { remotes } from "../core/git.js";
@@ -27,7 +27,8 @@ export async function doctor(opts: DoctorOptions = {}): Promise<{ checks: Check[
   // 1 config
   const { cfg: partial, errors } = tryLoadConfig(p);
   const cfgErrors = Object.entries(errors);
-  add("1", "config/*.yaml load + validate", cfgErrors.length ? "fail" : "ok", cfgErrors.length ? cfgErrors.map(([k, v]) => `${k}: ${v.split("\n")[0]}`).join(" | ") : "14 files valid");
+  const personal = CONFIG_FILES.filter((n) => configFilePath(n, p).source === "personal").length;
+  add("1", "config/*.yaml load + validate", cfgErrors.length ? "fail" : "ok", cfgErrors.length ? cfgErrors.map(([k, v]) => `${k}: ${v.split("\n")[0]}`).join(" | ") : `${CONFIG_FILES.length} files valid (${personal} personal in config/, ${CONFIG_FILES.length - personal} from config/defaults/)`);
   const cfg = partial as AllConfig;
   const dev = cfg.orgs?.orgs.find((o) => o.role === "development");
   const pre = cfg.orgs?.orgs.find((o) => o.role === "preprod");

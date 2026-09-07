@@ -208,10 +208,23 @@ function schemaPath(name: string): string | undefined {
   return candidates.find((c) => exists(c));
 }
 
+/**
+ * Two layers, one file name: `config/<name>.yaml` is the PERSONAL copy (gitignored — written by setup / the UI / org add),
+ * `config/defaults/<name>.yaml` is the tracked default that ships with the repository. A missing personal copy means "use
+ * the default" — so a fresh clone runs, tests see pristine defaults, and nothing machine-specific can leak into git.
+ */
+export function configFilePath<K extends keyof AllConfig>(name: K, p: ProjectPaths = projectPaths()): { file: string; source: "personal" | "default" | "missing" } {
+  const personal = path.join(p.config, `${name}.yaml`);
+  if (exists(personal)) return { file: personal, source: "personal" };
+  const def = path.join(p.config, "defaults", `${name}.yaml`);
+  if (exists(def)) return { file: def, source: "default" };
+  return { file: personal, source: "missing" };
+}
+
 export function loadConfigFile<K extends keyof AllConfig>(name: K, p: ProjectPaths = projectPaths()): AllConfig[K] {
-  const file = path.join(p.config, `${name}.yaml`);
-  if (!exists(file)) {
-    throw new SfsmithsError(`Missing config/${name}.yaml — run \`sfsmiths-human setup\` (no silent defaults for orgs/emails).`, "CONFIG_MISSING", { file });
+  const { file, source } = configFilePath(name, p);
+  if (source === "missing") {
+    throw new SfsmithsError(`Missing config/defaults/${name}.yaml (and no personal config/${name}.yaml) — the repository is incomplete; restore it from git.`, "CONFIG_MISSING", { file });
   }
   let parsed: unknown;
   try {
@@ -282,7 +295,7 @@ export function writeConfigFile<K extends keyof AllConfig>(name: K, value: AllCo
     if (errors.length) throw new SfsmithsError(`Refusing to write invalid config/${name}.yaml:\n  - ${errors.join("\n  - ")}`, "CONFIG_INVALID", { errors });
   }
   fs.mkdirSync(p.config, { recursive: true });
-  const header = `# config/${name}.yaml — edited by sfsmiths-human setup/ui. Source of truth (UI is only an editor).\n`;
+  const header = `# config/${name}.yaml — YOUR copy (gitignored), written by sfsmiths-human setup / the UI. Defaults: config/defaults/${name}.yaml.\n`;
   fs.writeFileSync(path.join(p.config, `${name}.yaml`), header + YAML.stringify(value), "utf8");
   cache = undefined;
 }

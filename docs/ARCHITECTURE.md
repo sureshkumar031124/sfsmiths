@@ -123,6 +123,8 @@ Golden Ticket Replay (`benchmarks/`) guards against drift after model/plugin/pro
 
 ## 9. Configuration is the product surface
 
-Everything a team would change lives in `config/` (14 YAML files, schemas in `schemas/config/`). `sfsmiths-human sync`
-propagates config into generated files; the UI is an editor over the same files. `scripts/hardcode-lint.mjs` fails CI if
-anything company-specific leaks outside `config/`.
+Everything a team would change lives in `config/` (14 YAML files, schemas in `schemas/config/`): tracked defaults in
+`config/defaults/`, a user's personal copies in `config/*.yaml` (gitignored; read first, default otherwise — see
+`config/README.md`). `sfsmiths-human sync` propagates config into generated files (`.mcp.json`, compiled policy, agent model
+lines, `.claude/settings.local.json` deny blocks); the UI is an editor over the same files. `scripts/hardcode-lint.mjs` fails
+CI if anything company-specific leaks into tracked files — `config/defaults/` included.

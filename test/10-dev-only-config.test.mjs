@@ -18,8 +18,8 @@ const T = "DEMO-101";
 
 /** keep only the development org in config/orgs.yaml */
 function devOnly(root) {
-  const file = path.join(root, "config", "orgs.yaml");
-  const lines = fs.readFileSync(file, "utf8").split("\n");
+  const file = path.join(root, "config", "orgs.yaml"); // personal copy, written from the tracked default
+  const lines = fs.readFileSync(path.join(root, "config", "defaults", "orgs.yaml"), "utf8").split("\n");
   const cut = lines.findIndex((l) => /^\s+- alias: PartialUAT/.test(l));
   fs.writeFileSync(file, lines.slice(0, cut).join("\n") + "\n");
 }

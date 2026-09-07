@@ -33,7 +33,8 @@ yourself: `npm run install:toolkit` again (doctor #9e warns when the versions di
 
 ## 2. Configure — `sfsmiths-human setup`
 
-The wizard writes `config/*.yaml` (all schema-validated; the UI edits the same files later). Enter keeps the shown default;
+The wizard writes **your** `config/*.yaml` (gitignored; the tracked defaults live in `config/defaults/` and are used for any
+file you have not personalised — all schema-validated; the UI edits the same files later). Enter keeps the shown default;
 type `none` to skip an optional org. **A development-sandbox-only first run is supported** (preprod = `none`, production =
 `none`, tracker `file`): baseline sync, the preprod deploy/QA stages and production verify are skipped and recorded as
 such; add the other orgs later with `sfsmiths-human org add` + `org login` (or the UI → Orgs).
@@ -51,7 +52,8 @@ such; add the other orgs later with `sfsmiths-human org add` + `org login` (or t
 Secrets never go in config: `SFSMITHS_JIRA_TOKEN`, `SFSMITHS_SLACK_WEBHOOK`, `SFSMITHS_CANARY_EMAIL`, `ANTHROPIC_API_KEY` (pipeline mode only) are environment variables.
 
 Run `sfsmiths-human sync` after any config change: it regenerates `.mcp.json` (dev-only `sf-dev` server), the compiled
-hook policy, the `model:` line in each agent file, the alias deny rules in `.claude/settings.json`, and the lessons skills.
+hook policy, the `model:` line in each agent file, the alias + keychain deny rules in the gitignored `.claude/settings.local.json`
+(`.claude/settings.json` itself is static and never rewritten), and the lessons skills.
 
 ## 3. The production read-only user (admin, once) — Spike A
 

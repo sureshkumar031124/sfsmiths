@@ -22,7 +22,7 @@ const FORBIDDEN = [
   { re: /https?:\/\/(?!test\.salesforce\.com|login\.salesforce\.com|developer\.salesforce\.com|github\.com|www\.npmjs\.com|code\.claude\.com|docs\.claude\.com|json\.schemastore\.org|json-schema\.org|anthropic\.com|www\.anthropic\.com|127\.0\.0\.1|localhost|your-dev-sandbox\.sandbox\.my\.salesforce\.com|acme-corp)[a-z0-9.-]*\.(my\.salesforce\.com|lightning\.force\.com|force\.com)/i, why: "real instance hostname" },
   ...(local.forbidden ?? []).map((s) => ({ re: new RegExp(s, "i"), why: "local rule" })),
 ];
-const SKIP_DIRS = new Set(["node_modules", "dist", ".git", "work", "config", "inbox", "metrics", ".sfsmiths", "org", "knowledge", "test"]); // test/ holds deliberate negative fixtures (fake emails/hosts the guards must reject)
+const SKIP_DIRS = new Set(["node_modules", "dist", ".git", "work", "inbox", "metrics", ".sfsmiths", "org", "knowledge", "test"]); // test/ holds deliberate negative fixtures (fake emails/hosts the guards must reject)
 const SKIP_FILES = new Set(["package-lock.json", ".hardcode-lint.json", "settings.local.json", ".mcp.json"]); // settings.local.json + .mcp.json are gitignored, machine-specific (keychain denies, dev alias)
 const ALLOW_DIRS = ["docs/org-map"]; // org facts are allowed to be specific — they are generated per clone
 const TEXT_EXT = /\.(ts|mjs|js|json|md|yaml|yml|txt|apex|cls|xml|html|css|sh|cmd|toml)$/;
@@ -34,6 +34,7 @@ function walk(dir) {
     const rel = path.relative(repo, full).replace(/\\/g, "/");
     if (e.isDirectory()) { if (SKIP_DIRS.has(e.name) || ALLOW_DIRS.some((a) => rel.startsWith(a))) continue; walk(full); continue; }
     if (!TEXT_EXT.test(e.name) || SKIP_FILES.has(e.name)) continue;
+    if (/^config\/[^/]+\.ya?ml$/.test(rel)) continue; // personal config (gitignored) — config/defaults/ IS scanned
     if (rel === "scripts/hardcode-lint.mjs") continue;
     const text = fs.readFileSync(full, "utf8");
     text.split("\n").forEach((line, i) => {
@@ -52,4 +53,4 @@ if (problems.length) {
   console.error(`hardcode-lint: ${problems.length} problem(s)\n` + problems.map((p) => "  " + p).join("\n"));
   process.exit(1);
 }
-console.log("hardcode-lint: clean (nothing company-specific outside config/)");
+console.log("hardcode-lint: clean (nothing company-specific in tracked files — config/defaults/ included)");

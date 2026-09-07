@@ -13,9 +13,11 @@ export const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 
 export function makeProject(opts = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "sfsmiths-test-"));
-  for (const d of ["config", "schemas", "templates", "knowledge", ".claude", "org"]) {
-    fs.cpSync(path.join(REPO, d), path.join(root, d), { recursive: true, filter: (src) => !/node_modules|\.baseline/.test(src) });
+  for (const d of ["schemas", "templates", "knowledge", ".claude", "org"]) {
+    fs.cpSync(path.join(REPO, d), path.join(root, d), { recursive: true, filter: (src) => !/node_modules|\.baseline|settings\.local\.json/.test(src) });
   }
+  // config: ONLY the tracked defaults — a developer's personal config/*.yaml (gitignored) must never leak into a test
+  fs.cpSync(path.join(REPO, "config", "defaults"), path.join(root, "config", "defaults"), { recursive: true });
   fs.mkdirSync(path.join(root, "work"), { recursive: true });
   fs.mkdirSync(path.join(root, "inbox"), { recursive: true });
   fs.mkdirSync(path.join(root, ".sfsmiths", "sessions"), { recursive: true });

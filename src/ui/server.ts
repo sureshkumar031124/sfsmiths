@@ -16,7 +16,7 @@ import path from "node:path";
 import fs from "node:fs";
 import { spawn } from "node:child_process";
 import YAML from "yaml";
-import { CONFIG_FILES, loadConfig, loadConfigFile, tryLoadConfig, writeConfigFile, type AllConfig, type OrgsConfig } from "../core/config.js";
+import { CONFIG_FILES, configFilePath, loadConfig, loadConfigFile, tryLoadConfig, writeConfigFile, type AllConfig, type OrgsConfig } from "../core/config.js";
 import { readAllEvents, readEvents, emitEvent } from "../core/events.js";
 import { listTickets, loadManifest, tryLoadManifest, type Manifest } from "../core/manifest.js";
 import { homePaths, packageRoot, projectPaths, sanitizeTicket, vaultDir, type ProjectPaths } from "../core/paths.js";
@@ -149,7 +149,7 @@ async function route(method: string, url: URL, body: Record<string, unknown> | u
     if (!id && method === "GET") return configView(p);
     const name = String(id) as keyof AllConfig;
     if (!CONFIG_FILES.includes(name)) throw new HttpError(404, `unknown config file ${name}`);
-    if (method === "GET") { const f = path.join(p.config, `${name}.yaml`); return { name, yaml: exists(f) ? readText(f) : "", schema: readSchema(p, name) }; }
+    if (method === "GET") { const { file: f, source } = configFilePath(name as keyof AllConfig, p); return { name, source, yaml: exists(f) ? readText(f) : "", schema: readSchema(p, name) }; }
     if (method === "PUT") {
       // two accepted shapes: {yaml: "..."} (Config screen) or {value: {...}} (Agents/Orgs screens)
       let value: unknown;
@@ -326,7 +326,7 @@ function orgLogin(p: ProjectPaths, alias: string, instanceUrl?: string) {
 function configView(p: ProjectPaths) {
   const { errors } = tryLoadConfig(p);
   return {
-    files: CONFIG_FILES.map((n) => { const f = path.join(p.config, `${n}.yaml`); return { name: n, exists: exists(f), bytes: exists(f) ? fs.statSync(f).size : 0, error: errors[n] ?? null }; }),
+    files: CONFIG_FILES.map((n) => { const { file: f, source } = configFilePath(n, p); return { name: n, exists: exists(f), source, bytes: exists(f) ? fs.statSync(f).size : 0, error: errors[n] ?? null }; }),
     generated: {
       mcp_json: exists(path.join(p.root, ".mcp.json")),
       compiled_policy: exists(path.join(p.state, "policy.compiled.json")),

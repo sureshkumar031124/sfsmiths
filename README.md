@@ -27,13 +27,13 @@ risky step waits for **you**.
 | **Your style** | Comments match the existing codebase format; names describe behaviour, never ticket numbers. |
 | **Humans decide** | Tier-based gates (LOW/MEDIUM/HIGH), per-agent ask/auto, typed approvals on HIGH plans, deploys always human. Approvals are recorded by a prompt hook only *you* can trigger. |
 | **Learns from evidence** | A reward ledger computed from events (gate results, denials, escalations, your decisions) → lesson candidates → you approve → injected into the right agent as a skill. Agents' own notes are quarantined until confirmed. |
-| **Nothing hard-coded** | Orgs, tracker, emails, names, models, budgets live in `config/*.yaml` (schema-validated). Clone, run `setup`, add your orgs. |
+| **Nothing hard-coded** | Orgs, tracker, emails, names, models, budgets live in `config/*.yaml` (schema-validated; tracked defaults in `config/defaults/`, your copies gitignored). Clone, run `setup`, add your orgs — `git status` stays clean. |
 
 ## Quick start (macOS / Linux)
 
 ```bash
 git clone <your-fork> sfsmiths && cd sfsmiths
-npm ci && npm run build && npm test           # 51 offline tests: state machine, gates, hooks, lifecycle, UI, MCP, scripts
+npm ci && npm run build && npm test           # 51 offline tests: state machine, gates, hooks, lifecycle, UI, MCP, scripts, config layers
 npm run install:toolkit                       # installs ~/.sfsmiths/bin (hooks call this copy, never the repo)
 export PATH="$HOME/.sfsmiths/bin:$PATH"
 
@@ -69,7 +69,7 @@ flowchart LR
 
 - **Claude Code layer** — `.claude/agents/*.md` (12 agents), `.claude/skills/` (rules, methods, generated lessons), `.claude/rules/` (path-scoped), `.claude/commands/`, `.claude/settings.json` (hooks + permissions = enforcement), `CLAUDE.md` (arbitration).
 - **Toolkit** (`src/`, TypeScript, zero-LLM) — `sfsmiths agent …` verbs agents may run; `sfsmiths-human …` verbs only you run; `sfsmiths-hook` (fast deny hooks, stage gates); two MCP servers (`sfsmiths-mcp-evidence`, `sfsmiths-mcp-ui`); the local UI.
-- **Config** (`config/`) — 14 schema-validated YAML files. **Knowledge** — checklists, guards, lessons, docs mirror. **Templates** — stage prompts and file skeletons. **Schemas** — manifest, config, stage contracts.
+- **Config** (`config/`) — 14 schema-validated YAML files: tracked defaults in `config/defaults/`, your personal copies beside them (gitignored). **Knowledge** — checklists, guards, lessons, docs mirror. **Templates** — stage prompts and file skeletons. **Schemas** — manifest, config, stage contracts.
 
 Deep dive: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · daily operations: [docs/RUNBOOK.md](docs/RUNBOOK.md) · what could go wrong and why it can't: [docs/THREAT-MODEL.md](docs/THREAT-MODEL.md) · words: [docs/GLOSSARY.md](docs/GLOSSARY.md).
 
