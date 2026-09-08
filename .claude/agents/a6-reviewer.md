@@ -2,9 +2,11 @@
 name: a6-reviewer
 description: Fresh-eyes reviewer — reviews the ticket's diff against the approved plan, acceptance criteria and repro evidence, applies the security ruleset and the Salesforce Well-Architected pillars (Trusted/Easy/Adaptable), and writes the review plus the deploy brief (profiles/permission sets in prose, window, rollback, remediation). Read-only. Use only via conductor.
 model: fable
+effort: high
 tools: Read, Glob, Grep, Bash, Write, Skill, mcp__sf-dev__query_code_analyzer_results, mcp__sf-dev__run_code_analyzer, mcp__sf-dev__retrieve_metadata, mcp__sf-dev__get_username, mcp__plugin_salesforce-development_salesforce-lsp__*
 disallowedTools: Agent, Edit, MultiEdit, NotebookEdit, WebFetch, WebSearch, mcp__sf-dev__deploy_metadata, mcp__sf-dev__run_apex_test, mcp__sf-dev__run_soql_query, mcp__sf-dev__delete_org, mcp__sf-dev__create_scratch_org, mcp__sf-dev__create_org_snapshot, mcp__sf-dev__open_org, mcp__sfsmiths-evidence__*, mcp__sfsmiths-ui__*
 permissionMode: default
+background: false
 maxTurns: 50
 memory: project
 skills:

@@ -2,9 +2,11 @@
 name: a0b-baseline
 description: Baseline Sync — makes the development sandbox match preprod for the ticket's scope before any work starts (3-way diff, snapshot, sync, verify). Drives `sfsmiths agent baseline`; never touches orgs itself. Use only via conductor.
 model: sonnet
+effort: low
 tools: Read, Glob, Grep, Bash, Write, Skill
 disallowedTools: Agent, Edit, MultiEdit, NotebookEdit, WebFetch, WebSearch, mcp__sf-dev__*, mcp__sfsmiths-evidence__*, mcp__sfsmiths-ui__*
 permissionMode: default
+background: false
 maxTurns: 30
 memory: project
 skills:

@@ -98,9 +98,17 @@ export function humanGateMode(m: Manifest, s: StageDef, cfg: AllConfig): "ask" |
   return mode;
 }
 
+/**
+ * D-093: how many consecutive WAIT_AGENT answers we give before treating a stage whose agent never
+ * reported back as a genuine failure. Bounded by OUR persisted counter (the house rule), not by
+ * session state — the Stop hook's 8-block cap is the second, independent belt.
+ */
+export const AGENT_WAIT_CAP = 8;
+
 export type HandoffAction =
   | { action: "SPAWN"; stage: string; agent: string; allowed_agents: string[]; attempt: number }
   | { action: "RUN_TOOLKIT"; stage: string; verb: string }
+  | { action: "WAIT_AGENT"; stage: string; agent: string; since?: string; waits: number }
   | { action: "WAIT_HUMAN"; stage: string; kind: NonNullable<Manifest["waiting"]>["kind"]; prompt: string }
   | { action: "HOLD"; reason: string }
   | { action: "ESCALATED"; stage: string; reason: string }
@@ -168,10 +176,14 @@ export function decideHandoff(m: Manifest, cfg: AllConfig): HandoffResult {
     return { decision: { action: "DONE" }, manifest: m, notes };
   }
 
-  // budget hard stop (park, resumable)
-  if (m.budget.tokens > cfg.budgets.per_ticket.tokens || m.budget.usd > cfg.budgets.per_ticket.usd) {
+  // budget hard stop (park, resumable).
+  // D-094: judged on FRESH tokens (input + output + cache_creation), not the cache-read-inflated total — a cache read
+  // is a re-read of context already paid for, and counting it made the token budget meaningless (21× over in one
+  // stage with nothing parked). Older manifests have no fresh_tokens: fall back to the total so they still park.
+  const freshUsed = m.budget.fresh_tokens ?? m.budget.tokens;
+  if (freshUsed > cfg.budgets.per_ticket.tokens || m.budget.usd > cfg.budgets.per_ticket.usd) {
     m.status = "parked";
-    m.waiting = { kind: "budget", stage: m.stage, prompt: `Budget exceeded (tokens ${m.budget.tokens}, usd ${m.budget.usd.toFixed(2)}). Raise config/budgets.yaml or resume with --allow-budget.`, since: nowIso() };
+    m.waiting = { kind: "budget", stage: m.stage, prompt: `Budget exceeded (fresh tokens ${freshUsed} of ${cfg.budgets.per_ticket.tokens}, usd ${m.budget.usd.toFixed(2)} of ${cfg.budgets.per_ticket.usd}; ${m.budget.tokens} total incl. cache reads). Raise config/budgets.yaml or resume with --allow-budget.`, since: nowIso() };
     return { decision: { action: "PARKED", reason: m.waiting.prompt }, manifest: m, notes };
   }
 
@@ -212,8 +224,11 @@ export function decideHandoff(m: Manifest, cfg: AllConfig): HandoffResult {
   // 2. stage not started yet → start it
   if (rec.status === "pending") return startStage(m, cfg, cur, notes);
 
-  // 3. stage running (agent spawned, not yet marked done by stage-gate) → spawn again (conductor re-entry) is NOT allowed;
-  //    the SubagentStop hook marks done. If we are here the subagent returned without the hook marking done → treat as failed attempt.
+  // 3. stage running (agent spawned, not yet marked done by stage-gate) → spawn again (conductor re-entry) is NOT allowed.
+  //    The SubagentStop stage-gate marks the stage done/failed AND stamps `agent_ended_at`. Without that stamp the
+  //    subagent is still alive (D-093: a background/async Agent call ends the conductor's turn while the agent works —
+  //    calling that a failure bounced the stage and spawned a second specialist in parallel). Only a stamped end,
+  //    or too many waits, is a failure.
   if (rec.status === "running") {
     if (cur.kind === "agent") {
       // support flow: the stage agent asked for a support agent (e.g. a UI observation) and stopped cleanly
@@ -228,10 +243,22 @@ export function decideHandoff(m: Manifest, cfg: AllConfig): HandoffResult {
       if (m.flags.resume_stage_agent === true) {
         m.flags.resume_stage_agent = false;
         rec.blocks = 0;
+        clearAgentEnd(rec);       // D-093: the stage agent is about to run again on the same attempt
         notes.push(`resuming ${cur.agent} with the support report (same attempt ${rec.attempts})`);
         return { decision: { action: "SPAWN", stage: cur.id, agent: cur.agent ?? "", allowed_agents: allowedAgentsFor(cur.id), attempt: rec.attempts }, manifest: m, notes };
       }
-      notes.push(`stage ${cur.id} still 'running' when handoff called — subagent ended without passing gates`);
+      // the stage-gate has NOT recorded an end for this attempt → the agent is still running
+      if (!rec.agent_ended_at) {
+        const waits = (rec.agent_waits ?? 0) + 1;
+        rec.agent_waits = waits;
+        if (waits <= AGENT_WAIT_CAP) {
+          notes.push(`stage ${cur.id} is running and its agent has not reported back (wait ${waits}/${AGENT_WAIT_CAP})`);
+          return { decision: { action: "WAIT_AGENT", stage: cur.id, agent: cur.agent ?? "", since: rec.started_at, waits }, manifest: m, notes };
+        }
+        notes.push(`stage ${cur.id}: agent never reported back after ${AGENT_WAIT_CAP} waits`);
+        return handleStageFailure(m, cfg, cur, `agent never reported back (no SubagentStop end recorded after ${AGENT_WAIT_CAP} waits) — it may have been spawned in the background or died silently`, notes);
+      }
+      notes.push(`stage ${cur.id} still 'running' when handoff called — subagent ended (${rec.agent_ended_at}) without passing gates`);
       return handleStageFailure(m, cfg, cur, "agent ended without passing stage gates", notes);
     }
     if (cur.kind === "toolkit") return { decision: { action: "RUN_TOOLKIT", stage: cur.id, verb: toolkitVerb(cur.id) }, manifest: m, notes };
@@ -290,6 +317,7 @@ function startStage(m: Manifest, cfg: AllConfig, s: StageDef, notes: string[]): 
   rec.started_at = nowIso();
   rec.blocks = 0;
   rec.agent = s.agent;
+  clearAgentEnd(rec);           // D-093: a new attempt has no recorded agent end yet
   if (s.kind === "agent" && s.agent) {
     m.next_allowed_stages = allowedAgentsFor(s.id);
     // safety: data-creating stages need a fresh canary (checked by the privileged/data verbs too)
@@ -345,9 +373,27 @@ function markStart(m: Manifest, stage: string): Manifest {
   rec.attempts += 1;
   rec.started_at = nowIso();
   rec.blocks = 0;
+  clearAgentEnd(rec);           // D-093
   m.next_allowed_stages = allowedAgentsFor(stage);
   m.status = "running";
   return m;
+}
+
+/**
+ * D-093: forget the previous subagent's end for this stage. Called whenever an agent is about to run
+ * again — a new attempt, or the same attempt resumed after a support agent. A stale stamp would make
+ * the next handoff read a live agent as a finished, gate-less failure.
+ */
+export function clearAgentEnd(rec: { agent_ended_at?: string; agent_waits?: number }): void {
+  delete rec.agent_ended_at;
+  rec.agent_waits = 0;
+}
+
+/** D-093: called by the SubagentStop stage-gate when this attempt's subagent has genuinely ended. */
+export function markAgentEnded(m: Manifest, stage: string): void {
+  const rec = stageRecord(m, stage);
+  rec.agent_ended_at = nowIso();
+  rec.agent_waits = 0;
 }
 
 function handleStageFailure(m: Manifest, cfg: AllConfig, s: StageDef, reason: string, notes: string[]): HandoffResult {

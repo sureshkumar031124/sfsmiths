@@ -9,8 +9,10 @@
 | **Human** | approvals at gates, deploys, remediation, lesson approval, org/model/budget config | nothing is done *for* the human that they did not ask for |
 
 The conductor runs on the main thread (`claude --agent conductor`) and calls `sfsmiths agent handoff <KEY>` in a loop.
-The toolkit answers with exactly one action (SPAWN / WAIT_HUMAN / RUN_TOOLKIT / HOLD / ESCALATED / PARKED / DONE) and,
-for SPAWN, the rendered prompt for exactly one subagent. Hooks make everything else impossible.
+The toolkit answers with exactly one action (SPAWN / WAIT_AGENT / WAIT_HUMAN / RUN_TOOLKIT / HOLD / ESCALATED / PARKED /
+FAILED / DONE) and, for SPAWN, the rendered prompt for exactly one subagent. Hooks make everything else impossible.
+Every Agent call is **foreground**: the stage gates run when the subagent stops, so a background spawn would end the
+conductor's turn before the stage could be judged — the agent-gate hook denies it (D-093).
 
 ## 2. Stage machine (`src/core/state-machine.ts`)
 
@@ -30,8 +32,13 @@ every other agent stage: one retry with the gate report, then escalate. **Reject
 rejected stage with the reason in its prompt (the reason also becomes a lesson candidate). **Support flow**: a specialist
 that ends with "UI observation requested" (after writing `ui-request.md`) stops cleanly; the next handoff spawns `a8-ui`,
 then re-spawns the specialist on the same attempt — no bounce, no penalty. **Blocks**: a SubagentStop can block the same
-agent up to 3 times per attempt; then the stage is marked failed and handoff bounces/escalates. **Budget**: over the
-per-ticket tokens/USD → `parked` (resumable). **Human gates**: `waiting_human` with a typed `waiting.kind`
+agent up to 3 times per attempt; then the stage is marked failed and handoff bounces/escalates.
+**A live agent is not a failure** (D-093): the stage-gate stamps `agent_ended_at` on the attempt whenever the subagent
+genuinely ends (gates passed, or the block cap reached); while a `running` stage carries no stamp the handoff answers
+`WAIT_AGENT`, bounded by `AGENT_WAIT_CAP` (8) and then handed to the normal bounce ladder. `/resume` **recovers** a failed
+agent stage by re-running its gates: all passing means the work really was finished, so the stage is marked done without
+re-running the agent. **Budget**: over the per-ticket **fresh** tokens (input + output + cache_creation — cache reads are
+re-reads of context already paid for and are never counted, D-094) or USD → `parked` (resumable). **Human gates**: `waiting_human` with a typed `waiting.kind`
 (approval | deploy | remediation | question | budget | baseline | canary).
 
 ## 3. Gates (`src/gates/`)
@@ -62,16 +69,16 @@ Outcomes are `passed | failed | unavailable`; **unavailable is never passed**. E
 
 | Event | Hook | Behaviour |
 |---|---|---|
-| PreToolUse Agent | `agent-gate` (fast, ≤50 ms) | deny agents not in `next_allowed_stages`, denied names, when waiting/on hold/parked/done |
+| PreToolUse Agent | `agent-gate` (fast, ≤50 ms) | deny agents not in `next_allowed_stages`, denied names, when waiting/on hold/parked/done, **and any background spawn** (`run_in_background` and every other spelling — D-093) |
 | PreToolUse Bash | `policy` (fast) | R1 human verbs · R2 HOME/SF_* / engine home · R3 git push / Blue Canvas · R4 nested claude · R5 direct HTTP to Salesforce · R6 protected paths (write targets only) · R7 sf targets (any explicit target that is not a configured development alias is denied — reads included, bare usernames included; preprod/prod get specific messages; writes need an explicit dev target; org login deny) |
 | PreToolUse Edit/Write/… | `write-guard` (fast) | write areas only; own ticket vault; own agent memory; role exceptions (a0 → docs/org-map, a7 → lessons/PENDING) |
 | PreToolUse mcp__sf-dev__.* | `data-guard` (fast) | side-effect tools need a fresh PASS email canary |
 | PostToolUse Agent | `tokens` | per agent/model/ticket accounting (payload shape defensive; transcript fallback) |
 | — | (design note) | loops are bounded by SFsmiths' own persisted counters (≤3 gate blocks per attempt, 8 consecutive stop blocks per session, reset on every new human prompt); `stop_hook_active` is deliberately not relied upon |
 | PostToolUse Edit/Write | `post-edit` | advisory comment/naming feedback |
-| SubagentStop (our agents) | `stage-gate` | run the stage's gates → mark done or `{"decision":"block"}` (≤3) |
+| SubagentStop (our agents) | `stage-gate` | run the stage's gates → mark done or `{"decision":"block"}` (≤3); stamps `agent_ended_at` on every terminal path so the handoff can tell a finished agent from a live one (D-093) |
 | Stop | `stop-guard` | conductor may not stop mid-ticket (8-block cap → waiting_human + notify) |
-| UserPromptSubmit | `prompt-router` | `/ticket` binding (conductor only); `/approve /reject /hold /resume /feedback` recorded as HUMAN actions; pasted text → inbox evidence |
+| UserPromptSubmit | `prompt-router` | `/ticket` binding (conductor only); `/approve /reject /hold /resume /feedback` recorded as HUMAN actions; pasted text → inbox evidence; a `<task-notification>` is a system message — routed back to the handoff, never filed as evidence (D-093) |
 | SessionStart / PreCompact | `session-start` / `precompact` | state + P7 reminders as context |
 
 Fast deny hooks are zero-dependency (node:fs/path only) and fail **closed** on internal errors; a timed-out hook renders
@@ -123,7 +130,11 @@ Golden Ticket Replay (`benchmarks/`) guards against drift after model/plugin/pro
 
 ## 9. Configuration is the product surface
 
-Everything a team would change lives in `config/` (14 YAML files, schemas in `schemas/config/`): tracked defaults in
+Everything a team would change lives in `config/` (14 YAML files, schemas in `schemas/config/`). `models.yaml` carries both
+the model **and the reasoning effort** per agent (D-095: `effort: low|medium|high|xhigh|max|inherit`, synced into the
+`effort:` line of each agent file — note that `CLAUDE_CODE_EFFORT_LEVEL` in the environment beats agent frontmatter, so
+doctor warns when it is set), and `budgets.yaml` carries the model **prices** (D-094) so cost is never silently zero.
+Tracked defaults in
 `config/defaults/`, a user's personal copies in `config/*.yaml` (gitignored; read first, default otherwise — see
 `config/README.md`). `sfsmiths-human sync` propagates config into generated files (`.mcp.json`, compiled policy, agent model
 lines, `.claude/settings.local.json` deny blocks); the UI is an editor over the same files. `scripts/hardcode-lint.mjs` fails

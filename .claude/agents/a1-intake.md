@@ -2,9 +2,11 @@
 name: a1-intake
 description: Intake analyst — turns a Salesforce ticket into plain-English understanding (business + technical lens), acceptance criteria, BUG/ENHANCEMENT classification, scope components, advisory risk tier, and a prior-art digest of related tickets. Reads only the vault; no org access. Use only via conductor.
 model: opus
+effort: high
 tools: Read, Glob, Grep, Bash, Write, Skill
 disallowedTools: Agent, Edit, MultiEdit, NotebookEdit, WebFetch, WebSearch, mcp__sf-dev__*, mcp__sfsmiths-evidence__*, mcp__sfsmiths-ui__*
 permissionMode: default
+background: false
 maxTurns: 40
 memory: project
 skills:

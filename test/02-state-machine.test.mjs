@@ -130,15 +130,41 @@ test("stageGatesAllPassed: unavailable is not passed", () => {
   assert.deepEqual(r.missing, ["naming-lint"]);
 });
 
-test("budget exceeded parks the ticket (resumable, never silently continues)", () => {
+test("budget exceeded parks the ticket (resumable, never silently continues) — on FRESH tokens (D-094)", () => {
   const root = makeProject();
   try {
-    const { cfg, m } = fresh(root);
-    m.budget.tokens = cfg.budgets.per_ticket.tokens + 1;
-    const r = decideHandoff(m, cfg);
-    assert.equal(r.decision.action, "PARKED");
-    assert.equal(r.manifest.status, "parked");
-    assert.equal(r.manifest.waiting.kind, "budget");
+    // fresh tokens over the limit → park
+    {
+      const { cfg, m } = fresh(root);
+      m.budget.fresh_tokens = cfg.budgets.per_ticket.tokens + 1;
+      const r = decideHandoff(m, cfg);
+      assert.equal(r.decision.action, "PARKED");
+      assert.equal(r.manifest.status, "parked");
+      assert.equal(r.manifest.waiting.kind, "budget");
+    }
+    // D-094: a cache-read-inflated TOTAL must NOT park. Run 1 crossed the 1.5M token budget 21× in one stage
+    // purely on cache reads (12.6M of 13.3M) — re-reads of context already paid for.
+    {
+      const { cfg, m } = fresh(root);
+      m.budget.tokens = cfg.budgets.per_ticket.tokens * 21;
+      m.budget.fresh_tokens = 700_000;
+      const r = decideHandoff(m, cfg);
+      assert.notEqual(r.decision.action, "PARKED", "cache reads must not park the ticket");
+      assert.equal(r.manifest.status, "running");
+    }
+    // USD is still an independent hard stop
+    {
+      const { cfg, m } = fresh(root);
+      m.budget.usd = cfg.budgets.per_ticket.usd + 1;
+      assert.equal(decideHandoff(m, cfg).decision.action, "PARKED");
+    }
+    // backward compatibility: a manifest written before D-094 has no fresh_tokens → judged on the total
+    {
+      const { cfg, m } = fresh(root);
+      delete m.budget.fresh_tokens;
+      m.budget.tokens = cfg.budgets.per_ticket.tokens + 1;
+      assert.equal(decideHandoff(m, cfg).decision.action, "PARKED");
+    }
   } finally { cleanup(root); }
 });
 

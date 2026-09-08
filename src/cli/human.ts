@@ -46,12 +46,19 @@ async function main(): Promise<void> {
       say(formatChecks(d.checks.filter((c) => c.level !== "ok")) || "✅ boot checks passed");
       if (fails.length && !a.bool("force")) fail(`${fails.length} boot check(s) failed — fix them or pass --force (not recommended)`);
       const mode = a.str("permission-mode") ?? "default";
-      say(`\nlaunching: claude --agent conductor --permission-mode ${mode}   (in ${p.root})\n  → in the session: /ticket <KEY>\n`);
+      // D-095: session-level effort. Per-agent `effort:` frontmatter (config/models.yaml → sync) overrides this for
+      // each specialist; this sets the floor for the conductor's own session when the agent files say `inherit`.
+      // CLAUDE_CODE_EFFORT_LEVEL beats both — doctor warns when it is set.
+      const cfgAll = tryLoadConfig(p).cfg;
+      const effort = a.str("effort") ?? cfgAll.models?.effort?.conductor ?? cfgAll.models?.fallback_effort;
+      const effortArgs = effort && effort !== "inherit" ? ["--effort", effort] : [];
+      if (process.env.CLAUDE_CODE_EFFORT_LEVEL) say(`⚠ CLAUDE_CODE_EFFORT_LEVEL=${process.env.CLAUDE_CODE_EFFORT_LEVEL} is set — it overrides every per-agent effort in config/models.yaml. Unset it to use them.`);
+      say(`\nlaunching: claude --agent conductor --permission-mode ${mode}${effortArgs.length ? ` --effort ${effort}` : ""}   (in ${p.root})\n  → in the session: /ticket <KEY>\n`);
       // agents call `sfsmiths agent …` by bare name: prepend the INSTALLED launchers (~/.sfsmiths/bin) so the hooks and the
       // agents run the same copy — and the repo's own bin/ as a fallback for a fresh clone that has not run install:toolkit yet
       const sep = process.platform === "win32" ? ";" : ":";
       const PATH = [homePaths().bin, path.join(p.root, "node_modules", ".bin"), process.env.PATH ?? ""].filter(Boolean).join(sep);
-      const child = spawn("claude", ["--agent", "conductor", "--permission-mode", mode, ...(a.list("claude-arg"))], { cwd: p.root, stdio: "inherit", env: { ...process.env, PATH, SFSMITHS_PROJECT_DIR: p.root } });
+      const child = spawn("claude", ["--agent", "conductor", "--permission-mode", mode, ...effortArgs, ...(a.list("claude-arg"))], { cwd: p.root, stdio: "inherit", env: { ...process.env, PATH, SFSMITHS_PROJECT_DIR: p.root } });
       child.on("exit", (code) => process.exit(code ?? 0));
       return;
     }
@@ -206,7 +213,8 @@ async function main(): Promise<void> {
     case "version": { say(readJsonOr<{ version?: string }>(path.join(packageRoot(), "package.json"), {}).version ?? "?"); return; }
     default:
       say(`sfsmiths-human <verb>  (human-only verbs)
-  start [--permission-mode default]         launch the conductor session (boot checks first)
+  start [--permission-mode default] [--effort low|medium|high|xhigh|max]
+                                            launch the conductor session (boot checks first)
   approve <KEY> [--stage S] [--answer "..."] [--edited "what you changed"]
   reject <KEY> --reason "..."
   hold <KEY> --reason "..." | resume <KEY> [--restart-from stage] [--allow-budget]

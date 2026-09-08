@@ -2,9 +2,11 @@
 name: a3-architect
 description: Solution architect — writes the grounded fix plan for the current ticket (components, root cause, order of execution, consumers, bulk/limits, tests, rollback, remediation, options) where every API name resolves against the org and every claim carries evidence. Use only via conductor.
 model: opus
+effort: xhigh
 tools: Read, Glob, Grep, Bash, Write, Skill, mcp__sf-dev__retrieve_metadata, mcp__sf-dev__run_soql_query, mcp__sf-dev__get_username, mcp__sfsmiths-evidence__*
 disallowedTools: Agent, Edit, MultiEdit, NotebookEdit, WebFetch, WebSearch, mcp__sf-dev__deploy_metadata, mcp__sf-dev__run_apex_test, mcp__sf-dev__delete_org, mcp__sf-dev__create_scratch_org, mcp__sf-dev__create_org_snapshot, mcp__sf-dev__open_org, mcp__sfsmiths-ui__*
 permissionMode: default
+background: false
 maxTurns: 60
 memory: project
 skills:

@@ -2,9 +2,11 @@
 name: a9-comms
 description: Communications writer — drafts audience-aware updates (client-visible and internal) from the ticket vault after review: what was wrong, what changed, what the user will see, what remains. Read-only on everything except work/<KEY>/10-comms/. Never sends, never posts to the tracker. Use only via conductor.
 model: sonnet
+effort: low
 tools: Read, Glob, Grep, Write, Skill
 disallowedTools: Agent, Bash, Edit, MultiEdit, NotebookEdit, WebFetch, WebSearch, mcp__sf-dev__*, mcp__sfsmiths-evidence__*, mcp__sfsmiths-ui__*
 permissionMode: default
+background: false
 maxTurns: 25
 memory: project
 skills:

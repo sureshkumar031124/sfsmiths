@@ -19,6 +19,31 @@
     },
     "fallback": {
       "type": "string"
+    },
+    "effort": {
+      "type": "object",
+      "description": "D-095: agent name -> reasoning effort. 'inherit' writes no effort line (session level applies).",
+      "additionalProperties": {
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "inherit"
+        ]
+      }
+    },
+    "fallback_effort": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max",
+        "inherit"
+      ],
+      "description": "D-095: effort for any agent not listed in `effort`."
     }
   },
   "title": "config/models.yaml"

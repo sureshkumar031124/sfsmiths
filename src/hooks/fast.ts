@@ -137,12 +137,32 @@ export function emit(decision: Decision): never {
 
 export const ALWAYS_DENIED_AGENTS = ["salesforce-dev", "salesforce-development:salesforce-dev"];
 
+/**
+ * D-093: does this Agent call ask for a background/async subagent? Every spelling is treated as one —
+ * the payload shape is not ours to rely on, so the check is deliberately generous and fails toward deny.
+ */
+export function isBackgroundSpawn(ti: Record<string, unknown>): boolean {
+  for (const k of ["run_in_background", "runInBackground", "background", "async", "is_async", "isAsync"]) {
+    const v = ti[k];
+    if (v === true || v === "true" || v === 1) return true;
+  }
+  return false;
+}
+
 export function decideAgentGate(input: HookInput, root: string): Decision {
   const ti = input.tool_input ?? {};
   const requested = String(ti.subagent_type ?? ti.agent ?? ti.name ?? "").trim();
   if (!requested) return { allow: true };
   if (ALWAYS_DENIED_AGENTS.some((d) => requested === d || requested.endsWith(`:${d}`))) return { deny: `agent "${requested}" is not part of this system (only sfsmiths agents may be spawned)` };
   const ticket = ticketForSession(root, input.session_id);
+  // D-093 — FOREGROUND ONLY. A background Agent call returns immediately: the conductor's turn ends while the
+  // specialist is still working, the SubagentStop gates have not run, and the handoff cannot tell a live agent
+  // from a dead one. In Run 1 that produced a false bounce, two a1-intake agents in parallel and a false
+  // escalation 40 s in. The stage gates ARE the result — so the conductor must wait for the Agent tool's result.
+  if (isBackgroundSpawn(ti)) {
+    appendEvent(root, ticket, "agent.spawn_denied", { requested, reason: "background" }, input.agent_type);
+    return { deny: `spawn "${requested}" in the FOREGROUND: remove run_in_background and wait for the Agent tool's result. A background subagent ends your turn before its stage gates have run, so the stage cannot be judged (D-093).` };
+  }
   if (!ticket) {
     // no ticket in flight: only maintenance agents allowed
     if (["a0-cartographer", "a7-coach"].includes(requested)) return { allow: true };

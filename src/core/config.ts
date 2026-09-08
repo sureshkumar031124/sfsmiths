@@ -34,10 +34,21 @@ export interface OrgsConfig {
   orgs: OrgConfig[];
 }
 
+/**
+ * D-095: Claude Code's reasoning effort, per agent. `inherit` means "write no effort line" — the session level
+ * (`--effort`, `/effort`, `~/.claude/settings.json → effortLevel`) then applies, as it did before this existed.
+ * Note the priority Claude Code documents: CLAUDE_CODE_EFFORT_LEVEL (env) beats agent frontmatter, which beats
+ * the session level. Doctor warns when that env var is set, because it silently disables everything below.
+ */
+export const EFFORT_LEVELS = ["low", "medium", "high", "xhigh", "max"] as const;
+export type EffortLevel = (typeof EFFORT_LEVELS)[number];
+
 export interface ModelsConfig {
   version: number;
   agents: Record<string, string>; // agent name → model alias (opus|sonnet|haiku|fable|inherit|full id)
+  effort?: Record<string, string>; // agent name → low|medium|high|xhigh|max|inherit  (optional: absent = fallback_effort)
   fallback?: string;
+  fallback_effort?: string;
 }
 
 export type Tier = "LOW" | "MEDIUM" | "HIGH";
@@ -50,12 +61,23 @@ export interface AutonomyConfig {
   hard_floor: string[];
 }
 
+/** D-094: USD per 1,000,000 tokens, matched to a run's model by model-family key (case-insensitive substring). */
+export interface ModelPrice {
+  input: number;
+  output: number;
+  cache_read?: number;
+  cache_write?: number;
+}
+
 export interface BudgetsConfig {
   version: number;
+  /** `tokens` is judged on FRESH tokens (input + output + cache_creation) — see D-094. */
   per_ticket: { tokens: number; usd: number; wall_minutes: number };
   daily_usd: number;
   on_exceed: "park";
   pipeline_max_budget_usd: number;
+  /** D-094: default prices so cost is never silently 0. `metrics/prices.json` still overrides these. */
+  prices?: Record<string, ModelPrice>;
 }
 
 export interface SafetyConfig {

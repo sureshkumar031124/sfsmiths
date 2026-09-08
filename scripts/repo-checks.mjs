@@ -5,7 +5,8 @@
  *   1. .claude/settings.json parses and wires every sfsmiths-hook verb the toolkit implements
  *   2. every hook command points at the INSTALLED copy ($HOME/.sfsmiths/bin), never at the repo
  *   3. .claude-plugin/marketplace.json parses and pins the plugin to a 40-char sha
- *   4. every .claude/agents/*.md has frontmatter with name (= file name), description and model
+ *   4. every .claude/agents/*.md has frontmatter with name (= file name), description and model; a present
+ *      `effort:` is a valid level and every specialist declares `background: false` (D-093/D-095)
  *   5. the conductor's Agent(...) allowlist names only agents that exist
  *
  * Plain node:fs — no build, no dependencies, same result on every platform (the previous inline shell version
@@ -69,6 +70,12 @@ for (const f of fs.readdirSync(agentsDir).filter((f) => f.endsWith(".md")).sort(
   if (field("name") !== expected) fail(`.claude/agents/${f}: name must be "${expected}" (found "${field("name")}")`);
   if (!field("description")) fail(`.claude/agents/${f}: missing description`);
   if (!field("model")) fail(`.claude/agents/${f}: missing model`);
+  // D-095: an effort line is optional (config `inherit` removes it), but a present one must be a level Claude Code accepts
+  const effort = field("effort");
+  if (effort && !["low", "medium", "high", "xhigh", "max"].includes(effort)) fail(`.claude/agents/${f}: effort "${effort}" is not low|medium|high|xhigh|max`);
+  // D-093: a specialist must never be spawned as a background task — the stage gates run when it stops, so a
+  // background agent ends the conductor's turn before the stage can be judged (Run 1's false escalation).
+  if (expected !== "conductor" && field("background") !== "false") fail(`.claude/agents/${f}: must declare "background: false" (D-093)`);
   agentNames.add(field("name") ?? expected); // Claude Code addresses a subagent by its frontmatter name, not its file name
 }
 

@@ -2,9 +2,11 @@
 name: a5-qa
 description: QA engineer — runs the test pyramid against the implemented fix (Apex bulk tests, Flow tests, SOQL distribution assertions, repro PASS + inverse PASS, permission tests, UI via sfsmiths-ui, regression) in the development sandbox, and after the human deploys, in preprod through the toolkit. Writes the test report with a verdict backed by run files. Use only via conductor.
 model: sonnet
+effort: medium
 tools: Read, Glob, Grep, Bash, Write, Edit, Skill, mcp__sf-dev__run_apex_test, mcp__sf-dev__run_soql_query, mcp__sf-dev__retrieve_metadata, mcp__sf-dev__get_username, mcp__sfsmiths-ui__*
 disallowedTools: Agent, MultiEdit, NotebookEdit, WebFetch, WebSearch, mcp__sf-dev__deploy_metadata, mcp__sf-dev__delete_org, mcp__sf-dev__create_scratch_org, mcp__sf-dev__create_org_snapshot, mcp__sf-dev__open_org, mcp__sfsmiths-evidence__*
 permissionMode: default
+background: false
 maxTurns: 80
 memory: project
 skills:

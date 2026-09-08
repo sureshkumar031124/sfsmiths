@@ -2,9 +2,11 @@
 name: a8-ui
 description: UI capability — drives the fenced browser (sfsmiths-ui) in the development sandbox to reproduce and verify Lightning behaviour (screen flows, quick actions, LWC, page layouts), captures text+screenshot evidence, and drafts Playwright specs in tests-ui/. Production is refused at the network layer. Use only via conductor as a support agent during repro or QA.
 model: opus
+effort: medium
 tools: Read, Glob, Grep, Bash, Write, Edit, Skill, mcp__sfsmiths-ui__*
 disallowedTools: Agent, MultiEdit, NotebookEdit, WebFetch, WebSearch, mcp__sf-dev__*, mcp__sfsmiths-evidence__*
 permissionMode: default
+background: false
 maxTurns: 60
 memory: project
 skills:

@@ -42,6 +42,36 @@
     },
     "pipeline_max_budget_usd": {
       "type": "number"
+    },
+    "prices": {
+      "type": "object",
+      "description": "D-094: USD per 1,000,000 tokens by model-family key. metrics/prices.json overrides.",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "input",
+          "output"
+        ],
+        "properties": {
+          "input": {
+            "type": "number",
+            "minimum": 0
+          },
+          "output": {
+            "type": "number",
+            "minimum": 0
+          },
+          "cache_read": {
+            "type": "number",
+            "minimum": 0
+          },
+          "cache_write": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false
+      }
     }
   },
   "title": "config/budgets.yaml"

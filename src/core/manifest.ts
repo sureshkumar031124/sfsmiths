@@ -31,6 +31,13 @@ export interface StageRecord {
   attempts: number;
   started_at?: string;
   ended_at?: string;
+  /**
+   * D-093: stamped by the SubagentStop stage-gate when THIS attempt's subagent actually ended
+   * (gates passed, or gates failed past the block cap). Cleared whenever a new attempt starts.
+   * `status: running` WITHOUT this stamp means the agent is still alive — never a failure.
+   */
+  agent_ended_at?: string;
+  agent_waits?: number;      // consecutive WAIT_AGENT decisions for this attempt (bounded, see AGENT_WAIT_CAP)
   blocks: number;            // consecutive SubagentStop blocks for this stage
   outputs?: string[];
   note?: string;
@@ -71,7 +78,12 @@ export interface Manifest {
   waiting: { kind: "approval" | "question" | "deploy" | "remediation" | "budget" | "canary" | "baseline"; stage: string; prompt: string; since: string } | null;
   fingerprints: { dev?: string; uat?: string; scope?: string; taken_at?: string };
   baseline: { synced_at?: string; ancestor_source?: string; decisions: { component: string; classification: string; action: string; by?: string; at: string }[] } | null;
-  budget: { tokens: number; usd: number; wall_ms: number; started_at: string };
+  /**
+   * D-094: `tokens` stays the raw total (cache reads included) for reporting; `fresh_tokens`
+   * (input + output + cache_creation) is what the per-ticket token budget is judged on, because
+   * a cache read is ~10% of the price and inflates the total by an order of magnitude.
+   */
+  budget: { tokens: number; fresh_tokens?: number; usd: number; wall_ms: number; started_at: string };
   resumes: ResumeRecord[];
   bounces: { from: string; to: string; at: string; reason: string }[];
   locks: string[];
@@ -107,7 +119,7 @@ export function newManifest(ticket: string, tracker: string, title?: string): Ma
     waiting: null,
     fingerprints: {},
     baseline: null,
-    budget: { tokens: 0, usd: 0, wall_ms: 0, started_at: now },
+    budget: { tokens: 0, fresh_tokens: 0, usd: 0, wall_ms: 0, started_at: now },
     resumes: [],
     bounces: [],
     locks: [],
@@ -151,12 +163,14 @@ export function saveManifest(m: Manifest, p: ProjectPaths = projectPaths()): voi
     ticket: m.ticket, status: m.status, stage: m.stage, tier: m.tier, next_allowed_stages: m.next_allowed_stages,
     waiting: m.waiting ? { kind: m.waiting.kind, stage: m.waiting.stage } : null, updated_at: m.updated_at,
     stage_status: m.stages[m.stage]?.status ?? "pending", blocks: m.stages[m.stage]?.blocks ?? 0,
+    agent_ended_at: m.stages[m.stage]?.agent_ended_at ?? null,
   }) + "\n");
 }
 
 export interface StateSidecar {
   ticket: string; status: TicketStatus; stage: string; tier: string; next_allowed_stages: string[];
   waiting: { kind: string; stage: string } | null; updated_at: string; stage_status: StageStatus; blocks: number;
+  agent_ended_at?: string | null;
 }
 
 export function listTickets(p: ProjectPaths = projectPaths()): string[] {

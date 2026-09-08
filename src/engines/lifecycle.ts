@@ -8,7 +8,8 @@ import { emitEvent } from "../core/events.js";
 import { acquireLocks, releaseLocks } from "../core/locks.js";
 import { loadManifest, newManifest, saveManifest, stageRecord, tryLoadManifest, type Manifest } from "../core/manifest.js";
 import { projectPaths, vaultDir, sanitizeTicket, type ProjectPaths } from "../core/paths.js";
-import { STAGE_BY_ID, STAGES, stageIndex, markStageDone } from "../core/state-machine.js";
+import { STAGE_BY_ID, STAGES, stageIndex, markStageDone, markAgentEnded } from "../core/state-machine.js";
+import { runStageGates } from "../gates/registry.js";
 import { setActiveTicket } from "../core/session.js";
 import { orgDisplay } from "../core/sf.js";
 import { ensureDir, exists, nowIso, readJsonOr, readTextOr, tsCompact, writeJsonAtomic, writeTextAtomic, SfsmithsError } from "../core/util.js";
@@ -137,12 +138,49 @@ export function classifyTicketDiff(before: TicketSnapshot, after: TicketSnapshot
 
 export interface ResumeResult { manifest: Manifest; diff: { cls: DiffClass; changes: string[] }; actions: string[] }
 
+/**
+ * D-093 — recovery. A stage that was marked failed while its work was in fact finished (Run 1: the handoff
+ * read a live background agent as dead, bounced, escalated — and both a1-intake runs then PASSED their gates)
+ * must not be re-run: re-running costs a full agent and throws away good evidence.
+ *
+ * The test is mechanical and stronger than trusting the recorded gate rows: the stage's gates are RE-RUN
+ * against whatever is in the vault right now. All pass → the stage really is done, mark it done and move on.
+ * Anything short of all-pass → leave it failed and let the normal bounce/restart path handle it.
+ */
+export async function recoverFinishedStage(m: Manifest, p: ProjectPaths): Promise<{ recovered: boolean; note: string } | undefined> {
+  const def = STAGE_BY_ID[m.stage];
+  if (!def || def.kind !== "agent" || !def.gates.length) return undefined;
+  if (stageRecord(m, m.stage).status !== "failed") return undefined;
+  const { ok, outcomes, manifest } = await runStageGates(m.ticket, m.stage, {}, p);
+  if (!ok) {
+    const bad = outcomes.filter((o) => o.status !== "passed").map((o) => `${o.name}: ${o.status}`).join(", ");
+    return { recovered: false, note: `recovery declined for ${m.stage} — gates still not all passing (${bad || "no gates ran"})` };
+  }
+  const outputs = [def.output ?? "", def.output?.replace(/\.md$/, ".json") ?? ""].filter((f) => f && exists(path.join(vaultDir(p, m.ticket), f)));
+  markAgentEnded(manifest, m.stage);
+  markStageDone(manifest, m.stage, outputs);
+  manifest.stages[m.stage].note = `recovered on resume: all gates re-ran and passed (${outcomes.map((o) => o.name).join(", ")})`;
+  if (manifest.status === "escalated") { manifest.status = "running"; manifest.escalation = null; manifest.waiting = null; }
+  saveManifest(manifest, p);
+  emitEvent({ ticket: m.ticket, type: "stage.recovered", stage: m.stage, agent: def.agent, data: { gates: outcomes.map((o) => o.name), outputs } }, p);
+  return { recovered: true, note: `${m.stage} recovered — its gates re-ran and all passed, so the stage is done (no agent re-run)` };
+}
+
 export async function resumeTicket(key: string, opts: { restartFrom?: string; p?: ProjectPaths; allowBudget?: boolean; skipBaselineCheck?: boolean } = {}): Promise<ResumeResult> {
   const p = opts.p ?? projectPaths();
   const cfg = loadConfig(p);
-  const m = loadManifest(key, p);
+  let m = loadManifest(key, p);
   const vault = vaultDir(p, m.ticket);
   const actions: string[] = [];
+
+  // 0. recovery (D-093) — only when the human did not ask for an explicit restart
+  if (!opts.restartFrom) {
+    const rec = await recoverFinishedStage(m, p);
+    if (rec) {
+      actions.push(rec.note);
+      if (rec.recovered) m = loadManifest(key, p);
+    }
+  }
   const before = readJsonOr<TicketSnapshot | undefined>(path.join(vault, "ticket.json"), undefined);
   if (!before) throw new SfsmithsError("vault has no ticket.json", "VAULT_CORRUPT");
 
@@ -219,7 +257,7 @@ export async function resumeTicket(key: string, opts: { restartFrom?: string; p?
   }
 
   // 5. budget park override
-  if (m.status === "parked" && opts.allowBudget) { m.budget.tokens = 0; m.budget.usd = 0; actions.push("budget counter reset by human (--allow-budget)"); }
+  if (m.status === "parked" && opts.allowBudget) { m.budget.tokens = 0; m.budget.fresh_tokens = 0; m.budget.usd = 0; actions.push("budget counter reset by human (--allow-budget)"); }
 
   // 6. locks + status
   const scope = readJsonOr<{ components?: string[] }>(path.join(vault, "scope.json"), {}).components ?? [];

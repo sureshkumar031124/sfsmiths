@@ -16,7 +16,7 @@ import path from "node:path";
 import fs from "node:fs";
 import { spawn } from "node:child_process";
 import YAML from "yaml";
-import { CONFIG_FILES, configFilePath, loadConfig, loadConfigFile, tryLoadConfig, writeConfigFile, type AllConfig, type OrgsConfig } from "../core/config.js";
+import { CONFIG_FILES, configFilePath, loadConfig, loadConfigFile, tryLoadConfig, writeConfigFile, EFFORT_LEVELS, type AllConfig, type OrgsConfig } from "../core/config.js";
 import { readAllEvents, readEvents, emitEvent } from "../core/events.js";
 import { listTickets, loadManifest, tryLoadManifest, type Manifest } from "../core/manifest.js";
 import { homePaths, packageRoot, projectPaths, sanitizeTicket, vaultDir, type ProjectPaths } from "../core/paths.js";
@@ -237,6 +237,7 @@ function agentsView(p: ProjectPaths) {
   const rewards = rewardsSummary(p);
   const agentFile = (a: string) => path.join(p.agents, `${a}.md`);
   const models = cfg.models?.agents ?? {};
+  const efforts = cfg.models?.effort ?? {};
   const autonomy = cfg.autonomy?.agents ?? {};
   const agents = AGENT_NAMES.map((a) => {
     const rs = runs.filter((r) => r.agent === a);
@@ -244,27 +245,59 @@ function agentsView(p: ProjectPaths) {
     for (const r of rs) byModel[r.model ?? "unknown"] = (byModel[r.model ?? "unknown"] ?? 0) + r.total_tokens;
     const fm = exists(agentFile(a)) ? readText(agentFile(a)).split("\n---")[0] : "";
     const declaredModel = /^model:\s*(\S+)/m.exec(fm)?.[1];
+    const declaredEffort = /^effort:\s*(\S+)/m.exec(fm)?.[1];
+    const wantModel = models[a] ?? cfg.models?.fallback;
+    const wantEffort = efforts[a] ?? cfg.models?.fallback_effort ?? "inherit";
     return {
-      name: a, model: models[a] ?? cfg.models?.fallback ?? "inherit", model_in_agent_file: declaredModel ?? null, in_sync: !declaredModel || declaredModel === (models[a] ?? cfg.models?.fallback),
+      name: a, model: models[a] ?? cfg.models?.fallback ?? "inherit", model_in_agent_file: declaredModel ?? null,
+      // D-095: effort is only in the agent file when it is NOT `inherit` — no line means the session level applies
+      effort: wantEffort, effort_in_agent_file: declaredEffort ?? null,
+      in_sync: (!declaredModel || declaredModel === wantModel) && (wantEffort === "inherit" ? !declaredEffort : declaredEffort === wantEffort),
       gate_mode: autonomy[a] ?? "inherit", hard_floor: (cfg.autonomy?.hard_floor ?? []).includes(a),
-      runs: rs.length, tokens: rs.reduce((s, r) => s + r.total_tokens, 0), usd: rs.reduce((s, r) => s + (r.usd ?? 0), 0), tokens_by_model: byModel,
+      runs: rs.length, tokens: rs.reduce((s, r) => s + r.total_tokens, 0), fresh_tokens: rs.reduce((s, r) => s + (r.fresh_tokens ?? 0), 0),
+      cache_read_tokens: rs.reduce((s, r) => s + (r.usage?.cache_read_input_tokens ?? 0), 0),
+      usd: rs.reduce((s, r) => s + (r.usd ?? 0), 0), tokens_by_model: byModel,
       reward: rewards?.by_agent?.[a] ?? 0, agent_file_exists: exists(agentFile(a)),
       lessons_skill: exists(path.join(p.skills, `lessons-${a}`, "SKILL.md")),
     };
   });
-  return { agents, models_config: cfg.models ?? null, autonomy_config: cfg.autonomy ?? null, budgets: cfg.budgets ?? null, model_choices: ["opus", "sonnet", "haiku", "fable", "inherit"] };
+  return {
+    agents, models_config: cfg.models ?? null, autonomy_config: cfg.autonomy ?? null, budgets: cfg.budgets ?? null,
+    model_choices: ["opus", "sonnet", "haiku", "fable", "inherit"],
+    effort_choices: [...EFFORT_LEVELS, "inherit"],
+    // D-095: this env var beats agent frontmatter — if it is set, every effort value on this screen is ignored
+    effort_env_override: process.env.CLAUDE_CODE_EFFORT_LEVEL || null,
+  };
 }
 
 function tokensView(p: ProjectPaths) {
   const runs = readAgentRuns(p);
   const agg = (key: (r: (typeof runs)[number]) => string) => {
-    const out: Record<string, { tokens: number; usd: number; runs: number; input: number; output: number; cache_read: number }> = {};
-    for (const r of runs) { const k = key(r); const o = (out[k] ??= { tokens: 0, usd: 0, runs: 0, input: 0, output: 0, cache_read: 0 }); o.tokens += r.total_tokens; o.usd += r.usd ?? 0; o.runs++; o.input += r.usage.input_tokens; o.output += r.usage.output_tokens; o.cache_read += r.usage.cache_read_input_tokens; }
+    const out: Record<string, { tokens: number; fresh: number; usd: number; runs: number; input: number; output: number; cache_read: number; cache_write: number }> = {};
+    for (const r of runs) {
+      const k = key(r);
+      const o = (out[k] ??= { tokens: 0, fresh: 0, usd: 0, runs: 0, input: 0, output: 0, cache_read: 0, cache_write: 0 });
+      o.tokens += r.total_tokens; o.usd += r.usd ?? 0; o.runs++;
+      o.input += r.usage.input_tokens; o.output += r.usage.output_tokens;
+      o.cache_read += r.usage.cache_read_input_tokens; o.cache_write += r.usage.cache_creation_input_tokens;
+      o.fresh += r.fresh_tokens ?? (r.usage.input_tokens + r.usage.output_tokens + r.usage.cache_creation_input_tokens);
+    }
     return out;
   };
   const days: Record<string, number> = {};
   for (const r of runs) days[r.ts.slice(0, 10)] = (days[r.ts.slice(0, 10)] ?? 0) + r.total_tokens;
-  return { by_model: agg((r) => r.model ?? "unknown"), by_ticket: agg((r) => r.ticket ?? "(none)"), by_agent: agg((r) => r.agent), by_day: days, prices_file: exists(path.join(p.metrics, "prices.json")), total_runs: runs.length };
+  const { cfg } = tryLoadConfig(p);
+  // D-094: which models we can actually price. A run whose model matches nothing here records no cost.
+  const priceKeys = Object.keys(readJsonOr<Record<string, unknown>>(path.join(p.metrics, "prices.json"), {}) ?? {});
+  const configPriceKeys = Object.keys(cfg.budgets?.prices ?? {});
+  const known = priceKeys.length ? priceKeys : configPriceKeys;
+  const unpriced = [...new Set(runs.map((r) => r.model).filter((m): m is string => !!m))]
+    .filter((m) => !known.some((k) => m.toLowerCase().includes(k.toLowerCase())));
+  return {
+    by_model: agg((r) => r.model ?? "unknown"), by_ticket: agg((r) => r.ticket ?? "(none)"), by_agent: agg((r) => r.agent), by_day: days,
+    prices_file: exists(path.join(p.metrics, "prices.json")), prices_source: priceKeys.length ? "metrics/prices.json" : configPriceKeys.length ? "config/budgets.yaml" : "none",
+    priced_models: known, unpriced_models: unpriced, total_runs: runs.length,
+  };
 }
 
 async function orgsView(p: ProjectPaths, ctx: Ctx, fresh: boolean) {

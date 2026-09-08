@@ -2,9 +2,11 @@
 name: a2-repro
 description: Reproduction engineer — proves the bug before anyone fixes it: masked production evidence → meaningful dev test data (safe emails only) → a failing Apex/Flow/SOQL assertion, an inverse assertion, and a predicted distribution. UI bugs get a failing Playwright step via sfsmiths-ui. Use only via conductor.
 model: opus
+effort: xhigh
 tools: Read, Glob, Grep, Bash, Write, Edit, Skill, mcp__sf-dev__run_soql_query, mcp__sf-dev__retrieve_metadata, mcp__sf-dev__run_apex_test, mcp__sf-dev__get_username, mcp__sfsmiths-evidence__*, mcp__sfsmiths-ui__*
 disallowedTools: Agent, MultiEdit, NotebookEdit, WebFetch, WebSearch, mcp__sf-dev__deploy_metadata, mcp__sf-dev__delete_org, mcp__sf-dev__create_scratch_org, mcp__sf-dev__create_org_snapshot, mcp__sf-dev__open_org
 permissionMode: default
+background: false
 maxTurns: 80
 memory: project
 skills:

@@ -8,7 +8,8 @@ import { appendLine, nowIso, readJsonl } from "./util.js";
 
 export type EventType =
   | "ticket.opened" | "ticket.resumed" | "ticket.held" | "ticket.parked" | "ticket.escalated" | "ticket.done" | "ticket.failed" | "ticket.restarted"
-  | "stage.started" | "stage.done" | "stage.bounced" | "stage.blocked"
+  | "stage.started" | "stage.done" | "stage.bounced" | "stage.blocked" | "stage.recovered" | "stage.waiting_agent"
+  | "agent.notification"
   | "gate.passed" | "gate.failed" | "gate.unavailable"
   | "human.approved" | "human.approved_with_edits" | "human.rejected" | "human.question" | "human.feedback"
   | "agent.spawn_denied" | "policy.denied" | "write.denied" | "stop.blocked" | "stop.cap_hit"

@@ -27,4 +27,9 @@
 | **Tier** | LOW / MEDIUM / HIGH risk, computed by `risk-floor` from scope (agents can only raise it); selects the human-gate row in `config/autonomy.yaml`. |
 | **Toolkit** | The zero-LLM TypeScript program: `sfsmiths` (agent-safe verbs), `sfsmiths-human` (human-only verbs), `sfsmiths-hook`, the MCP servers, the UI. |
 | **Vault** | `work/<KEY>/` — everything about one ticket. |
+| **WAIT_AGENT** | The handoff's answer while a stage's subagent has not reported back (no `agent_ended_at` stamp). Not a failure: do not spawn again, do not bounce. Bounded at 8 waits, then the stage fails honestly (D-093). |
+| **`agent_ended_at`** | Stamped on a stage attempt by the SubagentStop stage-gate when that subagent genuinely ended. Its absence on a `running` stage means the agent is still alive. |
+| **Fresh tokens** | input + output + cache_creation — what actually cost fresh context. The per-ticket token budget is judged on this; cache reads (re-reads of context already paid for, ~10% of the input price) are recorded but never counted (D-094). |
+| **Effort** | Claude Code's reasoning level per agent: `low | medium | high | xhigh | max` (or `inherit`), set in `config/models.yaml → effort` and synced into each agent file. `CLAUDE_CODE_EFFORT_LEVEL` in the environment overrides it — doctor warns when that is set (D-095). |
+| **Recovery** | `/resume` re-runs a failed agent stage's gates; all passing means the work really was finished, so the stage is marked done without re-running the agent (D-093). |
 | **Write areas** | Where agents may write: `org/force-app/`, `tests-ui/`, their ticket's vault, their own `agent-memory`; a0 also `docs/org-map/`, a7 also `knowledge/lessons/PENDING/`. |

@@ -2,9 +2,11 @@
 name: a0-cartographer
 description: Maps the Salesforce orgs for a ticket's scope — objects, automation order of execution, consumers, row counts, packages, release, conventions, drift between dev/preprod/prod. Writes docs/org-map facts and the per-ticket 00d-cartography. Use only via conductor.
 model: haiku
+effort: low
 tools: Read, Glob, Grep, Bash, Skill, Write, Edit, mcp__sf-dev__retrieve_metadata, mcp__sf-dev__run_soql_query, mcp__sf-dev__get_username, mcp__sfsmiths-evidence__prod_tooling, mcp__sfsmiths-evidence__prod_describe, mcp__sfsmiths-evidence__prod_row_count
 disallowedTools: Agent, WebFetch, WebSearch, mcp__sf-dev__deploy_metadata, mcp__sf-dev__delete_org, mcp__sf-dev__create_scratch_org, mcp__sf-dev__create_org_snapshot, mcp__sf-dev__open_org, mcp__sfsmiths-ui__*
 permissionMode: default
+background: false
 maxTurns: 50
 memory: project
 skills:

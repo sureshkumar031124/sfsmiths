@@ -16,7 +16,7 @@ import { emitEvent } from "../core/events.js";
 import { loadManifest, saveManifest, stageRecord, tryLoadManifest, latestGates } from "../core/manifest.js";
 import { projectPaths, vaultDir, sanitizeTicket } from "../core/paths.js";
 import { getSession, isConductorSession, ticketForSession, upsertSession } from "../core/session.js";
-import { STAGE_BY_ID, SUPPORT_AGENTS_BY_STAGE, markStageDone } from "../core/state-machine.js";
+import { STAGE_BY_ID, SUPPORT_AGENTS_BY_STAGE, markStageDone, markAgentEnded } from "../core/state-machine.js";
 import { appendLine, exists, nowIso, readJsonOr, readTextOr, tsCompact, writeTextAtomic } from "../core/util.js";
 import { runStageGates, formatOutcomes } from "../gates/registry.js";
 import { lintApexComments, lintMetadataDescription, checkName } from "../gates/hygiene.js";
@@ -67,6 +67,16 @@ export function parseSlash(prompt: string): { cmd: string; key?: string; flags: 
   return { cmd: m[1].toLowerCase(), key, flags };
 }
 
+/**
+ * D-093/R1-4: recognise Claude Code's own subagent-finished message. Matched on the envelope tag and on the
+ * id/output-file pair it always carries, so a human quoting the words "task notification" is not misread.
+ */
+export function isTaskNotification(prompt: string): boolean {
+  const s = prompt.trim();
+  if (/<\/?task-notification>/i.test(s)) return true;
+  return /<task-id>/i.test(s) && /<(output-file|tool-use-id)>/i.test(s);
+}
+
 export async function promptRouter(input: FullHookInput): Promise<void> {
   const p = projectPaths();
   const prompt = String(input.prompt ?? input.user_prompt ?? "");
@@ -78,6 +88,14 @@ export async function promptRouter(input: FullHookInput): Promise<void> {
     // free text: if it looks like pasted tracker content and a ticket is bound, keep it as evidence in the inbox
     const ticket = ticketForSession(sid, p);
     upsertSession(sid, { last_prompt_kind: "work" } as never, p);
+    // D-093/R1-4: a <task-notification> is Claude Code telling the conductor that a subagent finished.
+    // It is a SYSTEM message, not something a human pasted — it must never become vault evidence
+    // (in Run 1 it was filed as `source="human-paste"` in 00-inbox/). Route it back to the handoff instead.
+    if (isTaskNotification(prompt)) {
+      if (ticket) emitEvent({ ticket, type: "agent.notification", data: { source: "system", status: /<status>\s*([a-z_]+)/i.exec(prompt)?.[1] ?? "unknown" } }, p);
+      out({ hookSpecificOutput: { hookEventName: "UserPromptSubmit", additionalContext: `SFsmiths: that is a system task-notification (a subagent finished), not human input — nothing was saved as evidence.${ticket ? ` Run \`sfsmiths agent handoff ${ticket}\` and follow it.` : ""}` } });
+      return;
+    }
     if (ticket && prompt.length > 400 && /(jira|ticket|acceptance|steps to reproduce|expected|actual)/i.test(prompt)) {
       const f = path.join(vaultDir(p, ticket), "00-inbox", `paste-${tsCompact()}.md`);
       writeTextAtomic(f, `<untrusted source="human-paste" at="${nowIso()}">\n${prompt.replace(/<\/?untrusted[^>]*>/gi, "")}\n</untrusted>\n`);
@@ -199,11 +217,13 @@ export async function stageGate(input: FullHookInput): Promise<void> {
   const report = formatOutcomes(outcomes);
   // the stage itself asked for a human (baseline decisions, canary, questions): let the agent stop, no block, no failure
   if (manifest.status === "waiting_human" || manifest.status === "escalated" || manifest.status === "parked") {
+    markAgentEnded(manifest, m.stage);   // D-093: the subagent really did stop
     saveManifest(manifest, p);
     return;
   }
   if (ok) {
     const outputs = [def.output ?? "", def.output?.replace(/\.md$/, ".json") ?? ""].filter((f) => f && exists(path.join(vaultDir(p, ticket), f)));
+    markAgentEnded(manifest, m.stage);   // D-093: stamp the end BEFORE marking done, so both are always consistent
     markStageDone(manifest, m.stage, outputs);
     if (m.stage === "plan") {
       // remediation stage is optional — the approved plan decides
@@ -220,6 +240,7 @@ export async function stageGate(input: FullHookInput): Promise<void> {
   if (blocks > 3) {
     stageRecord(manifest, m.stage).status = "failed";
     stageRecord(manifest, m.stage).note = `gates not passed after ${blocks - 1} block(s): ${outcomes.filter((o) => o.status !== "passed").map((o) => o.name).join(", ")}`;
+    markAgentEnded(manifest, m.stage);   // D-093: block cap reached — this subagent is done for good
     saveManifest(manifest, p);
     emitEvent({ ticket, type: "stage.blocked", stage: m.stage, agent, data: { blocks, cap: true, report } }, p);
     return; // let it stop; handoff will bounce or escalate
@@ -257,8 +278,9 @@ export async function stopGuard(input: FullHookInput): Promise<void> {
     await notify(cfg as never, "stop_cap", `${ticket}: conductor stuck at ${m.stage} — needs you`);
     return;
   }
-  emitEvent({ ticket, type: "stop.blocked", stage: m.stage, data: { blocks } }, p);
-  out({ decision: "block", reason: `SFsmiths: ticket ${ticket} is still in progress (stage "${m.stage}", ${rec?.status ?? "pending"}). Run \`sfsmiths agent handoff ${ticket}\` and follow its instruction. If it says WAIT_HUMAN, tell the human exactly what to do and then stop.` });
+  const live = rec?.status === "running" && !rec?.agent_ended_at;
+  emitEvent({ ticket, type: "stop.blocked", stage: m.stage, data: { blocks, agent_live: live } }, p);
+  out({ decision: "block", reason: `SFsmiths: ticket ${ticket} is still in progress (stage "${m.stage}", ${rec?.status ?? "pending"}).${live ? ` The ${rec?.agent ?? "stage"} agent has NOT reported back yet — do NOT spawn it again and do NOT bounce the stage.` : ""} Run \`sfsmiths agent handoff ${ticket}\` and follow its instruction. If it says WAIT_AGENT, wait for the subagent's result (call the Agent tool in the FOREGROUND so its result comes back to you); if it says WAIT_HUMAN, tell the human exactly what to do and then stop.` });
 }
 
 /* ---------------- tokens (PostToolUse Agent) ---------------- */

@@ -7,3 +7,34 @@ per_ticket:
 daily_usd: 120
 on_exceed: park
 pipeline_max_budget_usd: 20        # passed to `claude -p --max-budget-usd` in pipeline mode
+
+# D-094 — prices so cost is never silently $0 (the dashboard and the USD budgets were dead without them).
+# USD per 1,000,000 tokens. The key is matched case-insensitively as a substring of the run's model id,
+# so "opus" matches claude-opus-5. metrics/prices.json (if present) overrides this block entirely.
+# REVIEW THESE against your own plan or contract before you trust the USD numbers — a model with no entry
+# here records no cost at all (honest unknown), and `sfsmiths-human doctor` warns about it.
+prices:
+  opus:
+    input: 15.00
+    output: 75.00
+    cache_read: 1.50
+    cache_write: 18.75
+  sonnet:
+    input: 3.00
+    output: 15.00
+    cache_read: 0.30
+    cache_write: 3.75
+  haiku:
+    input: 0.80
+    output: 4.00
+    cache_read: 0.08
+    cache_write: 1.00
+  # a6-reviewer runs on the `fable` alias on purpose (fresh eyes — a different family than a4). Its price is not
+  # shipped because it is not ours to guess: an invented number is worse than an honest zero. Uncomment and fill in
+  # the rates you are actually billed, then doctor #16 goes quiet. On a Claude SUBSCRIPTION plan you are not billed
+  # per token at all — these figures are an equivalent-API-cost estimate for budgeting, so leaving this out is fine.
+  # fable:
+  #   input: 0.00
+  #   output: 0.00
+  #   cache_read: 0.00
+  #   cache_write: 0.00

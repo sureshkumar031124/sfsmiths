@@ -9,7 +9,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
-import { loadConfig, devOrg, preprodOrg, evidenceOrg, type AllConfig } from "../core/config.js";
+import { loadConfig, devOrg, preprodOrg, evidenceOrg, EFFORT_LEVELS, type AllConfig } from "../core/config.js";
 import { homePaths, projectPaths, type ProjectPaths } from "../core/paths.js";
 import { AGENT_NAMES } from "../core/state-machine.js";
 import { exists, nowIso, readText, writeJsonAtomic, writeTextAtomic } from "../core/util.js";
@@ -43,20 +43,48 @@ export function syncAll(p: ProjectPaths = projectPaths(), opts: { skipSkills?: b
   return { agents_updated, mcp_written, policy_written, skills, warnings };
 }
 
+/**
+ * Replace a top-level frontmatter key in place, or insert it. A new key goes directly AFTER `after` when that key
+ * exists (so `effort:` sits next to `model:`) — never at the very end, where it would land under a block list
+ * such as `skills:` and read as part of it.
+ */
+function setFrontmatterKey(fm: string, key: string, value: string, after?: string): string {
+  const re = new RegExp(`^${key}:[ \\t]*.*$`, "m");
+  if (re.test(fm)) return fm.replace(re, `${key}: ${value}`);
+  if (after) {
+    const anchor = new RegExp(`^(${after}:[ \\t]*.*)$`, "m");
+    if (anchor.test(fm)) return fm.replace(anchor, `$1\n${key}: ${value}`);
+  }
+  return `${fm}\n${key}: ${value}`;
+}
+
+/** Remove a top-level frontmatter key and its line (effort `inherit` → no line → the session level applies). */
+function removeFrontmatterKey(fm: string, key: string): string {
+  return fm.replace(new RegExp(`^${key}:[ \\t]*.*$\\n?`, "m"), "");
+}
+
+/**
+ * config/models.yaml → the `model:` and `effort:` lines of .claude/agents/*.md.
+ *
+ * D-095 adds effort. `inherit` (or no configured value at all) removes the line, which restores the pre-D-095
+ * behaviour exactly: the session level applies. Every other frontmatter key the file carries is left untouched.
+ */
 export function syncAgentModels(p: ProjectPaths, cfg: AllConfig, warnings: string[]): string[] {
   const updated: string[] = [];
   for (const agent of AGENT_NAMES) {
     const f = path.join(p.agents, `${agent}.md`);
     if (!exists(f)) { warnings.push(`agent file missing: .claude/agents/${agent}.md`); continue; }
     const model = cfg.models.agents[agent] ?? cfg.models.fallback ?? "sonnet";
+    const effortRaw = cfg.models.effort?.[agent] ?? cfg.models.fallback_effort ?? "inherit";
+    const effort = EFFORT_LEVELS.includes(effortRaw as never) ? effortRaw : "inherit";
+    if (effortRaw !== effort) warnings.push(`models.yaml: effort "${effortRaw}" for ${agent} is not one of ${EFFORT_LEVELS.join("|")}|inherit — leaving it to the session level`);
     const txt = readText(f);
     const m = txt.match(/^---\n([\s\S]*?)\n---/);
     if (!m) { warnings.push(`${agent}.md has no frontmatter`); continue; }
-    let fm = m[1];
-    if (/^model:\s*.*$/m.test(fm)) fm = fm.replace(/^model:\s*.*$/m, `model: ${model}`);
-    else fm += `\nmodel: ${model}`;
-    const next = txt.replace(m[0], `---\n${fm}\n---`);
-    if (next !== txt) { writeTextAtomic(f, next); updated.push(`${agent} → ${model}`); }
+    let fm = setFrontmatterKey(m[1], "model", model);
+    fm = effort === "inherit" ? removeFrontmatterKey(fm, "effort") : setFrontmatterKey(fm, "effort", effort, "model");
+    const next = txt.replace(m[0], `---\n${fm.replace(/\n$/, "")}\n---`);
+    if (next !== txt) { writeTextAtomic(f, next); updated.push(`${agent} → ${model}${effort === "inherit" ? "" : ` @ ${effort}`}`); }
   }
   return updated;
 }

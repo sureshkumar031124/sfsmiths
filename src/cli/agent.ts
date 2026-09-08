@@ -9,7 +9,7 @@ import { loadConfig } from "../core/config.js";
 import { emitEvent } from "../core/events.js";
 import { loadManifest, saveManifest, listTickets, latestGates, stageRecord } from "../core/manifest.js";
 import { projectPaths, vaultDir, sanitizeTicket, packageRoot } from "../core/paths.js";
-import { decideHandoff, STAGE_BY_ID, STAGES, type HandoffAction } from "../core/state-machine.js";
+import { decideHandoff, STAGE_BY_ID, STAGES, AGENT_WAIT_CAP, type HandoffAction } from "../core/state-machine.js";
 import { exists, readTextOr, readJsonOr, writeJsonAtomic, nowIso, tsCompact, appendLine } from "../core/util.js";
 import { buildContext, runGate, runStageGates, formatOutcomes, gateNames } from "../gates/registry.js";
 import { openTicket, prodVerify, ticketSummary, configSnapshotForPrompt } from "../engines/lifecycle.js";
@@ -77,6 +77,12 @@ function printDecision(ticket: string, d: HandoffAction, notes: string[]): void 
       say(`After it returns, run: sfsmiths agent handoff ${ticket}`);
       break;
     case "RUN_TOOLKIT": say(`ACTION: toolkit step "${d.verb}" (already executed). Run: sfsmiths agent handoff ${ticket}`); break;
+    case "WAIT_AGENT":
+      say(`ACTION: WAIT_AGENT — "${d.agent}" is still working on stage "${d.stage}" (started ${d.since ?? "?"}, wait ${d.waits}/${AGENT_WAIT_CAP}).`);
+      say(`Do NOT spawn it again, do NOT bounce the stage, do NOT tell the human it failed.`);
+      say(`If you called the Agent tool and are waiting on its result: keep waiting — the result comes back to you.`);
+      say(`If you called it in the background (not allowed — the agent-gate hook denies that): wait for its task notification, then run: sfsmiths agent handoff ${ticket}`);
+      break;
     case "WAIT_HUMAN":
       say(`ACTION: WAIT_HUMAN (${d.kind}) at stage "${d.stage}".`);
       say(`Tell the human exactly this, then STOP (do not spawn anything):`);
@@ -133,6 +139,11 @@ async function handoff(ticket: string): Promise<void> {
     }
     if (decision.action === "WAIT_HUMAN") {
       await notify(cfg, decision.kind === "deploy" ? "ready_for_deploy" : "gate_manual", `${ticket}: ${decision.prompt}`);
+      break;
+    }
+    // D-093: the stage agent has not reported back — no notification, no bounce, nothing to do but wait
+    if (decision.action === "WAIT_AGENT") {
+      emitEvent({ ticket, type: "stage.waiting_agent", stage: decision.stage, agent: decision.agent, data: { waits: decision.waits, since: decision.since } }, p);
       break;
     }
     if (decision.action === "ESCALATED") { emitEvent({ ticket, type: "ticket.escalated", stage: decision.stage, data: { reason: decision.reason } }, p); await notify(cfg, "escalation", `${ticket}: ${decision.reason}`); break; }

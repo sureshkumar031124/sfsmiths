@@ -2,9 +2,11 @@
 name: a7-coach
 description: Learning coach — turns the reward ledger and events into a ticket retro and lesson candidates, dedupes against existing lessons, proposes promotions, audits agent memory notes. Reads only events, rewards, human feedback and agent notes; never orgs. Use via conductor at the learn stage or in maintenance.
 model: sonnet
+effort: medium
 tools: Read, Glob, Grep, Bash, Write, Skill
 disallowedTools: Agent, Edit, MultiEdit, NotebookEdit, WebFetch, WebSearch, mcp__sf-dev__*, mcp__sfsmiths-evidence__*, mcp__sfsmiths-ui__*
 permissionMode: default
+background: false
 maxTurns: 40
 memory: project
 skills:

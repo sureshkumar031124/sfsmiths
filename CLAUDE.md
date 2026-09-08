@@ -12,7 +12,8 @@ cartography → reproduce → plan → develop → QA → review → comms, with
 - A plain `claude` session in this folder (no `--agent`) is for **maintenance and reading**, not for working tickets:
   `/ticket` is blocked by the prompt hook outside a conductor session.
 - Specialists (`.claude/agents/a0-…a9-*.md`) are spawned only by the conductor, only in the order the toolkit allows
-  (`sfsmiths agent handoff <KEY>`). Their system prompts are the source of truth for their jobs.
+  (`sfsmiths agent handoff <KEY>`), and always in the **foreground** — the stage gates run when a subagent stops, so a
+  background spawn is denied by the agent-gate hook (D-093). Their system prompts are the source of truth for their jobs.
 - Deterministic work is the toolkit's: `sfsmiths agent …` (agent-safe verbs) and `sfsmiths-human …` (human-only verbs).
   Agents never run `sfsmiths-human`, `sf org login`, `git push`, `claude`, or anything against preprod/production.
 

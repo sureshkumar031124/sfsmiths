@@ -251,15 +251,18 @@
     const d = await api('GET', 'agents');
     if (!d.models_config || !d.autonomy_config) return setMain(`<h1>Agents</h1><div class="banner">config/models.yaml or config/autonomy.yaml is missing/invalid — fix it in the Config tab first.</div>`);
     const tiers = d.autonomy_config.tiers; const gateNames = ['intake', 'plan', 'review'];
-    setMain(`<h1>Agents &amp; models</h1><div class="sub">Per-agent model and ask/auto gate mode. Saving writes <span class="mono">config/models.yaml</span> / <span class="mono">config/autonomy.yaml</span> and rewrites the <span class="mono">model:</span> line in <span class="mono">.claude/agents/*.md</span>. New values apply in the <b>next</b> Claude Code session.</div>
-      <div class="card"><table><tr><th>Agent</th><th>Model</th><th>Gate mode</th><th>Runs</th><th>Tokens</th><th>Cost</th><th>By model</th><th>Reward</th><th>Files</th></tr>
+    setMain(`<h1>Agents &amp; models</h1><div class="sub">Per-agent model, <b>reasoning effort</b> and ask/auto gate mode. Saving writes <span class="mono">config/models.yaml</span> / <span class="mono">config/autonomy.yaml</span> and rewrites the <span class="mono">model:</span> and <span class="mono">effort:</span> lines in <span class="mono">.claude/agents/*.md</span>. New values apply in the <b>next</b> Claude Code session.</div>
+      ${d.effort_env_override ? `<div class="banner">CLAUDE_CODE_EFFORT_LEVEL=<b>${esc(d.effort_env_override)}</b> is set in this environment. That environment variable <b>overrides every effort value below</b> — unset it (remove it from your shell profile) for these to take effect.</div>` : ''}
+      <div class="card"><table><tr><th>Agent</th><th>Model</th><th>Effort</th><th>Gate mode</th><th>Runs</th><th>Fresh tokens</th><th>Cache reads</th><th>Cost</th><th>Reward</th><th>Files</th></tr>
         ${d.agents.map((a) => `<tr><td class="mono">${esc(a.name)}</td>
-          <td><select data-model="${esc(a.name)}">${d.model_choices.map((m) => `<option ${m === a.model ? 'selected' : ''}>${esc(m)}</option>`).join('')}${d.model_choices.includes(a.model) ? '' : `<option selected>${esc(a.model)}</option>`}</select>${a.in_sync ? '' : ` <span class="pill warn" title="agent file says ${esc(a.model_in_agent_file)}">out of sync</span>`}</td>
+          <td><select data-model="${esc(a.name)}">${d.model_choices.map((m) => `<option ${m === a.model ? 'selected' : ''}>${esc(m)}</option>`).join('')}${d.model_choices.includes(a.model) ? '' : `<option selected>${esc(a.model)}</option>`}</select>${a.in_sync ? '' : ` <span class="pill warn" title="agent file: model=${esc(a.model_in_agent_file)} effort=${esc(a.effort_in_agent_file || 'none')}">out of sync</span>`}</td>
+          <td><select data-effort="${esc(a.name)}">${d.effort_choices.map((e) => `<option ${e === a.effort ? 'selected' : ''}>${esc(e)}</option>`).join('')}</select></td>
           <td><select data-gate="${esc(a.name)}" ${a.hard_floor ? 'disabled title="hard floor: always ask"' : ''}>${['inherit', 'ask', 'auto'].map((g) => `<option ${g === a.gate_mode ? 'selected' : ''}>${g}</option>`).join('')}</select>${a.hard_floor ? ' <span class="pill HIGH">hard floor</span>' : ''}</td>
-          <td>${a.runs}</td><td>${fmt(a.tokens)}</td><td>${usd(a.usd)}</td><td class="muted">${Object.entries(a.tokens_by_model).map(([m, t]) => `${esc(m)}: ${fmt(t)}`).join('<br>') || '–'}</td>
+          <td>${a.runs}</td><td title="input + output + cache writes — what the token budget is judged on">${fmt(a.fresh_tokens)}</td><td class="muted" title="context re-read on each round trip; ~10% of the input price, excluded from the budget">${fmt(a.cache_read_tokens)}</td><td>${usd(a.usd)}</td>
           <td>${a.reward > 0 ? '+' : ''}${a.reward}</td><td>${a.agent_file_exists ? '<span class="dot ok"></span>agent' : '<span class="dot bad"></span>no agent file'}${a.lessons_skill ? ' · <span class="dot ok"></span>lessons' : ''}</td></tr>`).join('')}
         </table>
         <div class="row" style="margin-top:12px"><label style="margin:0">Fallback model</label><select id="fallback">${d.model_choices.filter((m) => m !== 'inherit').map((m) => `<option ${m === d.models_config.fallback ? 'selected' : ''}>${m}</option>`).join('')}</select>
+          <label style="margin:0 0 0 14px">Fallback effort</label><select id="fallback-effort">${d.effort_choices.map((e) => `<option ${e === (d.models_config.fallback_effort || 'inherit') ? 'selected' : ''}>${e}</option>`).join('')}</select>
           <button class="btn primary right" id="save-agents">Save models + gate modes</button></div></div>
       <div class="grid g2" style="margin-top:14px">
         <div class="card"><h3>Tier matrix (who must approve, per risk tier)</h3><table><tr><th>Tier</th>${gateNames.map((g) => `<th>${g}</th>`).join('')}</tr>
@@ -272,12 +275,13 @@
           <label>Per ticket · wall minutes</label><input id="b-wall" type="number" value="${d.budgets.per_ticket.wall_minutes}">
           <label>Daily USD (all tickets)</label><input id="b-daily" type="number" step="1" value="${d.budgets.daily_usd}">
           <label>Pipeline mode max USD per ticket</label><input id="b-pipe" type="number" step="1" value="${d.budgets.pipeline_max_budget_usd}">
-          <div class="muted" style="margin-top:8px">On exceed: <b>park</b> (ticket stops, you decide). Costs need <span class="mono">metrics/prices.json</span> — tokens are always exact.</div>
+          <div class="muted" style="margin-top:8px">On exceed: <b>park</b> (ticket stops, you decide). <b>Per ticket · tokens</b> is judged on <b>fresh</b> tokens (input + output + cache writes); cache reads are shown separately and never counted. Prices come from <span class="mono">config/budgets.yaml &rarr; prices</span> (or <span class="mono">metrics/prices.json</span>) — review them against your own plan.</div>
           <div class="row" style="margin-top:10px"><button class="btn primary right" id="save-budgets">Save budgets</button></div></div>
       </div>`);
     $('#save-agents').onclick = async () => {
-      const models = { ...d.models_config, agents: { ...d.models_config.agents }, fallback: $('#fallback').value };
+      const models = { ...d.models_config, agents: { ...d.models_config.agents }, effort: { ...(d.models_config.effort || {}) }, fallback: $('#fallback').value, fallback_effort: $('#fallback-effort').value };
       main.querySelectorAll('[data-model]').forEach((s) => (models.agents[s.dataset.model] = s.value));
+      main.querySelectorAll('[data-effort]').forEach((s) => (models.effort[s.dataset.effort] = s.value));
       const autonomy = JSON.parse(JSON.stringify(d.autonomy_config));
       main.querySelectorAll('select[data-gate][data-tier]').forEach((s) => { autonomy.tiers[s.dataset.tier].human_gates[s.dataset.gate] = s.value; });
       main.querySelectorAll('select[data-gate]:not([data-tier])').forEach((s) => (autonomy.agents[s.dataset.gate] = s.value));

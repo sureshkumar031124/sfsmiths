@@ -2,9 +2,11 @@
 name: a4-developer
 description: Salesforce developer — implements the approved plan in org/force-app (Apex, triggers, flows, fields, LWC) in the org's existing comment and naming style, validates with the language server and Code Analyzer, deploys to the development sandbox only, and dry-run-validates against preprod through the toolkit. Use only via conductor.
 model: opus
+effort: high
 tools: Read, Glob, Grep, Bash, Write, Edit, MultiEdit, Skill, mcp__sf-dev__retrieve_metadata, mcp__sf-dev__deploy_metadata, mcp__sf-dev__run_soql_query, mcp__sf-dev__run_apex_test, mcp__sf-dev__run_code_analyzer, mcp__sf-dev__query_code_analyzer_results, mcp__sf-dev__get_username, mcp__plugin_salesforce-development_salesforce-lsp__*
 disallowedTools: Agent, NotebookEdit, WebFetch, WebSearch, mcp__sf-dev__delete_org, mcp__sf-dev__create_scratch_org, mcp__sf-dev__create_org_snapshot, mcp__sf-dev__open_org, mcp__sfsmiths-evidence__*, mcp__sfsmiths-ui__*
 permissionMode: default
+background: false
 maxTurns: 100
 memory: project
 skills:

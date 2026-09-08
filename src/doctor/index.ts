@@ -9,7 +9,8 @@ import { homePaths, projectPaths, packageRoot, type ProjectPaths } from "../core
 import { orgList, orgDisplay, soql, sfVersion, type OrgListEntry } from "../core/sf.js";
 import { remotes } from "../core/git.js";
 import { run, which } from "../core/shell.js";
-import { exists, readJsonOr, readText } from "../core/util.js";
+import { exists, readJsonOr, readText, readTextOr } from "../core/util.js";
+import { AGENT_NAMES } from "../core/state-machine.js";
 import { runCanary } from "../privileged/index.js";
 import { evidenceDescribe } from "../engines/evidence/query.js";
 import { SF_MCP_VERSION, keychainDenyRules, KEYCHAIN_DENY_RE } from "../engines/sync.js";
@@ -173,6 +174,41 @@ export async function doctor(opts: DoctorOptions = {}): Promise<{ checks: Check[
   const cacheDir = path.join(p.state, "cache", "describe");
   add("13", "oracle cache (plan-lint/semantic-check)", exists(cacheDir) && fs.readdirSync(cacheDir).length ? "ok" : "warn", exists(cacheDir) && fs.readdirSync(cacheDir).length ? `${fs.readdirSync(cacheDir).length} object describe(s) cached` : "empty — a3-architect runs `sfsmiths agent cache freshen <KEY>` at plan time (or run it now)");
   add("14", "package schemas/templates present", exists(path.join(packageRoot(), "schemas", "manifest.schema.json")) ? "ok" : "fail", packageRoot());
+
+  // 15 — D-095: reasoning effort. Report what will actually apply, and warn loudly about the one thing that
+  // silently overrides everything: CLAUDE_CODE_EFFORT_LEVEL beats agent frontmatter (documented Claude Code
+  // precedence). Without this line a per-agent effort matrix can be configured, synced, and quietly ignored.
+  {
+    const envEffort = process.env.CLAUDE_CODE_EFFORT_LEVEL;
+    const declared: { agent: string; effort?: string }[] = AGENT_NAMES.map((agentName: string) => {
+      const f = path.join(p.agents, `${agentName}.md`);
+      const fm = exists(f) ? readTextOr(f, "").split("\n---")[0] : "";
+      return { agent: agentName, effort: /^effort:\s*(\S+)/m.exec(fm)?.[1] };
+    });
+    const withEffort = declared.filter((d) => !!d.effort);
+    if (envEffort) {
+      add("15", "reasoning effort (per-agent, D-095)", "warn",
+        `CLAUDE_CODE_EFFORT_LEVEL=${envEffort} is set in this environment and OVERRIDES the effort in .claude/agents/*.md — ${withEffort.length} agent(s) configure their own and none of them will apply. Unset it (remove it from your shell profile) or accept one level for every agent.`);
+    } else if (!withEffort.length) {
+      add("15", "reasoning effort (per-agent, D-095)", "warn",
+        "no agent declares an effort — every agent inherits the session level (~/.claude/settings.json → effortLevel, or --effort). Set config/models.yaml → effort and run sfsmiths-human sync to spend reasoning where the work is hard.");
+    } else {
+      const summary = withEffort.map((d) => `${d.agent}=${d.effort}`).join(" · ");
+      add("15", "reasoning effort (per-agent, D-095)", withEffort.length === AGENT_NAMES.length ? "ok" : "warn",
+        `${withEffort.length}/${AGENT_NAMES.length} agent(s) declare effort — ${summary}${withEffort.length === AGENT_NAMES.length ? "" : "; the rest inherit the session level"}`);
+    }
+    // prices: a model with no price records usd: 0, which quietly disables the USD budgets (D-094)
+    const priced = Object.keys(cfg.budgets?.prices ?? {});
+    const overrideFile = exists(path.join(p.metrics, "prices.json"));
+    const models = [...new Set(Object.values(cfg.models?.agents ?? {}).filter((m) => m && m !== "inherit"))];
+    const unpriced = models.filter((m) => !priced.some((k) => m.toLowerCase().includes(k.toLowerCase())));
+    add("16", "model prices (USD budgets, D-094)",
+      overrideFile ? "ok" : !priced.length ? "warn" : unpriced.length ? "warn" : "ok",
+      overrideFile ? "metrics/prices.json present — it overrides config/budgets.yaml → prices"
+        : !priced.length ? "no prices configured — every run records usd: 0, so the daily/per-ticket USD budgets never fire and the dashboard reads $0. Add config/budgets.yaml → prices."
+        : unpriced.length ? `no price entry matches: ${unpriced.join(", ")} — those runs record no cost. Add a key to config/budgets.yaml → prices (matched as a substring of the model id).`
+        : `${priced.length} price key(s) from config/budgets.yaml: ${priced.join(", ")} — review them against your own plan`);
+  }
 
   const ok = !checks.some((c) => c.level === "fail");
   return { checks, ok };

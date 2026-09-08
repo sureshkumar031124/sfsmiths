@@ -1,6 +1,9 @@
-# config/models.yaml — model alias per agent. Edited by the UI (Agents screen). `sfsmiths-human sync` writes it into .claude/agents/*.md.
-# Values: opus | sonnet | haiku | fable | inherit | <full model id>
+# config/models.yaml — model AND reasoning effort per agent. Edited by the UI (Agents screen).
+# `sfsmiths-human sync` writes both into the `model:` and `effort:` lines of .claude/agents/*.md.
+# Changes take effect in the NEXT Claude Code session (agents load at session start).
 version: 1
+
+# model: opus | sonnet | haiku | fable | inherit | <full model id>
 agents:
   conductor: sonnet
   a0-cartographer: haiku
@@ -15,3 +18,32 @@ agents:
   a8-ui: opus
   a9-comms: sonnet
 fallback: sonnet
+
+# effort (D-095): low | medium | high | xhigh | max | inherit
+#
+# How much reasoning each agent is allowed to spend. `inherit` writes NO effort line, so the session level applies
+# (--effort / /effort / ~/.claude/settings.json → effortLevel) exactly as it did before this setting existed.
+#
+# Two things worth knowing before you tune these:
+#   1. CLAUDE_CODE_EFFORT_LEVEL (an environment variable) BEATS agent frontmatter. If it is set, every value below
+#      is silently ignored — `sfsmiths-human doctor` warns when that happens.
+#   2. Effort is recorded with every run in metrics/agent-runs.jsonl, so a token or cost number can be interpreted
+#      later. Without that, the same repo on two machines produces different cost and no way to tell why.
+#
+# The defaults below spend reasoning where the work is genuinely hard (proving a bug, grounding a plan) and keep it
+# low where the job is mechanical or is deliberately not a judgement call at all — the conductor is a router, and it
+# runs on every single turn. Re-measure against your golden set after you change them.
+effort:
+  conductor: low              # a router that follows `sfsmiths agent handoff` literally — it must not deliberate
+  a0-cartographer: low        # mechanical org mapping
+  a0b-baseline: low           # drives the toolkit's baseline verb; decides nothing itself
+  a1-intake: high             # plain-English understanding, acceptance criteria, scope, tier
+  a2-repro: xhigh             # the hardest job in the pipeline: prove the bug with a failing test
+  a3-architect: xhigh         # grounded plan, every API name resolved against the org
+  a4-developer: high          # implements an already-approved plan
+  a5-qa: medium               # runs the pyramid; the verdict comes from run files, not from prose
+  a6-reviewer: high           # fresh-eyes review + security ruleset
+  a7-coach: medium            # retro from events and the reward ledger
+  a8-ui: medium               # browser observation
+  a9-comms: low               # writes two drafts from the vault
+fallback_effort: high         # any agent not listed above

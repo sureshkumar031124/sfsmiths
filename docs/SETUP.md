@@ -44,9 +44,9 @@ such; add the other orgs later with `sfsmiths-human org add` + `org login` (or t
 | `orgs.yaml` | your three orgs (development / preprod / evidence), aliases, keychains, the read-only user; add more with `sfsmiths-human org add` or the UI |
 | `tracker.yaml` | `jira` (read-only token via env `SFSMITHS_JIRA_EMAIL` / `SFSMITHS_JIRA_TOKEN`, base URL, project key, prior-art JQL) or `file` (inbox/) |
 | `safety.yaml` | allowed test email domains, test tag field, canary recipient env (`SFSMITHS_CANARY_EMAIL` = **your** address), UI refusals |
-| `models.yaml` | model alias per agent (opus/sonnet/haiku/fable/inherit) |
+| `models.yaml` | model alias per agent (opus/sonnet/haiku/fable/inherit) **and reasoning effort per agent** (`effort:` low/medium/high/xhigh/max/inherit — D-095). Note: `CLAUDE_CODE_EFFORT_LEVEL` in your environment overrides these; doctor #15 warns if it is set |
 | `autonomy.yaml` | tier matrix (which stages ask you) + per-agent ask/auto |
-| `budgets.yaml` | per-ticket tokens/USD/minutes, daily USD, pipeline budget |
+| `budgets.yaml` | per-ticket tokens (judged on **fresh** tokens — cache reads excluded, D-094)/USD/minutes, daily USD, pipeline budget, and the model **prices** used for cost (review them against your plan) |
 | `naming.yaml`, `masking.yaml`, `policy.yaml`, `rewards.yaml`, `learning.yaml`, `notify.yaml`, `calendar.yaml`, `approvers.yaml` | defaults are sensible; review `masking.yaml` (which production fields agents may ever see) with whoever owns data privacy |
 
 Secrets never go in config: `SFSMITHS_JIRA_TOKEN`, `SFSMITHS_SLACK_WEBHOOK`, `SFSMITHS_CANARY_EMAIL`, `ANTHROPIC_API_KEY` (pipeline mode only) are environment variables.
@@ -108,10 +108,11 @@ the coach confirms them).
 
 ## 6. Boot conditions — `sfsmiths-human doctor`
 
-`start` refuses to launch while any of these fail: config valid · tools present · dev + evidence in the agent keychain,
+`start` refuses to launch while any of these fail (warnings do not block): config valid · tools present · dev + evidence in the agent keychain,
 preprod NOT there · preprod in the engine keychain · read-only identity (no create/edit/delete) · no admin prod login ·
 no Blue Canvas remote reachable by agents · `.mcp.json` consistent · hooks wired + installed copy version · canary fresh
-(when requested) · hook latency · FLS mirrors masking · oracle cache · package assets.
+(when requested) · hook latency · FLS mirrors masking · oracle cache · package assets · per-agent effort and the
+`CLAUDE_CODE_EFFORT_LEVEL` override (#15) · model prices for the USD budgets (#16).
 
 ## 7. First run — the demo ticket
 
