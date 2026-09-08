@@ -23,7 +23,7 @@ import { newManifest, saveManifest, loadManifest, recordGate, stageRecord } from
 import { decideHandoff, markStageDone, markAgentEnded, clearAgentEnd, AGENT_WAIT_CAP, AGENT_NAMES } from "../dist/core/state-machine.js";
 import { isBackgroundSpawn } from "../dist/hooks/fast.js";
 import { isTaskNotification } from "../dist/hooks/heavy.js";
-import { freshTokens, priceFor, loadPrices, effortForAgent, recordAgentRun } from "../dist/engines/tokens.js";
+import { freshTokens, priceFor, loadPrices, effortForAgent, recordAgentRun, backfillTicketBudget } from "../dist/engines/tokens.js";
 import { syncAgentModels } from "../dist/engines/sync.js";
 import { recoverFinishedStage } from "../dist/engines/lifecycle.js";
 
@@ -312,6 +312,41 @@ test("D-094: the manifest tracks fresh tokens and the raw total separately", () 
     assert.equal(after.budget.tokens, 13_299_604);
     assert.equal(after.budget.fresh_tokens, 706_143);
     assert.ok(after.budget.usd > 0);
+  } finally { cleanup(root); }
+});
+
+test("D-094 migration: a pre-D-094 manifest is re-judged on recomputed FRESH tokens, not the inflated total", async () => {
+  const root = makeProject();
+  try {
+    const { p, m } = runningStage(root);
+    // exactly DEMO-101 after Run 1: two a1-intake runs recorded, and a manifest written before fresh_tokens existed
+    const runs = [
+      { ts: "2026-09-07T10:13:38.000Z", ticket: "DEMO-101", agent: "a1-intake", model: "claude-opus-5", source: "transcript", total_tokens: 13_299_604, usage: { input_tokens: 122, output_tokens: 24_346, cache_read_input_tokens: 12_593_461, cache_creation_input_tokens: 681_675 }, usd: 0 },
+      { ts: "2026-09-07T10:15:47.000Z", ticket: "DEMO-101", agent: "a1-intake", model: "claude-opus-5", source: "transcript", total_tokens: 18_665_811, usage: { input_tokens: 166, output_tokens: 34_672, cache_read_input_tokens: 17_882_202, cache_creation_input_tokens: 748_771 }, usd: 0 },
+    ];
+    fs.writeFileSync(path.join(root, "metrics", "agent-runs.jsonl"), runs.map((r) => JSON.stringify(r)).join("\n") + "\n");
+    m.budget.tokens = 31_965_415;
+    delete m.budget.fresh_tokens;                 // as YAML written before D-094
+    saveManifest(m, p);
+
+    const back = backfillTicketBudget("DEMO-101", p);
+    assert.equal(back.runs, 2);
+    assert.equal(back.fresh, 1_489_752, "the true fresh total across both runs");
+    assert.ok(back.fresh < 1_500_000, "under the per-ticket budget — the ticket must NOT park");
+    assert.ok(back.usd > 0, "pre-D-094 runs recorded usd 0; they are re-priced now that a price table ships");
+
+    // the naive fallback would have parked it: 31.9M treated as fresh
+    const cfg = loadConfig(p, { fresh: true });
+    assert.ok(m.budget.tokens > cfg.budgets.per_ticket.tokens, "the stored total alone is over the limit");
+  } finally { cleanup(root); }
+});
+
+test("D-094 migration: with no recorded runs the cap stays on the total — an unknown never becomes 0", () => {
+  const root = makeProject();
+  try {
+    const p = projectPaths(root);
+    fs.writeFileSync(path.join(root, "metrics", "agent-runs.jsonl"), "");
+    assert.equal(backfillTicketBudget("DEMO-101", p), undefined);
   } finally { cleanup(root); }
 });
 

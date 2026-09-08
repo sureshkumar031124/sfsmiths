@@ -1,0 +1,4734 @@
+{
+  "ApexClass:cd_TriggerControl": [
+    "ApexClass:cd_TriggerControlTest"
+  ],
+  "ApexClass:ClarizenSyncNowController": [
+    "ApexPage:Project"
+  ],
+  "ApexClass:dc3LicenseScheduler": [
+    "CronTrigger:08eU900000VocTVIAZ"
+  ],
+  "ApexClass:dc3TelemetryTransmitScheduler": [
+    "CronTrigger:08eU900000VrLeAIAV"
+  ],
+  "ApexClass:RollupService": [
+    "ApexClass:dlrs_AccountTest",
+    "ApexClass:dlrs_OpportunityContactRoleTest",
+    "ApexTrigger:dlrs_AccountTrigger",
+    "ApexTrigger:dlrs_OpportunityContactRoleTrigger"
+  ],
+  "ApexClass:RLSTAGEWH3199": [
+    "ApexClass:TestRLSTAGEWH3199",
+    "ApexTrigger:RLSTAGEWH3199USER",
+    "ApexTrigger:RLSTAGEWH3199OPPORTUNITY",
+    "ApexTrigger:RLSTAGEWH3199E",
+    "ApexTrigger:RLSTAGEWH3199IMPLEMENTATIONPROJECTC",
+    "ApexTrigger:RLSTAGEWH3199ACCOUNT"
+  ],
+  "ApexClass:SiteLoginController": [
+    "ApexClass:SiteLoginControllerTest",
+    "ApexPage:SiteLogin",
+    "ApexPage:Unauthorized",
+    "ApexComponent:SiteLogin"
+  ],
+  "ApexClass:SiteRegisterController": [
+    "ApexClass:SiteRegisterControllerTest",
+    "ApexPage:SiteRegister"
+  ],
+  "ApexClass:ChangePasswordController": [
+    "ApexClass:ChangePasswordControllerTest",
+    "ApexPage:ChangePassword"
+  ],
+  "ApexClass:ForgotPasswordController": [
+    "ApexClass:ForgotPasswordControllerTest",
+    "ApexPage:ForgotPassword"
+  ],
+  "ApexClass:MyProfilePageController": [
+    "ApexClass:MyProfilePageControllerTest",
+    "ApexPage:MyProfilePage"
+  ],
+  "ApexClass:CommunitiesLoginController": [
+    "ApexClass:CommunitiesLoginControllerTest",
+    "ApexPage:CommunitiesLogin"
+  ],
+  "ApexClass:CommunitiesLandingController": [
+    "ApexClass:CommunitiesLandingControllerTest",
+    "ApexPage:CommunitiesLanding"
+  ],
+  "ApexClass:CommunitiesSelfRegController": [
+    "ApexClass:CommunitiesSelfRegControllerTest",
+    "ApexPage:CommunitiesSelfReg"
+  ],
+  "ApexClass:CommunitiesSelfRegConfirmController": [
+    "ApexClass:CommunitiesSelfRegConfirmControllerTest",
+    "ApexPage:CommunitiesSelfRegConfirm"
+  ],
+  "ApexClass:MicrobatchSelfRegController": [
+    "ApexClass:MicrobatchSelfRegControllerTest",
+    "ApexPage:MicrobatchSelfReg"
+  ],
+  "ApexClass:ScheduledDispatcher": [
+    "CronTrigger:08eU900000dBIEkIAO"
+  ],
+  "ApexClass:ers_DatatableController": [
+    "ApexClass:ers_DatatableControllerTest",
+    "LightningComponentBundle:datatable",
+    "LightningComponentBundle:ers_datatableCPE"
+  ],
+  "ApexClass:ers_EncodeDecodeURL": [
+    "ApexClass:ers_EncodeDecodeURLTest",
+    "Flow:Datatable_Configuration_Wizard5-1"
+  ],
+  "ApexClass:ers_QueryNRecords": [
+    "ApexClass:ers_QueryNRecordsTest",
+    "Flow:Datatable_Configuration_Wizard5-1"
+  ],
+  "ApexClass:DealHub_QuoteLineDeletionTriggerHandler": [
+    "ApexTrigger:DealHub_QuoteLineTriggerDeletion"
+  ],
+  "ApexClass:QuoteSyncUtil": [
+    "ApexClass:QuoteSyncTestSuite",
+    "ApexTrigger:OppLineSyncTrigger",
+    "ApexTrigger:OppSyncTrigger",
+    "ApexTrigger:QuoteLineSyncTrigger",
+    "ApexTrigger:QuoteSyncTrigger"
+  ],
+  "ApexClass:TriggerStopper": [
+    "ApexTrigger:OppLineSyncTrigger",
+    "ApexTrigger:OppSyncTrigger",
+    "ApexTrigger:QuoteLineSyncTrigger",
+    "ApexTrigger:QuoteSyncTrigger"
+  ],
+  "ApexClass:DealHub_OppLineDeletionTriggerHandler": [
+    "ApexTrigger:DealHub_OpportunityLineTriggerDeletion"
+  ],
+  "ApexClass:MassDeleteExtension": [
+    "ApexClass:MassDeleteExtensionTest",
+    "ApexPage:Mass_Delete_Account",
+    "ApexPage:Mass_Delete_Asset",
+    "ApexPage:Mass_Delete_Campaign",
+    "ApexPage:Mass_Delete_Case",
+    "ApexPage:Mass_Delete_Contact",
+    "ApexPage:Mass_Delete_Contract",
+    "ApexPage:Mass_Delete_Lead",
+    "ApexPage:Mass_Delete_Opportunity",
+    "ApexPage:Mass_Delete_Product2",
+    "ApexPage:Mass_Delete_Solution"
+  ],
+  "ApexClass:DealHub_CustomController": [
+    "ApexClass:DealHub_CustomControllerTest",
+    "ApexPage:DealHub_Custom"
+  ],
+  "ApexClass:ImplementationProjectTriggerHandler": [
+    "ApexTrigger:ImplementationProjectTrigger"
+  ],
+  "ApexClass:AccountTriggerHandler": [
+    "ApexClass:AccountTriggerHandlerTest",
+    "ApexClass:AccountTierCascade",
+    "ApexTrigger:AccountTrigger"
+  ],
+  "ApexClass:OpportunityActiveBatch": [
+    "ApexClass:OpportunityActiveBatchTest"
+  ],
+  "ApexClass:OpportunityService": [
+    "ApexClass:OpportunityActiveBatch",
+    "ApexClass:OpportuntiyTriggerHandler",
+    "ApexClass:AsyncSKURepAssignment"
+  ],
+  "ApexClass:OpportuntiyTriggerHandler": [
+    "ApexTrigger:OpportuntiyTrigger"
+  ],
+  "ApexClass:SdrKpiService": [
+    "ApexClass:SdrKpiServiceTest",
+    "Flow:Schedule_Weekly_SDR_KPIs-16",
+    "Flow:Schedule_Weekly_SDR_KPIs-17",
+    "Flow:Schedule_Weekly_SDR_KPIs-18",
+    "Flow:Schedule_Weekly_SDR_KPIs-19",
+    "Flow:Schedule_Weekly_SDR_KPIs-20"
+  ],
+  "ApexClass:ContactTriggerHandler": [
+    "ApexTrigger:ContactTrigger"
+  ],
+  "ApexClass:RocketLaneMockResponseGenerator": [
+    "ApexClass:RocketlaneAPIServiceTest",
+    "ApexClass:RocketlaneGetUserQueueTest",
+    "ApexClass:RocketlaneKickoffSchedulerTest",
+    "ApexClass:RocketlaneTimeTrackingQueueTest",
+    "ApexClass:RocketLaneGetUsers1TimeQueueTest"
+  ],
+  "ApexClass:RocketlaneAPIService": [
+    "ApexClass:RocketlaneAPIServiceTest",
+    "ApexClass:RocketlaneGetUsersQueue",
+    "ApexClass:RocketlaneTimeTrackingQueue",
+    "ApexClass:RocketlaneTimeTrackingQueueTest"
+  ],
+  "ApexClass:RocketlaneGetUsersQueue": [
+    "ApexClass:RocketlaneGetUserQueueTest",
+    "ApexClass:RocketlaneKickoffScheduler"
+  ],
+  "ApexClass:RocketlaneKickoffScheduler": [
+    "ApexClass:RocketlaneKickoffSchedulerTest"
+  ],
+  "ApexClass:RocketlaneTimeTrackingQueue": [
+    "ApexClass:RocketlaneGetUsersQueue",
+    "ApexClass:RocketlaneTimeTrackingQueueTest"
+  ],
+  "ApexClass:RocketLaneGetUsers1TimeQueue": [
+    "ApexClass:RocketLaneGetUsers1TimeQueueTest"
+  ],
+  "ApexClass:AccountStatusBatch": [
+    "ApexClass:AccountStatusBatchTest"
+  ],
+  "ApexClass:AsyncSKURepAssignment": [
+    "ApexClass:OpportunityLineItemTriggerHandler"
+  ],
+  "ApexClass:OpportunityLineItemTriggerHandler": [
+    "ApexTrigger:OpportunityLineItemTrigger"
+  ],
+  "ApexClass:MaxioTransactionTriggerHandler": [
+    "ApexTrigger:MaxioTransactionTrigger"
+  ],
+  "ApexClass:API": [
+    "ApexClass:CaseTriggerHandler"
+  ],
+  "ApexClass:CaseQuickUpdateController": [
+    "ApexClass:CaseQuickUpdateControllerTest",
+    "LightningComponentBundle:caseSetToWorkingButton"
+  ],
+  "ApexClass:AccountOppProductController": [
+    "ApexClass:AccountOppProductControllerTest",
+    "LightningComponentBundle:opportunityProductsTable"
+  ],
+  "ApexClass:AESlackPingService": [
+    "ApexClass:AESlackPingServiceTest"
+  ],
+  "ApexClass:SlackAPIService": [
+    "ApexClass:AESlackPingService",
+    "ApexClass:SlackAPIServiceTest",
+    "ApexClass:CaseTierSlackQueueable"
+  ],
+  "ApexClass:ArticleController": [
+    "ApexClass:ArticleControllerTest",
+    "LightningComponentBundle:articleDisplay"
+  ],
+  "ApexClass:CaseFeedController": [
+    "ApexClass:CaseFeedControllerTest",
+    "LightningComponentBundle:caseFeedViewer"
+  ],
+  "ApexClass:UserLookupService": [
+    "ApexClass:CaseFeedControllerTest",
+    "LightningComponentBundle:caseFeedViewer"
+  ],
+  "ApexClass:HelpSiteController": [
+    "ApexClass:HelpSiteControllerTest",
+    "LightningComponentBundle:helpSite_CaseViews"
+  ],
+  "ApexClass:CaseTriggerHandler": [
+    "ApexClass:CaseTriggerHandlerTest",
+    "ApexClass:CaseTriggerHandlerTestV2",
+    "ApexClass:CaseTriggerHandlerTestV3"
+  ],
+  "ApexClass:dc3InAppNotificationScheduler": [
+    "CronTrigger:08eU900000VocTWIAZ"
+  ],
+  "ApexClass:AccountTierCascade": [
+    "ApexTrigger:AccountTrigger"
+  ],
+  "ApexClass:FileUploadImprovedHelper": [
+    "ApexClass:FileUploadImproved_Test",
+    "Flow:Case_Create_a_Case_Screen_Flow-40",
+    "Flow:Case_Create_a_Case_Screen_Flow-41",
+    "Flow:Case_Create_a_Case_Screen_Flow-42",
+    "Flow:Case_Create_a_Case_Screen_Flow-43",
+    "Flow:Case_Create_a_Case_Screen_Flow-44",
+    "Flow:Screen_Flow_Create_New_Case-1",
+    "Flow:Screen_Flow_Create_New_Case-2",
+    "Flow:Screen_Flow_Create_New_Case-3",
+    "Flow:Case_Create_a_Case_Screen_Flow-45",
+    "Flow:Case_Create_a_Case_Screen_Flow-46",
+    "Flow:Case_Create_a_Case_Screen_Flow-47",
+    "Flow:Case_Create_a_Case_Screen_Flow-48",
+    "Flow:Case_Create_a_Case_Screen_Flow-49",
+    "Flow:Case_Create_a_Case_Screen_Flow-50",
+    "Flow:Case_Create_a_Case_Screen_Flow-51",
+    "Flow:Case_Create_a_Case_Screen_Flow-52",
+    "Flow:Case_Create_a_Case_Screen_Flow-53",
+    "Flow:Case_Create_a_Case_Screen_Flow-54",
+    "Flow:Case_Create_a_Case_Screen_Flow-55",
+    "Flow:Screen_Flow_Create_New_Case-4",
+    "Flow:Screen_Flow_Create_New_Case-5",
+    "Flow:Screen_Flow_Create_New_Case-6",
+    "LightningComponentBundle:fileUploadImproved"
+  ],
+  "ApexClass:FlowEmailSender": [
+    "ApexClass:FlowEmailSenderTest",
+    "Flow:Subflow_Universal_Error_Handler-1"
+  ],
+  "ApexClass:CaseJiraSyncGuard": [
+    "ApexClass:CaseJiraSyncGuardTest"
+  ],
+  "ApexClass:FeedCommentGuardHelper": [
+    "ApexTrigger:FeedCommentTrigger"
+  ],
+  "ApexClass:CaseSlaMilestoneSync": [
+    "ApexTrigger:CaseTrigger"
+  ],
+  "ApexClass:CaseTierSlackNotifier": [
+    "ApexClass:CaseTierSlackNotifierTest",
+    "ApexTrigger:CaseTrigger"
+  ],
+  "ApexClass:CaseTierSlackQueueable": [
+    "ApexClass:CaseTierSlackNotifier",
+    "ApexClass:CaseTierSlackQueueableTest"
+  ],
+  "ApexClass:CaseEntitlementAssigner": [
+    "ApexTrigger:CaseTrigger"
+  ],
+  "ApexClass:CasePriorityHandler": [
+    "ApexTrigger:CaseTrigger"
+  ],
+  "ApexClass:CaseMilestoneHandler": [
+    "ApexTrigger:CaseTrigger"
+  ],
+  "ApexClass:CaseTypeStamper": [
+    "ApexClass:CaseTypeStamperTest",
+    "ApexTrigger:CaseTrigger"
+  ],
+  "ApexClass:CaseRecipientWarningController": [
+    "ApexClass:CaseRecipientWarningControllerTest",
+    "LightningComponentBundle:caseRecipientWarning"
+  ],
+  "ApexClass:CaseCloseSolutionPicklists": [
+    "ApexClass:CaseCloseSolutionPicklistsTest",
+    "LightningComponentBundle:caseCloseSolutionPicklists"
+  ],
+  "ApexClass:GetFieldInformation": [
+    "Flow:Datatable_Configuration_Wizard5-1"
+  ],
+  "ApexClass:CreateJiraIssues": [
+    "Flow:Screen_Flow_Convert_Case_Type-1",
+    "Flow:Screen_Flow_Create_New_Case-1",
+    "Flow:PeekLogic_Map_Bug_Fields-1",
+    "Flow:PeekLogic_Map_Feedback_Fields-1",
+    "Flow:PeekLogic_Map_Task_Fields-1",
+    "Flow:Screen_Flow_Convert_Case_Type-3",
+    "Flow:Screen_Flow_Create_New_Case-3",
+    "Flow:Screen_Flow_Create_New_Case-4",
+    "Flow:Screen_Flow_Create_New_Case-5",
+    "Flow:Screen_Flow_Create_New_Case-6"
+  ],
+  "ApexClass:EditJiraIssue": [
+    "Flow:Case_Jira_Push_Sync-1"
+  ],
+  "ApexClass:CcEmailSanitizer": [
+    "Flow:Case_After_Save-52",
+    "Flow:Case_After_Save-53",
+    "Flow:Case_After_Save-54",
+    "Flow:Case_After_Save-55"
+  ],
+  "ApexClass:FlexCardController": [
+    "LightningComponentBundle:fsc_actionList3"
+  ],
+  "ApexClass:FieldSelectorController": [
+    "LightningComponentBundle:fsc_fieldSelector3",
+    "LightningComponentBundle:fsc_flowCombobox"
+  ],
+  "ApexClass:FlowListController": [
+    "LightningComponentBundle:fsc_flowPicker3"
+  ],
+  "ApexClass:ExpressionBuilder": [
+    "LightningComponentBundle:fsc_expressionBuilder3"
+  ],
+  "ApexClass:SearchUtils": [
+    "LightningComponentBundle:fsc_expressionBuilder3",
+    "LightningComponentBundle:fsc_formulaBuilder3"
+  ],
+  "ApexClass:FieldDescriptor": [
+    "LightningComponentBundle:fsc_sortingConfiguration3",
+    "LightningComponentBundle:fsc_dualListBox3"
+  ],
+  "ApexClass:FieldPickerController": [
+    "LightningComponentBundle:fsc_pickObjectAndField3"
+  ],
+  "ApexClass:DeployMetadata": [
+    "LightningComponentBundle:fsc_transferMetadata3"
+  ],
+  "ApexClass:RetrieveMetadata": [
+    "LightningComponentBundle:fsc_transferMetadata3"
+  ],
+  "CustomField:Queue_Days": [
+    "Layout:Queue Layout"
+  ],
+  "CustomField:Contact_ID_s": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:First_Expected_Usage_Explanation": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:First_Expected_Use_Catalog": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:First_Expected_Use_Curriculum": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:First_Expected_Use_Events": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:First_Expected_Use_Class": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Roles_Responsibilities_Concerns": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Last_Editor_Email": [
+    "Layout:Pre-KO Checklist Layout",
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Kickoff_Month_Modifier": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Kickoff_Day_Modifier": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Weekly_Cadence_Confirmation": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Timeline_Understanding_Explanation": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Timeline_Understanding_Confirmation": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Technical_Lead_3": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Technical_Lead_2": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Technical_Lead_1": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Student_Information_System": [
+    "Layout:Pre-KO Checklist Layout",
+    "Layout:Implementation Project Layout",
+    "Layout:Prospect Account Layout",
+    "Layout:System Survey Layout",
+    "Layout:NEWCustomer Layout",
+    "CustomField:Student_Information_Systems",
+    "CustomField:Outbound_SIS",
+    "CustomField:AIO",
+    "CustomField:Eligible_for_Demand",
+    "CustomField:Immature_Integration_for_Rocketlane",
+    "CustomField:Student_Information_System",
+    "EmailTemplate:New_Customer_SDR_Outbound",
+    "Flow:[PKOCL] Screen Flow",
+    "Flow:Commit Opportunity",
+    "Flow:[Implementation Team Roster] Screen Flow",
+    "Flow:[Opportunity] Closed Won Flow 2024",
+    "Flow:[Scheduled] Projects Fix",
+    "Flow:[Discovery Call] Screen Flow",
+    "Flow:[Account] After Save",
+    "Flow:[Opportunity] Closed Won Flow H2'24",
+    "Flow:[Account] Before Save",
+    "Flow:[Account ] After Save - V31",
+    "Flow:Closed Won/Lost Slack Notification"
+  ],
+  "CustomField:Status": [
+    "Layout:Pre-KO Checklist Layout",
+    "Layout:Implementation Project Layout",
+    "Layout:Discovery Call Layout",
+    "Layout:EBR Layout",
+    "Layout:System Survey Layout",
+    "Layout:Escalation Layout"
+  ],
+  "CustomField:SIS_Integration": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Roles_Responsibilities_Explanation": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Roles_Responsibilities_Confirmation": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Project_Lead": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Opportunity": [
+    "Layout:Pre-KO Checklist Layout",
+    "Layout:Note Layout",
+    "Layout:Event Layout",
+    "Layout:Task Layout",
+    "Layout:Email Message Layout",
+    "Layout:Implementation Project Layout",
+    "Layout:Concession Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:System Survey Layout",
+    "Layout:Services"
+  ],
+  "CustomField:Opportunity_Close_Date": [
+    "Layout:Pre-KO Checklist Layout",
+    "Layout:Opportunity Contact Role Layout",
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Functional_Lead_3": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Functional_Lead_2": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Functional_Lead_1": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Executive_Sponsor": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Ethos_Proper_Access_Confirmation": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Ethos_Prior_Connection_Confirmation": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Ethos_Explanation": [
+    "Layout:Pre-KO Checklist Layout",
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Ethos_Estimated_Completion_Date": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Ethos_Confirmation": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Estimated_Kickoff_Date": [
+    "Layout:Pre-KO Checklist Layout",
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Deployment_Order": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Deployment_Order_Explanation": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Billing_Legal_Contact": [
+    "Layout:Pre-KO Checklist Layout"
+  ],
+  "CustomField:Account": [
+    "Layout:Pre-KO Checklist Layout",
+    "Layout:Note Layout",
+    "Layout:Email Message Layout",
+    "Layout:Implementation Project Layout",
+    "Layout:Concession Layout",
+    "Layout:Discovery Call Layout",
+    "Layout:EBR Layout",
+    "Layout:Prospect Account Layout",
+    "Layout:System Survey Layout",
+    "Layout:NEWCustomer Layout",
+    "Layout:Customer Snapshot Layout",
+    "Layout:NPS Layout",
+    "Layout:Rep Request Layout",
+    "Layout:TypeForm Response Layout",
+    "Layout:Project Health Update Layout",
+    "Layout:Escalation Layout",
+    "Layout:Campaign Influence Contact Layout"
+  ],
+  "CustomField:Contact": [
+    "Layout:Note Layout",
+    "Layout:Prospect Layout",
+    "Layout:Email Message Layout",
+    "Layout:Customer Layout",
+    "Layout:Behavior Score Helper Layout",
+    "Layout:Rep Request Layout",
+    "Layout:TypeForm Response Layout",
+    "Layout:Campaign Influence Contact Layout"
+  ],
+  "CustomField:Active": [
+    "Layout:Note Layout",
+    "Layout:ers_datatableConfig Layout",
+    "Layout:Product Pod Mapping Layout",
+    "Layout:Tier Pod Slack Routing Layout"
+  ],
+  "CustomField:Last_Updated_At": [
+    "Layout:Note Layout"
+  ],
+  "CustomField:Created_At": [
+    "Layout:Note Layout"
+  ],
+  "CustomField:Timestamp": [
+    "Layout:Note Layout"
+  ],
+  "CustomField:Text_Body": [
+    "Layout:Note Layout"
+  ],
+  "CustomField:Test_Tag": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:SLA_Milestone_Time_Remaining_Display": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:SLA_Milestone_Active": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:Pre_Close_Status": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:Is_Resolution_Active": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:Resolution_Actual_Complete": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:Is_First_Response_Active": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:First_Response_Actual_Complete": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:SLA_Milestone_Violation": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:Last_Tier_Slack_Recipient": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:Last_Tier_Slack_Notified_At": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:SLA_Milestone_Time_Remaining_Min": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:Sr_TSA_Review_Summary": [
+    "Layout:Case Feed Layout"
+  ],
+  "CustomField:Agent_Effort_Notes": [
+    "Layout:Case Feed Layout"
+  ],
+  "CustomField:Coaching_Scope": [
+    "Layout:Case Feed Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Sr_TSA_Trend_Tag": [
+    "Layout:Case Feed Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Sr_TSA_Involvement_Type": [
+    "Layout:Case Feed Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Sr_TSA_Involved": [
+    "Layout:Case Feed Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:support_escalations": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout"
+  ],
+  "CustomField:Time_Tracking": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:First_Response_Time_calc": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:SLA_Exempt": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Problem_Frequency": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Date_Problem_First_Occurred": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:Bug_Rejection_Reason": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Queue_Name": [
+    "Layout:Case Feed Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Escalated_By": [
+    "Layout:Case Feed Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Escalation_Reason": [
+    "Layout:Case Feed Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Escalation_Explanation": [
+    "Layout:Case Feed Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Waiting_On": [
+    "Layout:Case Feed Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Implementation_Project": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Implementation Project Layout",
+    "Layout:Concession Layout",
+    "Layout:Project Health Update Layout",
+    "Layout:Escalation Layout"
+  ],
+  "CustomField:Client_Reported_Impact": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:Problem_Type": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:Jira_Issue_URL": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Freshdesk_Ticket_Id": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Task_Type": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Complexity": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Upstream_Solution_Sub_Category": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Upstream_Solution": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Scheduling_Term": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Environment": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:Product": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Implementation Project Layout",
+    "Layout:Escalation Layout",
+    "Layout:Customer Portal Case Layout",
+    "Layout:Product Pod Mapping Layout"
+  ],
+  "CustomField:Product_Area": [
+    "Layout:Case Feed Layout",
+    "Layout:Case Layout",
+    "Layout:Close Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:Block_Jira_Sync": [
+    "Layout:Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:First_Response_Field_Populated": [
+    "Layout:Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:Support_Tag": [
+    "Layout:Case Layout",
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Assisting_DE": [
+    "Layout:Case Layout"
+  ],
+  "CustomField:First_Response_Time": [
+    "Layout:Case Layout"
+  ],
+  "CustomField:Contact_Email_Name": [
+    "Layout:Case Layout",
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:LinkedIjn": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:Marketing_Channel_LC": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:Lead": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:Recent_Webinar": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:GCLID": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:LG_Email": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:Demo_Additional_Commentary": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:Fit_Group": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:Behavioral_Score": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:DQ_Reason": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:Marketing_Status": [
+    "Layout:Lead Layout",
+    "Layout:Opportunity Contact Role Layout"
+  ],
+  "CustomField:MQL_Date": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:Demo_Demand_Analytics": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:Demo_Scheduling": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:Demo_CurricCat": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:Demo_Platform": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:mkto71_Acquisition_Date": [
+    "Layout:Lead Layout"
+  ],
+  "CustomField:mkto71_Acquisition_Program": [
+    "Layout:Lead Layout",
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:Starbridge_Contact_ID": [
+    "Layout:Prospect Layout",
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Deeto_Redeemable_Amount": [
+    "Layout:Prospect Layout",
+    "Layout:Customer Layout"
+  ],
+  "CustomField:ContactId": [
+    "Layout:Prospect Layout",
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Demo_Form_Comments": [
+    "Layout:Prospect Layout",
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Sales_Touches_in_the_Last_90_Days": [
+    "Layout:Prospect Layout",
+    "Layout:Customer Layout",
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:score": [
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:Personal_Email": [
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:Manual_Unsubscribe_from_Marketing_Emails": [
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:Touchpoint_Source_LC": [
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:Touchpoint_Source_FT": [
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:Point_of_Contact": [
+    "Layout:Prospect Layout",
+    "Layout:Customer Layout",
+    "Layout:Discovery Call Layout",
+    "Layout:Escalation Layout"
+  ],
+  "CustomField:Number_of_related_tasks": [
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:mkto71_Last_Program_Success": [
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:LinkedIn": [
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:Lead_Genius_Last_Updated": [
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:OCR": [
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:Currently_Sequenced_By": [
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:Actively_Being_Sequenced": [
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:Current_Sequence_Status": [
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:Current_Sequence_Name": [
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:Re_engage_Date": [
+    "Layout:Prospect Layout",
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Customer Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Discovery Call Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Prospect Account Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Related_Entity_ID": [
+    "Layout:Prospect Layout"
+  ],
+  "CustomField:State": [
+    "Layout:Prospect Layout",
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Customer Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Lead_Status": [
+    "Layout:Prospect Layout",
+    "Layout:Customer Layout",
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:Automated_or_Manual": [
+    "Layout:Event Layout",
+    "Layout:Task Layout"
+  ],
+  "CustomField:Outreach_Task_Id": [
+    "Layout:Event Layout",
+    "Layout:Task Layout"
+  ],
+  "CustomField:Owner_Email": [
+    "Layout:Event Layout",
+    "Layout:Task Layout"
+  ],
+  "CustomField:Task_Completed_Sequenced_Date": [
+    "Layout:Event Layout",
+    "Layout:Task Layout"
+  ],
+  "CustomField:Marketing_Sales_Handoff": [
+    "Layout:Event Layout",
+    "Layout:Task Layout"
+  ],
+  "CustomField:Converted_to_Opportunity": [
+    "Layout:Event Layout"
+  ],
+  "CustomField:Discovery_Creation_Trigger": [
+    "Layout:Event Layout"
+  ],
+  "CustomField:SDR_Attribution": [
+    "Layout:Event Layout",
+    "Layout:Email Message Layout"
+  ],
+  "CustomField:HubSpot_ID": [
+    "Layout:Event Layout",
+    "Layout:Email Message Layout"
+  ],
+  "CustomField:UTM_Term": [
+    "Layout:Campaign Layout"
+  ],
+  "CustomField:UTM_Source": [
+    "Layout:Campaign Layout"
+  ],
+  "CustomField:UTM_Overridable_Campaign_Member_Statuses": [
+    "Layout:Campaign Layout"
+  ],
+  "CustomField:UTM_Medium": [
+    "Layout:Campaign Layout"
+  ],
+  "CustomField:UTM_Content": [
+    "Layout:Campaign Layout"
+  ],
+  "CustomField:UTM_Campaign": [
+    "Layout:Campaign Layout"
+  ],
+  "CustomField:UTM_Campaign_Member_Status": [
+    "Layout:Campaign Layout"
+  ],
+  "CustomField:Flag_for_UTM_Touchpoint_Reprocessing": [
+    "Layout:Campaign Layout"
+  ],
+  "CustomField:Campaign": [
+    "Layout:Campaign Layout",
+    "Layout:Campaign Influence Contact Layout"
+  ],
+  "CustomField:Campaign_Full_Name": [
+    "Layout:Campaign Layout"
+  ],
+  "CustomField:Campaign_Link": [
+    "Layout:Campaign Layout"
+  ],
+  "CustomField:RelatedTask": [
+    "Layout:Campaign Layout"
+  ],
+  "CustomField:Primary_Campaign_Source": [
+    "Layout:Campaign Layout"
+  ],
+  "CustomField:Source_Campaign": [
+    "Layout:Campaign Layout",
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Contact_Linkedin_URL": [
+    "Layout:Task Layout"
+  ],
+  "CustomField:Contact_Account": [
+    "Layout:Task Layout"
+  ],
+  "CustomField:Contact_Title": [
+    "Layout:Task Layout",
+    "Layout:Opportunity Contact Role Layout"
+  ],
+  "CustomField:Contact_Name": [
+    "Layout:Task Layout"
+  ],
+  "CustomField:UserGem_Type": [
+    "Layout:Task Layout"
+  ],
+  "CustomField:Date_Rejected_Status": [
+    "Layout:Task Layout"
+  ],
+  "CustomField:Task_Seen_Date": [
+    "Layout:Task Layout"
+  ],
+  "CustomField:Related_UserGem": [
+    "Layout:Task Layout"
+  ],
+  "CustomField:Engagement_Description": [
+    "Layout:Task Layout"
+  ],
+  "CustomField:Is_Past_Due": [
+    "Layout:Task Layout"
+  ],
+  "CustomField:Outbound_Sales_Activity_Type": [
+    "Layout:Task Layout"
+  ],
+  "CustomField:Type": [
+    "Layout:Task Layout",
+    "Layout:Opportunity Product Layout",
+    "Layout:Opp Product Layout 12/17/19",
+    "Layout:Territory Layout",
+    "Layout:Implementation Project Layout",
+    "Layout:Oppty Pipeline Snapshot Layout",
+    "Layout:Project Health Update Layout",
+    "Layout:Escalation Layout"
+  ],
+  "CustomField:LeadName": [
+    "Layout:Campaign Member Page Layout"
+  ],
+  "CustomField:ContactName": [
+    "Layout:Campaign Member Page Layout"
+  ],
+  "CustomField:Account_Status": [
+    "Layout:Campaign Member Page Layout",
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:AccountID": [
+    "Layout:Campaign Member Page Layout"
+  ],
+  "CustomField:RelatedTaskID": [
+    "Layout:Campaign Member Page Layout"
+  ],
+  "CustomField:Account_Stage": [
+    "Layout:Campaign Member Page Layout"
+  ],
+  "CustomField:Dealhub_Version": [
+    "Layout:Quote Layout"
+  ],
+  "CustomField:Dealhub_Expiration_Date": [
+    "Layout:Quote Layout"
+  ],
+  "CustomField:Dealhub_Status": [
+    "Layout:Quote Layout"
+  ],
+  "CustomField:Feedback": [
+    "Layout:Quote Layout"
+  ],
+  "CustomField:FTE": [
+    "Layout:Quote Layout",
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:AES_Rating": [
+    "Layout:Close Case Layout"
+  ],
+  "CustomField:Maxio_TCV": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Reseller_TCV": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Maxio_Transaction": [
+    "Layout:Opportunity Product Layout"
+  ],
+  "CustomField:Estimated_Hours": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Previous_Subscription_OLI_Id": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Baseline_Amount": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Opp Product Layout 12/17/19",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout"
+  ],
+  "CustomField:Previous_Subscription": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:SKU_Pre_Discount_TCV": [
+    "Layout:Opportunity Product Layout"
+  ],
+  "CustomField:SKU_Pre_Discount_ACV": [
+    "Layout:Opportunity Product Layout"
+  ],
+  "CustomField:Post_Discount_Sales_Price": [
+    "Layout:Opportunity Product Layout"
+  ],
+  "CustomField:Close_Date": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Opp Product Layout 12/17/19",
+    "Layout:Oppty Pipeline Snapshot Layout"
+  ],
+  "CustomField:SKU_Final_Year_ACV": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Product_Name": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Product to Account Field Layout"
+  ],
+  "CustomField:Opportunity_Is_Active": [
+    "Layout:Opportunity Product Layout"
+  ],
+  "CustomField:AccountId": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:SKU_ACV": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Synced_Quote_T_F": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Synced_Quote_Id": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:ACV": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:SKU_Term": [
+    "Layout:Opportunity Product Layout"
+  ],
+  "CustomField:SKU_End_Date": [
+    "Layout:Opportunity Product Layout"
+  ],
+  "CustomField:SKU_Start_Date": [
+    "Layout:Opportunity Product Layout"
+  ],
+  "CustomField:SKU_TCV": [
+    "Layout:Opportunity Product Layout"
+  ],
+  "CustomField:Push_to_Maxio": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Year_6_ARR": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Quote Line Item Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Year_5_ARR": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Quote Line Item Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Year_4_ARR": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Quote Line Item Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Year_3_ARR": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Quote Line Item Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Year_2_ARR": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Quote Line Item Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Year_1_ARR": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Quote Line Item Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Shown_As": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Quote Line Item Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Sales_Price_with_Bundle_Discount": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Quote Line Item Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Displayed_List_Price": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Quote Line Item Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:MSRP": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Quote Line Item Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Term": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Opp Product Layout 12/17/19",
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:End_Date": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Quote Line Item Layout",
+    "Layout:Opp Product Layout 12/17/19",
+    "Layout:Concession Layout"
+  ],
+  "CustomField:Start_Date": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Quote Line Item Layout",
+    "Layout:User Profile Layout",
+    "Layout:Concession Layout",
+    "Layout:Quota User Profile Layout",
+    "Layout:Quota User Layout"
+  ],
+  "CustomField:List_Price_for_PandaDoc": [
+    "Layout:Opportunity Product Layout"
+  ],
+  "CustomField:Gross_ARR": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Price_Type": [
+    "Layout:Opportunity Product Layout",
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:OOO": [
+    "Layout:User Layout",
+    "Layout:User Profile Layout"
+  ],
+  "CustomField:AE": [
+    "Layout:User Layout",
+    "Layout:Territory Layout",
+    "Layout:Quota User Layout"
+  ],
+  "CustomField:User_Manager": [
+    "Layout:User Layout",
+    "Layout:User Profile Layout",
+    "Layout:Quota User Profile Layout",
+    "Layout:Quota User Layout"
+  ],
+  "CustomField:Current_Quarter_Quota": [
+    "Layout:User Layout",
+    "Layout:User Profile Layout",
+    "Layout:Quota User Profile Layout",
+    "Layout:Quota User Layout"
+  ],
+  "CustomField:RunningUserIsUser": [
+    "Layout:User Layout",
+    "Layout:User Profile Layout",
+    "Layout:Quota User Profile Layout",
+    "Layout:Quota User Layout",
+    "Layout:Customer Portal User Layout"
+  ],
+  "CustomField:SDR": [
+    "Layout:User Layout",
+    "Layout:User Profile Layout",
+    "Layout:Territory Layout",
+    "Layout:Quota User Profile Layout",
+    "Layout:Quota User Layout"
+  ],
+  "CustomField:Slack_Handle": [
+    "Layout:User Layout",
+    "Layout:User Profile Layout",
+    "Layout:Quota User Profile Layout",
+    "Layout:Quota User Layout"
+  ],
+  "CustomField:Slack_ID": [
+    "Layout:User Layout",
+    "Layout:User Profile Layout",
+    "Layout:Quota User Profile Layout",
+    "Layout:Quota User Layout"
+  ],
+  "CustomField:X18_Digit_User_ID": [
+    "Layout:User Layout",
+    "Layout:User Profile Layout",
+    "Layout:Quota User Profile Layout",
+    "Layout:Quota User Layout"
+  ],
+  "CustomField:Is_the_Primary": [
+    "Layout:Quote Line Item Layout"
+  ],
+  "CustomField:Item_Net_Price": [
+    "Layout:Quote Line Item Layout"
+  ],
+  "CustomField:Dealhub_Quantity": [
+    "Layout:Quote Line Item Layout"
+  ],
+  "CustomField:Dealhub_Duration": [
+    "Layout:Quote Line Item Layout"
+  ],
+  "CustomField:Product_Managed": [
+    "Layout:Account Contact Relationship Layout"
+  ],
+  "CustomField:Product_Specific_Contact": [
+    "Layout:Account Contact Relationship Layout"
+  ],
+  "CustomField:Created_Date": [
+    "Layout:Account Contact Relationship Layout"
+  ],
+  "CustomField:PKOCL_ID": [
+    "Layout:Account Contact Relationship Layout",
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:Opportunity_ID": [
+    "Layout:Account Contact Relationship Layout"
+  ],
+  "CustomField:Relationship_Type": [
+    "Layout:Account Contact Relationship Layout"
+  ],
+  "CustomField:Email": [
+    "Layout:Opportunity Contact Role Layout",
+    "Layout:Account Contact Role Layout",
+    "Layout:TypeForm Response Layout"
+  ],
+  "CustomField:Opportunity_Stage": [
+    "Layout:Opportunity Contact Role Layout",
+    "Layout:Campaign Influence Contact Layout"
+  ],
+  "CustomField:Opportunity_Name": [
+    "Layout:Opportunity Contact Role Layout",
+    "Layout:Discovery Call Layout",
+    "Layout:Oppty Pipeline Snapshot Layout"
+  ],
+  "CustomField:Primary_Billing": [
+    "Layout:Opportunity Contact Role Layout"
+  ],
+  "CustomField:Discount": [
+    "Layout:Opp Product Layout 12/17/19"
+  ],
+  "CustomField:Territory_Score_Customer_Saturation": [
+    "Layout:Territory Layout"
+  ],
+  "CustomField:Territory_Score_Prospect_to_Customer": [
+    "Layout:Territory Layout"
+  ],
+  "CustomField:Territory_Score_Weighted_Tier": [
+    "Layout:Territory Layout"
+  ],
+  "CustomField:AM_Territory": [
+    "Layout:Territory Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:CustomerSuccessManager": [
+    "Layout:Territory Layout"
+  ],
+  "CustomField:CS_Account_Owner": [
+    "Layout:Territory Layout"
+  ],
+  "CustomField:Territory": [
+    "Layout:Territory Layout",
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:First_Name": [
+    "Layout:Opportunity Split Layout"
+  ],
+  "CustomField:Product_Missing_Features_PM_Slack_ID": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Ladder_Deal": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Key_Deal": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Date_Pod_Manager_Entered_Best_Case": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Preceding_Deal_ACV": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Influenced_Expansion": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Structural_Expansion": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Pre_Discount_Net_ACV": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Contract": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Contract_Clauses_Used": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:PO_Term": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:PO_Needed": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Product_Check": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:DealRoom_Status": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Mentor": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Funding_Confirmation": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Discovery Call Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:First_Vendor": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Discovery Call Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Go_Live_Expectations": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Pre_Opportunity_Onsite": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Re_Engagement_From": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Number_of_Products2": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Products": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:NEWCustomer Layout",
+    "Layout:TypeForm Response Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Ops_Inspected_Date": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Closed_Won_Lost_Call_Notes": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Closed_Won_Lost_Call_Status": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Re_Engage_Details": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Integration_Partner": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Implementation Project Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:NEWCustomer Layout",
+    "Layout:Customer Snapshot Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Enough_time_this_quarter": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Why_buy_this_quarter": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:CD_Commitment": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Why_buy_anything": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Partner": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Upsell_Path": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Technical_Overview": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:SOW_Modified": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:SOW_Modification_Details": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Approval Page Layout: Modified SOW Approval 04a6g000000LbDM",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Partner_specific_vocab_or_jargon": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Optimizer_Modules_Relevant": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Key_Resource_Limitations": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Feature_Enhancement_Commitments": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Data_Storage": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Configuration_Tier": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Campus_Document_Types_Modules_Relevant": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Brief_Description_of_Partnership": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Queue_Time": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Data_Engineer_Name": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Implementation Project Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Project_Manager_Name": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Implementation Project Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Kickoff_Explanation": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Actual_Kickoff_Date": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Next_Steps_sd_ai": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:sd_ai_Next_Steps": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Re_Engagement_Opportunity": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Product_Missing_Features": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout",
+    "Layout:No-Bid Layout"
+  ],
+  "CustomField:Product_Missing_Features_Explanation": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Lost_to_which_competitor": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout",
+    "Layout:No-Bid Layout"
+  ],
+  "CustomField:Lost_to_competitor_explanation": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Competitor_loss_reason": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Bleedv2": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Committed_Quarter": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Decision_Process_MEDDIC": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Billing_Instructions": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Competition_MEDDIC": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Paper_Process_MEDDIC": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Decision_Criteria_MEDDIC": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Metrics_MEDDIC": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Identified_Pain_MEDDIC": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Catalog_Amount": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:New_SIS": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Pricing_Sent_Details": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Is_Active": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Source_Opportunity": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Kick_off_Date": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Implementation Project Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Multi_year_Procurement_Limitations_desc": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Mulit_Year_Procurement_Limitations": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Bad_Egg": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Convenience_Termination": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Budget_Source": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Close_Sub_reason": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Close_Reason": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Discovery_Call": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Discovery Call Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Date_Entered_Commit_Forecast": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Opportunity_Type": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:AdminLayout",
+    "Layout:Campaign Influence Contact Layout"
+  ],
+  "CustomField:Renewal_Date": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Contract_Sent": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Other_Commitments": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Opt_Out_Date": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Contract_End_Date": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:GovSpend Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Contract_Start_Date": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:GovSpend Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:SOW": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Approval Page Layout: Modified SOW Approval 04a6g000000LbDM",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Integration_Notes": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Date_Entered_Commit": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Date_Entered_Budget_Confirmation": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Date_Entered_Proposal": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Date_Entered_Validation": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:FFC_Date": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Discovery Call Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:ARR_New": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Rep_Forecast": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Oppty Pipeline Snapshot Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Manager_Forecast": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Implementation Project Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Oppty Pipeline Snapshot Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Future_Firm_Commitment": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:MainCompetitors": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Primary_Opportunity": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Integration_Specs": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:NEWCustomer Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:RFP": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Curriculum_Product": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Prospect Account Layout",
+    "Layout:Services",
+    "Layout:NEWCustomer Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Student_Information_Systems": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Catalog_Product_cOPS": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Class_Scheduling_Product_cOPS": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Event_Scheduling_Product_cOPS": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Room_Scheduling_Product_cOps": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Implementation_Fee": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Implementation Project Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:Services",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Closed_Lost_Explanation": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout",
+    "Layout:No-Bid Layout"
+  ],
+  "CustomField:Sourcing_Rep": [
+    "Layout:Pipeline Opportunity Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout",
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Scoping_Survey": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Hours_Margin": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Over_Under_Budget_Hours": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Time_to_Value": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Blocking_Ticket": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Time_to_Adopt": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Welcome_Call_Date": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Product_Area_Sentiment": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Product_Sentiment": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Low_Adoption_Reason": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Baseline_Adoption_Date": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Days_Since_Contract_Start": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Days_Past_Baseline": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Meets_Usage_Threshold_Date": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Actual_Adoption_Date": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Projected_Adoption_Date": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Project_Coordinator_Tracked_Hours": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Data_Engineer_Tracked_Hours": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Project_Coordinator_Budget_Hours": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Data_Engineer_Budget_Hours": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Project_Manager_Tracked_Hours": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Project_Manager_Budget_Hours": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Project_Coordinator_Email": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Project_Coordinator_Name": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Notes": [
+    "Layout:Implementation Project Layout",
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Kickoff_Create_Due_Date": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Warming_Stalled": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Next_Steps": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Triage_Needed": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:On_Time_Completion_Date": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Launch_Cohort_Status": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Paid_Upfront": [
+    "Layout:Implementation Project Layout",
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Initial_Budget_Hours": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Opportunity_ISF": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Opportunity_Product": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Allocated_Hours": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Billable_Hours": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Launched_Sub_Status": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Data_Engineer": [
+    "Layout:Implementation Project Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Project_Manager": [
+    "Layout:Implementation Project Layout",
+    "Layout:NEWCustomer Layout",
+    "Layout:Project Health Update Layout"
+  ],
+  "CustomField:ParentProject": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:DE_CSAT": [
+    "Layout:Implementation Project Layout",
+    "Layout:TypeForm Response Layout"
+  ],
+  "CustomField:Send_CSAT": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Significant_Pushes": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:CSAT_Form_Submission": [
+    "Layout:Implementation Project Layout",
+    "Layout:TypeForm Response Layout"
+  ],
+  "CustomField:Staffed": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:CSAT": [
+    "Layout:Implementation Project Layout",
+    "Layout:TypeForm Response Layout"
+  ],
+  "CustomField:CSM_Handoff": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Rocketlane_Maintenance_Date": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Rocketlane_Project_Maintenance": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Current_Subscription": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Contract_Status": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Partnership_Kickoff_Date": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Migration_Initiation": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Rocketlane_Project_Start": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Rocketlane_Project_Id": [
+    "Layout:Implementation Project Layout",
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:PSA_Migration_Group": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:PSA_Record": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Project_Manager_Email": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:First_Deployment": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Account_Classification": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Institution_Type": [
+    "Layout:Implementation Project Layout",
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Support_Success_Transition_Date": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:First_Actual_Use": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:First_Expected_Use": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Adoption_Status": [
+    "Layout:Implementation Project Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Re_Engage_Date": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Project_Health_Explanation": [
+    "Layout:Implementation Project Layout",
+    "Layout:Project Health Update Layout"
+  ],
+  "CustomField:Project_Health": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Health_Reason": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Contract_End": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Contract_Start": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Baseline_Due_Date": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Customer_Success_Manager": [
+    "Layout:Implementation Project Layout",
+    "Layout:EBR Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Primary_Delay_Reason": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:of_ARR": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Sales_Price": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Project_State": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Temperature": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Deployment_Delay_Explanation": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Deployment_Phase": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Percent_Complete": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Actual_Launch_Date": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Projected_Launch_Date": [
+    "Layout:Implementation Project Layout"
+  ],
+  "CustomField:Concession_Type": [
+    "Layout:Concession Layout"
+  ],
+  "CustomField:Concession_Explanation": [
+    "Layout:Concession Layout"
+  ],
+  "CustomField:Concession_Value": [
+    "Layout:Concession Layout"
+  ],
+  "CustomField:Force_Resync": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Central_Support_Contact": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Promote_Contact_as_Reference": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Active_CAB_Member": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Most_Recent_NPS_Score": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Passive_Score": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Detractor_Score": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:NPSContact": [
+    "Layout:Customer Layout",
+    "Layout:NPS Layout"
+  ],
+  "CustomField:KelseyTestField": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Count_of_Tasks": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Manual_Unsubscribe_from_CS_Emails": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Release_Notes_Recipient": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Deal_Champion": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Main_Contact": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Reference_Catalog": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Reference_Curriculum": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Reference_Class": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Reference_Events": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:Customer_Success_Contact": [
+    "Layout:Customer Layout"
+  ],
+  "CustomField:EstimatedLaunchedDate": [
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:Services"
+  ],
+  "CustomField:Assign_Requirement_Needed": [
+    "Layout:Upsell Opportunity Layout"
+  ],
+  "CustomField:Net_ARR": [
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout"
+  ],
+  "CustomField:Initiate_Is_Active_Trigger": [
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Co_term_Upsell": [
+    "Layout:Upsell Opportunity Layout"
+  ],
+  "CustomField:Documentation_of_Workflows": [
+    "Layout:Upsell Opportunity Layout"
+  ],
+  "CustomField:Requisite_Data_in_SIS": [
+    "Layout:Upsell Opportunity Layout"
+  ],
+  "CustomField:Program_data_in_SIS": [
+    "Layout:Upsell Opportunity Layout"
+  ],
+  "CustomField:Forms": [
+    "Layout:Upsell Opportunity Layout"
+  ],
+  "CustomField:Programs": [
+    "Layout:Upsell Opportunity Layout"
+  ],
+  "CustomField:Courses": [
+    "Layout:Upsell Opportunity Layout"
+  ],
+  "CustomField:TCV_New": [
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Contractual_Dates": [
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout"
+  ],
+  "CustomField:Budget_Justification": [
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout"
+  ],
+  "CustomField:Goals_Objectives": [
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Renewal Opportunity Layout"
+  ],
+  "CustomField:Ideal_Go_Live_Date": [
+    "Layout:Upsell Opportunity Layout",
+    "Layout:Discovery Call Layout",
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:ARR_2024": [
+    "Layout:Renewal Opportunity Layout"
+  ],
+  "CustomField:Renewal_From": [
+    "Layout:Renewal Opportunity Layout"
+  ],
+  "CustomField:Renewal_Differential": [
+    "Layout:Renewal Opportunity Layout"
+  ],
+  "CustomField:tx_salesforce_opp_id": [
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:transaction_sfdc_opportunity": [
+    "Layout:Renewal Opportunity Layout",
+    "Layout:Partner Referral Layout",
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Recognized_Date": [
+    "Layout:Renewal Opportunity Layout"
+  ],
+  "CustomField:Catalog_Go_Live_Date": [
+    "Layout:Renewal Opportunity Layout"
+  ],
+  "CustomField:Curriculum_Go_Live_Date": [
+    "Layout:Renewal Opportunity Layout"
+  ],
+  "CustomField:Events_Go_Live_Date": [
+    "Layout:Renewal Opportunity Layout"
+  ],
+  "CustomField:Class_Go_Live_Date": [
+    "Layout:Renewal Opportunity Layout"
+  ],
+  "CustomField:Conversation": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Re_Score_reason": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Re_Score": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Account_Parent_Sales_Priority": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Account_Sales_Priority": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Go_Live_Context": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:First_Vendor_Explanation": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Sequence_Name": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Discovery_DateTime": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Lead_Source": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Loss_Explanation": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Demo_Date": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Date_Lost": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Date_Opportunity_Booked": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Date_Entered_Demo_Held": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Date_Entered": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Date_Entered_Post_Disco": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Timeline": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Authority": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Need": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Budget": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Loss_Reason": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Loss_Sub_Reason": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:FFC": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:PoC_Title": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Re_engage_Context": [
+    "Layout:Discovery Call Layout"
+  ],
+  "CustomField:Acquisition_Program": [
+    "Layout:Partner Referral Layout"
+  ],
+  "CustomField:Subchannel_Conversion": [
+    "Layout:Partner Referral Layout"
+  ],
+  "CustomField:Subchannel": [
+    "Layout:Partner Referral Layout"
+  ],
+  "CustomField:Ultimate_Source": [
+    "Layout:Partner Referral Layout"
+  ],
+  "CustomField:Renewal_Trigger": [
+    "Layout:Partner Referral Layout"
+  ],
+  "CustomField:Customer_Health_Post_EBR": [
+    "Layout:EBR Layout"
+  ],
+  "CustomField:Customer_Health_Pre_EBR": [
+    "Layout:EBR Layout"
+  ],
+  "CustomField:Behavior_score_change": [
+    "Layout:Behavior Score Helper Layout"
+  ],
+  "CustomField:Manager_Forecast_Pod": [
+    "Layout:CS Opp Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Syllabus_Amount": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Implementation_Roster_Completed": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Close_Date_Updated_Trigger": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Cancelled": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:DE_Assigned": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:AOA_Amount": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:PM_Assigned": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Readiness_Due_Date": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Slack_Channel_Trigger": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Slack_Channel_Name": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Pre_KO_Checklist": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Handoff_Owner": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Handoff_Stage": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Political_Landscape": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Non_Vanilla": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Implementation_Amount": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Demand_Analytics_Amount": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Events_Amount": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Curriculum_Amount": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Class_Amount": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Is_Active_Trigger": [
+    "Layout:CS Opp Layout"
+  ],
+  "CustomField:Customer_Priority": [
+    "Layout:CS Opp Layout",
+    "Layout:NEWCustomer Layout",
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Next_Review_Date": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Calendar_System": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:SIS_Location": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Previous_Customer_Success_Manager": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:CSM_Territory": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:How_To_Navigate_Procurement": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:System_ABM_Landing_Page": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:AI_Landing_Page": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Max_Days_Since_Contract_Start_Date": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Max_Days_Past_Baseline": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Parent_Account_SIS_Setup": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:SIS_Setup": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Parent_Account_SB_SIS_Procurement_Setup": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Starbridge": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Parent_Account_System_Procurement_Type": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:System_Procurement_Type": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Opportunity_Sentiment": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Navattic_Curriculum_Analytics_Overview": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Navattic_CDP_Overview": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Navattic_Assessment_Management_Overview": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Navattic_Syllabus_Management_Overview": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Navattic_Catalog_Handbook_Overview": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Navattic_Curriculum_Management_Overview": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Navattic_Event_Scheduling_Overview": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Navattic_Faculty_Workload_Overview": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Accrediting_Organization": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Navattic_Academic_Scheduling_Overview": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Priority_System": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:X2024_Sales_Priority": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Outbound_LMS": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Assessment_Floor": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:FWLM_Floor": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Parent_Account_Tier_Formula": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:RSD_Notes": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Primary_Institution_Language": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:X25_Business_Potential": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Learning_Management_System": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Enrollment_Band": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Last_Discovery_Call_Date": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Triage_Inclusion": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:FY24_Customer_Conference_Status": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Assessment_Product": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Faculty_Load_Add_On_Product": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Ultimate_Parent": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Count_of_OtherKeyPersona_Last_90": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Count_of_CIO_Touches_Last_90_Days": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Count_of_Registrar_Touches_Last_90_Days": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Count_of_Persona_Touches_Last_90_Days": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Sales_Priority": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Parent_System_Procurement": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:System_Procurement_Process": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Total_Prospect_Score": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Average_Prospect_Score": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Number_Contacts_w_Touches_Last_90_Days": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Course_Demand_Projections_Navattic": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Scheduling_Conflicts_Navattic": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Section_Optimizer_Navattic": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Course_Change_Navattic": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Build_Degree_Maps_Navattic": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Accreditation_Reporting_Navat": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Curriculum_Overview_Navattic": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Curriculum_Catalog_Overview_Navattic": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Forms_Workflows_Navattic": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Course_Sets_Navattic": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Email_Domain": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Sales_Touches_in_the_Last_30_Days": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Nav_Platform_Overview": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Nav_Scheduling_Overview": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Weighted_ARR": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Renewal_Open_Opportunities": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Number_of_Child_Accounts": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Whitespace": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Outbound_Attributed_Emails": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Syllabus_Product": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Open_Opportunities": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Consortium": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:DirectoryLink": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Degree_Audit_Solution": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Outbound_Owner": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Account_Score": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Re_engage_context": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Similar_Context_Verbiage": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Similar_Schools_Sales": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Exclude": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Classification": [
+    "Layout:Prospect Account Layout",
+    "Layout:Oppty Pipeline Snapshot Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Total_Expenses": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Total_Operating_Non_Operating_Revenue": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Local_Appropriations": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:State_Appropriations": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Federal_Appropriations": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Total_Operating_Revenues": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:IPEDS_Unit_Id": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Tribal_College": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:HBCU": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:System_FTE": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Primary_Account": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Demand_Analytics_Solution": [
+    "Layout:Prospect Account Layout",
+    "Layout:Services",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Strategic_Plan": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:StrategicPriorities_Above": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Account_Lifecycle_Status": [
+    "Layout:Prospect Account Layout"
+  ],
+  "CustomField:Enrollment": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Religious_Affilitation": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Catalog_Product": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Class_Schedule_Planning_Product": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Event_Scheduler_Product": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Room_Scheduling_Product": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:CKA": [
+    "Layout:Prospect Account Layout",
+    "Layout:NEWCustomer Layout",
+    "Flow:[Opportunity] Closed Won Flow 2024",
+    "Flow:[Opportunity] Closed Won Flow H2'24"
+  ],
+  "CustomField:Account_Name": [
+    "Layout:Oppty Pipeline Snapshot Layout"
+  ],
+  "CustomField:age": [
+    "Layout:Oppty Pipeline Snapshot Layout"
+  ],
+  "CustomField:Fiscal_Period": [
+    "Layout:Oppty Pipeline Snapshot Layout"
+  ],
+  "CustomField:Probability": [
+    "Layout:Oppty Pipeline Snapshot Layout"
+  ],
+  "CustomField:ARR": [
+    "Layout:Oppty Pipeline Snapshot Layout"
+  ],
+  "CustomField:Stage": [
+    "Layout:Oppty Pipeline Snapshot Layout"
+  ],
+  "CustomField:Opportunity_Owner": [
+    "Layout:Oppty Pipeline Snapshot Layout"
+  ],
+  "CustomField:System_Survey": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Other_Technical_Details": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:SIS_Refresh_Limitations": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Jenzabar": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Jenzabar_Course_Code_Value": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Anthology_API_User_Explanation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Anthology_External_API_User_Confirmation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Curriculum_Custom_Tables_Explanat": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Curriculum_Custom_Logic_Explanati": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Curriculum_Custom_Fields_Explanan": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Sections_Custom_Tables_Explanatio": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Sections_Custom_Logic_Explanation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Sections_Custom_Fields_Explanatio": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Courses_Custom_Tables_Explanatio": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Courses_Custom_Fields_Explanation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Courses_Custom_Logic_Explanation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Deployment_Capabilities_Explanation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Deployment_Capabilities": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Course_Catalog": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Course_Catalog_Custom_Tables_Explanat": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Course_Catalog_Custom_Logic_Explanati": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Schedule_Custom_Tables_Read_Explanati": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Schedule_Custom_Tables_Explanation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Schedule_Custom_Logic_Explanation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Delivered_Plan_Custom_Tables_Explanat": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Delivered_Plan_Custom_Logic_Explanati": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Delivered_Plans_Custom_Tables_Read": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Delivered_Plan_Custom_Tables": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Delivered_Plan_Custom_Logic": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Course_Catalog_Custom_Field_Explanati": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Schedule_Custom_Field_Explanation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Delivered_Plan_Custom_Fields_Explanat": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Delivered_Plan_Custom_Fields": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Schedule_Custom_Table_Reading": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Schedule_Custom_Tables": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Schedule_Custom_Logic": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Schedule_Custom_Fields": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Course_Catalog_Custom_Table_Reading": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Course_Catalog_Customized_Tables": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Course_Catalog_Custom_Logic": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:PS_Course_Catalog_Custom_Fields": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Docker_Infrastructure": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Curriculum_Custom_Logic": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Curriculum_Custom_Tables": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Curriculum_Custom_Fields": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Section_Custom_Logic": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Section_Custom_Tables": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Section_Custom_Fields": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Section_Number_0": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Session": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Rollover_Explanation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Faculty_Department_Association": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Linked_Sections": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Email_Code": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Courses_Custom_Logic": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Banner_Courses_Table_Custom_Fields": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Colleague_Timezone": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Colleague": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Colleague_Faculty_Load_Usage": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Colleague_Multiple_Instructional_Methods": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Colleague_Reporting_Term_Grouping": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:QA_Spec_Server_OS_Version": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:QA_Spec_Database_Release_Version": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:QA_Spec_OS_Full_Release_Version": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:QA_Spec_Full_Release_Version": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:SIS_Spec_Server_OS_Version": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:SIS_Spec_Database_Release_Version": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:SIS_Spec": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:SIS_Full": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:IT_Change_Notifications": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Maintenance_Schedule": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:SSO_Method": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:SIS_Administration_Access_Explanation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:SIS_Administrative_Access": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:SIS_Local_Administration": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:SIS_Refresh_Confirmation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:SIS_Refresh_Explanation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Whitelisting_Explanation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Whitelisting_Acknowledgement": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:External_Dependencies_Explanation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:External_Dependencies": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Technical_Resource_Explanation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Technical_Resource_Availability_Date": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Technical_Resource_Availability": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:SIS_Migration_Explanation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:SIS_Migration_Date": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:SIS_Migration_Confirmation": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Ethos_Past": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Ethos": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Ethos_Readiness_Date": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Ethos_Already_Configured": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Integration_Method": [
+    "Layout:System Survey Layout"
+  ],
+  "CustomField:Estimated_Service_Hours": [
+    "Layout:Services"
+  ],
+  "CustomField:Services_Explanation": [
+    "Layout:Services"
+  ],
+  "CustomField:Services_Type": [
+    "Layout:Services"
+  ],
+  "CustomField:Entitlement": [
+    "Layout:NEWCustomer Layout",
+    "Layout:Entitlement Layout"
+  ],
+  "CustomField:Customer_Health_Controller": [
+    "Layout:NEWCustomer Layout",
+    "Layout:Customer Snapshot Layout"
+  ],
+  "CustomField:Catalyst_Health_Score": [
+    "Layout:NEWCustomer Layout",
+    "Layout:Customer Snapshot Layout"
+  ],
+  "CustomField:Curriculum_Analytics_Product": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Percent_Adopted": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Number_of_Executive_Sponsors": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:RSD_Expiry_Date": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:CD_Conference_Notes": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Customer_Slack_Channel": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:AM_Introduction_Date": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Upsell_Tier_Explanation": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Upsell_Tier": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Past_Assessment_Product": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Past_Faculty_Load_Add_On_Product": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Upsell_Opportunities": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Account_Manager": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Total_NPS_Scores": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Next_Invoice_Due_Amount": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Outstanding_Invoice_Balance": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:next_invoice_due_date": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Count_of_Passives": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Count_of_Promoters": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Count_of_Detractors": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Customer_Health_Sub_Reason": [
+    "Layout:NEWCustomer Layout",
+    "Layout:Customer Snapshot Layout"
+  ],
+  "CustomField:Ultimate_Parent_Name": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Migration_Date": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Migration_Status": [
+    "Layout:NEWCustomer Layout",
+    "Layout:Customer Snapshot Layout"
+  ],
+  "CustomField:Historical_Tier": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Tier_Explanation": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Direct_Tier": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Parent_s_Tier": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Next_Invoice_Amount": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Number_of_Overdue_Invoices": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:First_Transitioned_to_Support_Success": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Products_in_Backlog_or_On_Hold": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Products_in_Deployment": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Partially_Adopted_Products": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Unadopted_Products": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Fully_Adopted_Products": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Deployment_Status": [
+    "Layout:NEWCustomer Layout",
+    "Layout:Customer Snapshot Layout"
+  ],
+  "CustomField:Customer_Health_Last_Explained": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Customer_Service_Model": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Deployment_Temperature_Explanation": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Action_Items": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Health_Temperature": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Deployed": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:DeployedTemperature": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Immature_Integration": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Red_Implementations": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Yellow_Implementations": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Referenceability_Last_Assessed": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Design_Parnter": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Referenceable_Account": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Health_Date_Red": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Customer_Marketing_Opt_Out": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Number_of_Lost_Opportunities_del": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Top_Brand": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Total_ACV_Bookings": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Past_Syllabus_Product": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Completed_Implementations": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Implementation_Temperature": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:SLA": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Past_Lost_Opportunity": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Client_engagement": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Red_Override": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:NPS_Score": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Referenceable": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:customer_salesforce_id": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:total_invoice_balance_prior_month": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:saasoptics_total_transactions_amount": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:saasoptics_total_revenue_scheduled": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:saasoptics_total_invoice_li_amount": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:next_invoice_amount": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:e_invoice_billing_profile": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:customer_status": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Became_Customer_Date": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Account_ARR": [
+    "Layout:NEWCustomer Layout",
+    "Layout:Customer Snapshot Layout"
+  ],
+  "CustomField:Past_Room_Scheduling_Product": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Past_Event_Scheduling_Product": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Past_Curriculum_Product": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Past_Class_Scheduling_Product": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Past_Catalog_Product": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Year_Founded": [
+    "Layout:NEWCustomer Layout"
+  ],
+  "CustomField:Number_of_Products": [
+    "Layout:Customer Snapshot Layout"
+  ],
+  "CustomField:Backlog_ACV": [
+    "Layout:Customer Snapshot Layout"
+  ],
+  "CustomField:Deployed_ACV": [
+    "Layout:Customer Snapshot Layout"
+  ],
+  "CustomField:In_Flight_ACV": [
+    "Layout:Customer Snapshot Layout"
+  ],
+  "CustomField:Health_Explanation_Summary": [
+    "Layout:Customer Snapshot Layout"
+  ],
+  "CustomField:Customer_Health_Explanation": [
+    "Layout:Customer Snapshot Layout"
+  ],
+  "CustomField:Customer_Health_Reason": [
+    "Layout:Customer Snapshot Layout"
+  ],
+  "CustomField:Snapshot_Date": [
+    "Layout:Customer Snapshot Layout"
+  ],
+  "CustomField:Customer_Health": [
+    "Layout:Customer Snapshot Layout"
+  ],
+  "CustomField:NPS": [
+    "Layout:NPS Layout",
+    "Layout:TypeForm Response Layout"
+  ],
+  "CustomField:AccountName": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:NPS_Score_Type": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Combined_Long_Answers": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:One_thing_to_make_you_Happer": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Testimonial": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Biz_w_CD_Based_on_Experience": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Support_Recommend_based_on_Experience": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Services_Recommend_based_on_Experience": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Product_Recommend_based_on_Experience": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Doing_Business_w_CD_to_Improve_Expereinc": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Support_Priority_to_Improve_Experience": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Services_Priority_To_Improve_Experience": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Product_Priority_to_Improve_Experience": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Recommend_Based_on_Experience": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Highest_Priority_to_Improve_Experience": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Primary_Score_Reason": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Score_Date": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Score": [
+    "Layout:NPS Layout"
+  ],
+  "CustomField:Wraps": [
+    "Layout:ers_datatableConfig Layout"
+  ],
+  "CustomField:Widths": [
+    "Layout:ers_datatableConfig Layout"
+  ],
+  "CustomField:Type_Attributes": [
+    "Layout:ers_datatableConfig Layout"
+  ],
+  "CustomField:Selection_Method": [
+    "Layout:ers_datatableConfig Layout"
+  ],
+  "CustomField:Other_Attributes": [
+    "Layout:ers_datatableConfig Layout"
+  ],
+  "CustomField:Object_API_Name": [
+    "Layout:ers_datatableConfig Layout"
+  ],
+  "CustomField:Labels": [
+    "Layout:ers_datatableConfig Layout"
+  ],
+  "CustomField:Icons": [
+    "Layout:ers_datatableConfig Layout"
+  ],
+  "CustomField:Filters": [
+    "Layout:ers_datatableConfig Layout"
+  ],
+  "CustomField:Field_API_Names": [
+    "Layout:ers_datatableConfig Layout"
+  ],
+  "CustomField:Edits": [
+    "Layout:ers_datatableConfig Layout"
+  ],
+  "CustomField:Cell_Attributes": [
+    "Layout:ers_datatableConfig Layout"
+  ],
+  "CustomField:Alignments": [
+    "Layout:ers_datatableConfig Layout"
+  ],
+  "CustomField:Contact_Phone": [
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:Assigned_AM": [
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:Assigned_CSM": [
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:Catalyst_Sync": [
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:Products_List_Formula": [
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:Deactivation_Reason": [
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:Last_Activity": [
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:Title": [
+    "Layout:Account Contact Role Layout",
+    "Layout:GovSpend Layout"
+  ],
+  "CustomField:ContactID": [
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:OppotunityID": [
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:Contact_Relationship_Type": [
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:Previous_Contact_Role_End_Date": [
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:Previous_OpportunityID": [
+    "Layout:Account Contact Role Layout"
+  ],
+  "CustomField:Enrichment_Target": [
+    "Layout:Rep Request Layout"
+  ],
+  "CustomField:SubmittedBy": [
+    "Layout:Rep Request Layout"
+  ],
+  "CustomField:Request_Explanation": [
+    "Layout:Rep Request Layout"
+  ],
+  "CustomField:Request_Date": [
+    "Layout:Rep Request Layout"
+  ],
+  "CustomField:Enrichment_Reason": [
+    "Layout:Rep Request Layout"
+  ],
+  "CustomField:Form_Name": [
+    "Layout:TypeForm Response Layout"
+  ],
+  "CustomField:AFI_text": [
+    "Layout:TypeForm Response Layout"
+  ],
+  "CustomField:Full_Name": [
+    "Layout:TypeForm Response Layout"
+  ],
+  "CustomField:Response_Negative": [
+    "Layout:TypeForm Response Layout"
+  ],
+  "CustomField:Response_Positive": [
+    "Layout:TypeForm Response Layout"
+  ],
+  "CustomField:Institutional_Impact": [
+    "Layout:TypeForm Response Layout"
+  ],
+  "CustomField:Areas_for_Improvement": [
+    "Layout:TypeForm Response Layout"
+  ],
+  "CustomField:Typeform_Form": [
+    "Layout:TypeForm Response Layout"
+  ],
+  "CustomField:Most_Recent_Update": [
+    "Layout:Project Health Update Layout"
+  ],
+  "CustomField:Project_Phase": [
+    "Layout:Project Health Update Layout"
+  ],
+  "CustomField:Project_Status": [
+    "Layout:Project Health Update Layout"
+  ],
+  "CustomField:Project_Health_Reason": [
+    "Layout:Project Health Update Layout"
+  ],
+  "CustomField:Updated_To": [
+    "Layout:Project Health Update Layout"
+  ],
+  "CustomField:Updated_From": [
+    "Layout:Project Health Update Layout"
+  ],
+  "CustomField:Current_Contract_Amount": [
+    "Layout:GovSpend Layout"
+  ],
+  "CustomField:Contract_With": [
+    "Layout:GovSpend Layout"
+  ],
+  "CustomField:Reference_Number": [
+    "Layout:GovSpend Layout"
+  ],
+  "CustomField:Bid_Due_Date": [
+    "Layout:GovSpend Layout"
+  ],
+  "CustomField:Description": [
+    "Layout:GovSpend Layout",
+    "Layout:Case Config Layout"
+  ],
+  "CustomField:Agency": [
+    "Layout:GovSpend Layout"
+  ],
+  "CustomField:GovSpend_Type": [
+    "Layout:GovSpend Layout"
+  ],
+  "CustomField:Sales_Leadership_Manual_override_Approva": [
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Estimated_Syllabus_Hours": [
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Sum_Final_Year_Products": [
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Renewal_Final_Year_Delta": [
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Upfront_Payment_Discount_Percentage": [
+    "Layout:AdminLayout"
+  ],
+  "CustomField:ISF_Override_Notes": [
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Related_Opportunity": [
+    "Layout:AdminLayout",
+    "Layout:Campaign Influence Contact Layout"
+  ],
+  "CustomField:TriggerCampaignInfluence": [
+    "Layout:AdminLayout"
+  ],
+  "CustomField:TriggerNotifications": [
+    "Layout:AdminLayout"
+  ],
+  "CustomField:RenewalFromOpportunityID": [
+    "Layout:AdminLayout"
+  ],
+  "CustomField:txs_sfdc_opp_id": [
+    "Layout:AdminLayout"
+  ],
+  "CustomField:Past_Account_Field": [
+    "Layout:Product to Account Field Layout"
+  ],
+  "CustomField:Account_Field": [
+    "Layout:Product to Account Field Layout"
+  ],
+  "CustomField:Resolution_Criteria": [
+    "Layout:Escalation Layout"
+  ],
+  "CustomField:Owner": [
+    "Layout:Escalation Layout"
+  ],
+  "CustomField:Territory_Id": [
+    "Layout:Closed Won States Layout"
+  ],
+  "CustomField:Billing_Field_Type": [
+    "Layout:Closed Won States Layout"
+  ],
+  "CustomField:X18DigitID": [
+    "Layout:Campaign Influence Contact Layout"
+  ],
+  "CustomField:Campaign_Action": [
+    "Layout:Campaign Influence Contact Layout"
+  ],
+  "CustomField:Influence_Date": [
+    "Layout:Campaign Influence Contact Layout"
+  ],
+  "CustomField:Influence_Type": [
+    "Layout:Campaign Influence Contact Layout"
+  ],
+  "CustomField:Hours_Formula": [
+    "Layout:Time Entry Layout"
+  ],
+  "CustomField:Annual_Quota": [
+    "Layout:Quota User Profile Layout",
+    "Layout:Quota User Layout"
+  ],
+  "CustomField:Q4_Quota": [
+    "Layout:Quota User Profile Layout",
+    "Layout:Quota User Layout"
+  ],
+  "CustomField:Q3_Quota": [
+    "Layout:Quota User Profile Layout",
+    "Layout:Quota User Layout"
+  ],
+  "CustomField:Q2_Quota": [
+    "Layout:Quota User Profile Layout",
+    "Layout:Quota User Layout"
+  ],
+  "CustomField:Q1_Quota": [
+    "Layout:Quota User Profile Layout",
+    "Layout:Quota User Layout"
+  ],
+  "CustomField:Question": [
+    "Layout:Knowledge Layout",
+    "Layout:Lightning Knowledge FAQ Layout"
+  ],
+  "CustomField:Answer": [
+    "Layout:Knowledge Layout",
+    "Layout:Lightning Knowledge FAQ Layout"
+  ],
+  "CustomField:Freshdesk_Folder_Name": [
+    "Layout:Lightning Knowledge FAQ Layout"
+  ],
+  "CustomField:Freshdesk_Category_Name": [
+    "Layout:Lightning Knowledge FAQ Layout"
+  ],
+  "CustomField:Freshdesk_Article_Id": [
+    "Layout:Lightning Knowledge FAQ Layout"
+  ],
+  "CustomField:Conversion_EOL_Date": [
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Economic_Buyer_MEDDPIC": [
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:Competiton_MEDDPIC": [
+    "Layout:Conversion Opp Layout"
+  ],
+  "CustomField:CC_emails": [
+    "Layout:Customer Portal Case Layout"
+  ],
+  "CustomField:Original_Opportunity": [
+    "Layout:No-Bid Layout"
+  ],
+  "CustomField:Pod": [
+    "Layout:Product Pod Mapping Layout",
+    "Layout:Tier Pod Slack Routing Layout"
+  ],
+  "CustomField:Tier": [
+    "Layout:Tier Pod Slack Routing Layout"
+  ],
+  "CustomField:Recipient_Slack_User_Id": [
+    "Layout:Tier Pod Slack Routing Layout"
+  ],
+  "CustomField:Recipient_Display_Name": [
+    "Layout:Tier Pod Slack Routing Layout"
+  ],
+  "CustomField:Channel_Id": [
+    "Layout:Tier Pod Slack Routing Layout"
+  ],
+  "CustomField:Config_Value": [
+    "Layout:Case Config Layout"
+  ],
+  "CustomObject:Oauth_Creds": [
+    "Flow:[Chatter] FeedItem After Save",
+    "Flow:[Case] Create a Case Screen Flow",
+    "Flow:OCR Automation - Create Contact Role on Disco Link"
+  ],
+  "CustomObject:Territory": [
+    "Flow:[Opportunity] Closed Won Flow 2024",
+    "Flow:[Territories] Territory Account Counts",
+    "Flow:[Account] After Save",
+    "Flow:[Opportunity] After Save",
+    "Flow:[Opportunity] Closed Won Flow H2'24",
+    "Flow:[Account ] After Save - V31",
+    "Flow:[Opportunity] After Save [New]",
+    "Flow:Opportunity - After Insert / Update",
+    "Flow:Opportunity - Before Insert / Update",
+    "Flow:Closed Won/Lost Slack Notification",
+    "FlexiPage:Territory_Record_Page"
+  ],
+  "CustomObject:Agenda": [
+    "Flow:[Case] After Save",
+    "Flow:[Opportunity] Closed Won Flow H2'24",
+    "Flow:Closed Won/Lost Slack Notification",
+    "Flow:[Case] Scheduled Awaiting Reply",
+    "Flow:[Discovery Call] After Save"
+  ],
+  "CustomObject:Call_Participant": [
+    "Flow:Gong for Salesforce - Create Contact Role",
+    "Flow:Gong for Salesforce - Enrich Contacts and Leads",
+    "Flow:Gong for Salesforce - Update Participant Contact Role",
+    "Flow:[Gong Conversation] After Save"
+  ],
+  "CustomObject:Gong_Call": [
+    "Flow:Gong Tracker-Record Triggered Post-Save Flow",
+    "Flow:Gong for Salesforce - Create Contact Role",
+    "Flow:Gong for Salesforce - Enrich Contacts and Leads",
+    "Flow:Gong for Salesforce - Update Participant Contact Role",
+    "Flow:Gong for Salesforce - Update Main Competitors",
+    "Flow:[Gong Conversation] 1 Minute After Create",
+    "Flow:[Gong Conversation] After Save",
+    "Flow:[Opportunity] One Time Onsites Retro",
+    "Flow:Gong for Salesforce - Create Event from Gong Conversation",
+    "Flow:[Opportunity] After Save",
+    "Flow:[Opportunity] After Save [New]",
+    "Flow:Opportunity - Before Insert / Update",
+    "FlexiPage:Gong_Interaction_Record_Page21",
+    "FlexiPage:Gong_Interaction_Record_Page22"
+  ],
+  "CustomObject:Tracker": [
+    "Flow:Gong Tracker-Record Triggered Post-Save Flow",
+    "Flow:Gong for Salesforce - Update Main Competitors"
+  ],
+  "CustomObject:cd_Trigger_Control": [
+    "ApexClass:cd_TriggerControl",
+    "ApexClass:cd_TriggerControlTest"
+  ],
+  "CustomObject:System_Survey": [
+    "Flow:[PKOCL] Screen Flow",
+    "Flow:[System Survey] Screen Flow",
+    "Flow:[Implementation Team Roster] Screen Flow"
+  ],
+  "CustomObject:invoice": [
+    "Flow:Invoice AfterSave"
+  ],
+  "CustomObject:transaction": [
+    "ApexClass:MaxioTransactionTriggerHandler",
+    "ApexClass:MaxioTransactionTriggerTest",
+    "ApexTrigger:MaxioTransactionTrigger"
+  ],
+  "CustomObject:Implementation_Project": [
+    "EmailTemplate:AccountImplementationTemperatureRed",
+    "ApexClass:testClassForTrigger",
+    "ApexClass:TestRLSTAGEWH3199IMPLEMENTATIONPROJECTC",
+    "ApexClass:ImplementationProjectTriggerHandler",
+    "ApexClass:ImplementationProjectTriggerHandlerTest",
+    "ApexClass:RocketlaneTimeTrackingQueue",
+    "ApexClass:RocketlaneTimeTrackingQueueTest",
+    "ApexTrigger:closedTrigger",
+    "ApexTrigger:RLSTAGEWH3199IMPLEMENTATIONPROJECTC",
+    "ApexTrigger:ImplementationProjectTrigger",
+    "ApexPage:Project",
+    "Flow:Implementation Project Mass Update Chckbox",
+    "Flow:Concessions",
+    "Flow:[Opportunity] PKO-Triggered Handoff Stage",
+    "Flow:[Event] 1 Minute After PKO",
+    "Flow:[Implementation Project] Executive Exception",
+    "Flow:[PKOCL] After Save",
+    "Flow:[TypeForm Response] After Save",
+    "Flow:[Implementation Project] 2 Minutes After Health Update",
+    "Flow:[Implementation Team Roster] Screen Flow",
+    "Flow:[Implementation Project] Parent Project Screen Info",
+    "Flow:[Implementation Project] After Save",
+    "Flow:[Opportunity] Closed Won Flow 2024",
+    "Flow:[Scheduled] Projects Fix",
+    "Flow:[Escalation] After Save",
+    "Flow:[Opportunity] Closed SiubFlow",
+    "Flow:[Implementation Project] Before Save",
+    "Flow:[Schedule] Daily Product Adoption Status Maintenance",
+    "Flow:[Account] After Save",
+    "Flow:[Opportunity] After Save",
+    "Flow:[Customer Snapshots] Batch Create",
+    "Flow:[Opportunity] Closed Won Flow H2'24",
+    "Flow:[Schedule] Daily Customer Products Update",
+    "Flow:[Opportunity] Closed SubFlow",
+    "Flow:[Scheduled] Account Implementation Project Maintenance",
+    "Flow:[Account ] After Save - V31",
+    "Flow:[Scheduled] Rocketlane Date Maintenance",
+    "Flow:[Scheduled–One Time] Implementation Project Status Update",
+    "Flow:[Opportunity] After Save [New]",
+    "Flow:Opportunity - After Insert / Update",
+    "Flow:Update Long Text",
+    "Flow:[Case] On Create",
+    "Flow:[Implementation Project] 2 MInutes After Launch Push",
+    "Flow:[Implementation Project] 2 MInutes After Kickoff Push",
+    "Flow:Role-Specific Tracked Hours",
+    "Flow:[Schedule] Weekly Role-Specific Hours Project Update",
+    "Flow:Closed Won/Lost Slack Notification",
+    "FlexiPage:Home_Page_Default",
+    "FlexiPage:Home_Page_Default1",
+    "FlexiPage:Implementation_Project"
+  ],
+  "CustomObject:Concession": [
+    "EmailTemplate:Concession",
+    "Flow:Concessions"
+  ],
+  "CustomObject:Discovery_Call": [
+    "ApexClass:OpportunityTriggerTest",
+    "ApexClass:OpportuntiyTriggerHandler",
+    "ApexClass:SdrKpiService",
+    "ApexClass:SdrKpiServiceTest",
+    "ApexClass:AccountStatusBatchTest",
+    "WaveDataflow:Analytics_B2BMADataflow",
+    "Flow:OCR Automation",
+    "Flow:[Event] After Save",
+    "Flow:[Discovery Call] After Save",
+    "Flow:[Discovery Call] 1 Minute After Creation",
+    "Flow:Task Record-Triggered Post-Save Flow",
+    "Flow:[Discovery Call] Screen Flow",
+    "Flow:[Schedule] Weekly SDR KPIs",
+    "Flow:[Discovery Call] Before Save",
+    "Flow:[Opportunity] Before Save",
+    "Flow:Opportunity - Before Insert / Update",
+    "Flow:OCR Automation - Create Contact Role on Disco Link",
+    "FlexiPage:Home_Page_Default",
+    "FlexiPage:Home_Page_Default1"
+  ],
+  "CustomObject:Queue": [
+    "Flow:[Opportunity] After Save",
+    "Flow:[Opportunity] After Save [New]",
+    "Flow:Opportunity - Before Insert / Update"
+  ],
+  "CustomObject:Pre_KO_Checklist": [
+    "Flow:[PKOCL] Screen Flow",
+    "Flow:[System Survey] Screen Flow",
+    "Flow:[PKOCL] After Save",
+    "Flow:[Implementation Team Roster] Screen Flow",
+    "Flow:[Opportunity] Closed Won Flow 2024",
+    "Flow:[Opportunity] Closed Won Flow H2'24",
+    "Flow:Closed Won/Lost Slack Notification"
+  ],
+  "CustomObject:RLSTAGEWH3199E": [
+    "ApexClass:TestRLSTAGEWH3199E",
+    "ApexTrigger:RLSTAGEWH3199USER",
+    "ApexTrigger:RLSTAGEWH3199OPPORTUNITY",
+    "ApexTrigger:RLSTAGEWH3199E",
+    "ApexTrigger:RLSTAGEWH3199IMPLEMENTATIONPROJECTC",
+    "ApexTrigger:RLSTAGEWH3199ACCOUNT"
+  ],
+  "CustomObject:Freshdesk_Ticket_Object": [
+    "Flow:[Frehdesk Ticket] After Save"
+  ],
+  "CustomObject:Behavior_Score_Helper": [
+    "Flow:[Contact] After Save"
+  ],
+  "CustomObject:LookupRollupSummary2": [
+    "dlrs__LookupRollupSummary2__mdt:Count_Child_Accounts",
+    "dlrs__LookupRollupSummary2__mdt:sdaiOnOppCount"
+  ],
+  "CustomObject:Employment_History": [
+    "Flow:[Contact] After Save"
+  ],
+  "CustomObject:Customer_Snapshot": [
+    "Flow:[Customer Snapshots] Batch Create"
+  ],
+  "CustomObject:NPS": [
+    "Flow:NPSCreated"
+  ],
+  "CustomObject:FlowTableViewDefinition": [
+    "Flow:Datatable Configuration Wizard"
+  ],
+  "CustomObject:Account_Contact_Role": [
+    "Flow:[ACR] One Time",
+    "Flow:zarchive-one time upsell type update",
+    "Flow:[PKOCL] After Save",
+    "Flow:[UserGems] On Create",
+    "Flow:[Scheduled] Active ACR Maintenance",
+    "Flow:[Account Contact Role] Create Screen Flow",
+    "Flow:[Account Contact Role] Deactivation Screen",
+    "Flow:[Account Contact Role] After Save",
+    "Flow:OneTimeProductCheck",
+    "Flow:[Contact] After Save",
+    "Flow:[Implementation Team Roster] Screen Flow",
+    "Flow:[Implementation Project] After Save",
+    "Flow:[Opportunity] Closed Won Flow 2024",
+    "Flow:[Schedule] Daily ACR Counter",
+    "Flow:[Opportunity] Closed Won Flow H2'24",
+    "Flow:[Schedule] Daily Customer Products Update",
+    "Flow:[Scheduled] Daily ACR Catalyst Push",
+    "Flow:Closed Won/Lost Slack Notification"
+  ],
+  "CustomObject:Rep_Request": [
+    "Flow:[Rep Request] Request Submission Screen Flow"
+  ],
+  "CustomObject:UserGems": [
+    "Flow:UG - Job Change Template",
+    "Flow:UG - Promotion Template",
+    "Flow:[User Gems] Task Notifications Manual",
+    "Flow:[UserGems] On Create"
+  ],
+  "CustomObject:TypeForm_Response": [
+    "Flow:[TypeForm Response] After Save"
+  ],
+  "CustomObject:Project_Health_Updates": [
+    "Flow:[Account] 7 Minutes After Health Update",
+    "Flow:[Implementation Project] 2 Minutes After Health Update",
+    "Flow:[Implementation Project] 2 MInutes After Launch Push",
+    "Flow:[Implementation Project] 2 MInutes After Kickoff Push"
+  ],
+  "CustomObject:DealHub_QuoteLine_Deletion": [
+    "ApexClass:DealHub_QuoteLineDeletionTest",
+    "ApexClass:DealHub_QuoteLineDeletionTriggerHandler"
+  ],
+  "CustomObject:QuoteLineSyncField": [
+    "ApexClass:QuoteSyncTestSuite",
+    "ApexClass:QuoteSyncUtil"
+  ],
+  "CustomObject:QuoteSyncField": [
+    "ApexClass:QuoteSyncTestSuite",
+    "ApexClass:QuoteSyncUtil"
+  ],
+  "CustomObject:DealHub_OpportunityLine_Deletion": [
+    "ApexClass:DealHub_OppLineDeletionTest",
+    "ApexClass:DealHub_OppLineDeletionTriggerHandler"
+  ],
+  "CustomObject:Product_to_Account_Fields": [
+    "Product_to_Account_Fields__mdt:Academic_Scheduling",
+    "Product_to_Account_Fields__mdt:Event_Scheduling",
+    "Product_to_Account_Fields__mdt:Catalog_and_Handbook",
+    "Product_to_Account_Fields__mdt:Syllabus_Management",
+    "Product_to_Account_Fields__mdt:Curriculum_Management",
+    "Product_to_Account_Fields__mdt:Course_Demand_Projections",
+    "Product_to_Account_Fields__mdt:Curriculum_Analytics",
+    "Product_to_Account_Fields__mdt:Assessment_Management",
+    "Product_to_Account_Fields__mdt:Faculty_Workload_Management"
+  ],
+  "CustomObject:CalendlyAction": [
+    "Flow:CancelEventTemplate",
+    "Flow:UpdateEventNoShowTemplate",
+    "Flow:CreateEventTemplate"
+  ],
+  "CustomObject:CalendlyLink": [
+    "Flow:MapUserCalendlyLinkTemplate"
+  ],
+  "CustomObject:CalendlyRoutingFormQuestionsAnswers": [
+    "Flow:CreateRoutingFormLeadTemplate"
+  ],
+  "CustomObject:CalendlyRoutingFormSubmission": [
+    "Flow:CreateRoutingFormLeadTemplate"
+  ],
+  "CustomObject:Escalation": [
+    "Flow:[Escalation] After Save"
+  ],
+  "CustomObject:Closed_Won_States": [
+    "Flow:[Opportunity] Closed Won Flow H2'24",
+    "Closed_Won_States__mdt:KS",
+    "Closed_Won_States__mdt:MS",
+    "Closed_Won_States__mdt:NY",
+    "Closed_Won_States__mdt:PA",
+    "Closed_Won_States__mdt:MN",
+    "Closed_Won_States__mdt:MO",
+    "Closed_Won_States__mdt:TN",
+    "Closed_Won_States__mdt:OH",
+    "Closed_Won_States__mdt:WI",
+    "Closed_Won_States__mdt:AL",
+    "Closed_Won_States__mdt:AZ",
+    "Closed_Won_States__mdt:CA",
+    "Closed_Won_States__mdt:CO",
+    "Closed_Won_States__mdt:CT",
+    "Closed_Won_States__mdt:DC",
+    "Closed_Won_States__mdt:FL",
+    "Closed_Won_States__mdt:GA",
+    "Closed_Won_States__mdt:HI",
+    "Closed_Won_States__mdt:IA",
+    "Closed_Won_States__mdt:ID",
+    "Closed_Won_States__mdt:IL",
+    "Closed_Won_States__mdt:IN",
+    "Closed_Won_States__mdt:KY",
+    "Closed_Won_States__mdt:LA",
+    "Closed_Won_States__mdt:MA",
+    "Closed_Won_States__mdt:MD",
+    "Closed_Won_States__mdt:ME",
+    "Closed_Won_States__mdt:WY",
+    "Closed_Won_States__mdt:MI",
+    "Closed_Won_States__mdt:MT",
+    "Closed_Won_States__mdt:NC",
+    "Closed_Won_States__mdt:NE",
+    "Closed_Won_States__mdt:NJ",
+    "Closed_Won_States__mdt:NM",
+    "Closed_Won_States__mdt:NV",
+    "Closed_Won_States__mdt:OK",
+    "Closed_Won_States__mdt:OR",
+    "Closed_Won_States__mdt:RI",
+    "Closed_Won_States__mdt:SC",
+    "Closed_Won_States__mdt:TX",
+    "Closed_Won_States__mdt:UT",
+    "Closed_Won_States__mdt:VA",
+    "Closed_Won_States__mdt:VT",
+    "Closed_Won_States__mdt:WA",
+    "Closed_Won_States__mdt:AK",
+    "Closed_Won_States__mdt:West_Indies",
+    "Closed_Won_States__mdt:Cayman_Islands_Grand_Cayman",
+    "Closed_Won_States__mdt:NH",
+    "Closed_Won_States__mdt:DE",
+    "Closed_Won_States__mdt:ON",
+    "Closed_Won_States__mdt:WV",
+    "Closed_Won_States__mdt:AB",
+    "Closed_Won_States__mdt:BC",
+    "Closed_Won_States__mdt:AR",
+    "Closed_Won_States__mdt:MB",
+    "Closed_Won_States__mdt:ND",
+    "Closed_Won_States__mdt:SD",
+    "Closed_Won_States__mdt:Qatar",
+    "Closed_Won_States__mdt:Argentina",
+    "Closed_Won_States__mdt:Singapore"
+  ],
+  "CustomObject:Campaign_Influence_Contacts": [
+    "Flow:[Opportunity Sub Flow] Campaign Influence"
+  ],
+  "CustomObject:Time_Entry": [
+    "ApexClass:RocketlaneTimeTrackingQueue",
+    "ApexClass:RocketlaneTimeTrackingQueueTest",
+    "Flow:Role-Specific Tracked Hours",
+    "Flow:[Schedule] Weekly Role-Specific Hours Project Update"
+  ],
+  "CustomObject:Deeto_Engagement_Standalone": [
+    "Flow:Deeto Engagement RollUp Handler - Engagement (CREATE/UPDATE)",
+    "Flow:Deeto Engagement RollUp Handler - Engagement (DELETE)",
+    "Flow:Deeto Engagement RollUp Handler - Opportunity"
+  ],
+  "CustomObject:Deeto_Referral": [
+    "Flow:Convert Deeto Referral to a Lead",
+    "Flow:Deeto: Convert Lead To Qualified"
+  ],
+  "CustomObject:Knowledge": [
+    "ApexClass:ArticleController",
+    "ApexClass:ArticleControllerTest",
+    "FlexiPage:Knowledge_Record_Page1"
+  ],
+  "CustomObject:Custom_Registration_Configuration": [
+    "expcloud__Custom_Registration_Configuration__mdt:Company_Name"
+  ],
+  "CustomObject:Experience_Cloud_Event": [
+    "Flow:Create Error Log for Experience Cloud Custom Components"
+  ],
+  "CustomObject:Experience_Cloud_Log": [
+    "Flow:Create Error Log for Experience Cloud Custom Components"
+  ],
+  "CustomObject:Jira_Issue": [
+    "Flow:Jira Issue Case Sync",
+    "Flow:Case Jira Push Sync"
+  ],
+  "CustomObject:Sync_Error": [
+    "Flow:Jira Error Notifications"
+  ],
+  "CustomObject:User": [
+    "Flow:PeekLogic Map Bug Fields",
+    "Flow:PeekLogic Map Feedback Fields",
+    "Flow:PeekLogic Map Task Fields"
+  ],
+  "CustomObject:Product_Pod_Mapping": [
+    "ApexClass:CaseTierSlackQueueable",
+    "Product_Pod_Mapping__mdt:Academic_Scheduling",
+    "Product_Pod_Mapping__mdt:Admin_Panel",
+    "Product_Pod_Mapping__mdt:Catalog_and_Handbook",
+    "Product_Pod_Mapping__mdt:Course_Demand_Projections",
+    "Product_Pod_Mapping__mdt:Curriculum_Management",
+    "Product_Pod_Mapping__mdt:Event_Scheduling",
+    "Product_Pod_Mapping__mdt:Faculty_Workload_Management",
+    "Product_Pod_Mapping__mdt:Integrations_Hub",
+    "Product_Pod_Mapping__mdt:Other",
+    "Product_Pod_Mapping__mdt:Syllabus_Management"
+  ],
+  "CustomObject:Tier_Pod_Slack_Routing": [
+    "ApexClass:CaseTierSlackQueueable",
+    "Tier_Pod_Slack_Routing__mdt:Tier2_CM_Ash",
+    "Tier_Pod_Slack_Routing__mdt:Tier2_CrossCutting_Ash",
+    "Tier_Pod_Slack_Routing__mdt:Tier2_CrossCutting_Danielle",
+    "Tier_Pod_Slack_Routing__mdt:Tier2_SM_Danielle",
+    "Tier_Pod_Slack_Routing__mdt:Tier3_CM_Tyler",
+    "Tier_Pod_Slack_Routing__mdt:Tier3_CrossCutting_Sophia",
+    "Tier_Pod_Slack_Routing__mdt:Tier3_CrossCutting_Tyler",
+    "Tier_Pod_Slack_Routing__mdt:Tier3_SM_Sophia"
+  ],
+  "CustomObject:Case_Config": [
+    "Flow:[Screen Flow] Create New Case",
+    "Case_Config__mdt:PEQ_Process_Bug",
+    "Case_Config__mdt:PEQ_Process_Feature_Request",
+    "Case_Config__mdt:PEQ_Process_Internal_Bug",
+    "Case_Config__mdt:PEQ_Process_Task",
+    "Case_Config__mdt:Workato_Associate_API_Key"
+  ],
+  "FlexiPage:Customer_Triage": [
+    "CustomTab:Customer_Triage"
+  ],
+  "FlexiPage:My_Open_Opportunities": [
+    "CustomTab:My_Open_Opportunities"
+  ],
+  "FlexiPage:Services_Triage1": [
+    "CustomTab:Services_Triage"
+  ],
+  "FlexiPage:AI_Customer_Success": [
+    "CustomTab:AI_Customer_Success"
+  ],
+  "FlexiPage:Territory_Record_Page": [
+    "CustomObject:Territory"
+  ],
+  "FlexiPage:Gong_Interaction_Record_Page22": [
+    "CustomObject:Gong_Call"
+  ],
+  "FlexiPage:Implementation_Project": [
+    "CustomObject:Implementation_Project"
+  ],
+  "FlexiPage:Discovery_Call_Record_Page": [
+    "CustomObject:Discovery_Call"
+  ],
+  "FlexiPage:NPS_Record_Page": [
+    "CustomObject:NPS"
+  ],
+  "FlexiPage:Account_Contact_Role_Record_Page": [
+    "CustomObject:Account_Contact_Role"
+  ],
+  "FlexiPage:Rep_Request_Record_Page": [
+    "CustomObject:Rep_Request"
+  ],
+  "FlexiPage:UserGems_Record_Page21": [
+    "CustomObject:UserGems"
+  ],
+  "FlexiPage:Typeform_Form1": [
+    "CustomObject:Form"
+  ],
+  "FlexiPage:TypeForm_Response_Record_Page": [
+    "CustomObject:TypeForm_Response"
+  ],
+  "FlexiPage:Escalation_Page": [
+    "CustomObject:Escalation"
+  ],
+  "FlexiPage:Time_Entry_Record_Page1": [
+    "CustomObject:Time_Entry"
+  ],
+  "FlexiPage:Customer_Account_Record_Page": [
+    "StandardEntity:Account"
+  ],
+  "FlexiPage:Case_Record_Page1": [
+    "StandardEntity:Case"
+  ],
+  "FlexiPage:Contact_Record_Page_v2": [
+    "StandardEntity:Contact"
+  ],
+  "FlexiPage:Lead_Record_Page1": [
+    "StandardEntity:Lead"
+  ],
+  "FlexiPage:Lead": [
+    "StandardEntity:Lead"
+  ],
+  "FlexiPage:New_Opportunity_Page": [
+    "StandardEntity:Opportunity"
+  ],
+  "FlexiPage:Quote_Record_Page": [
+    "StandardEntity:Quote"
+  ],
+  "FlexiPage:Task_Lightning_Layout": [
+    "StandardEntity:Task"
+  ],
+  "FlexiPage:Sales_UtilityBar": [
+    "CustomApplication:Sales"
+  ],
+  "FlexiPage:Relationship_Management_UtilityBar": [
+    "CustomApplication:Relationship_Management"
+  ],
+  "FlexiPage:Lead_Generation_UtilityBar": [
+    "CustomApplication:Lead_Generation"
+  ],
+  "FlexiPage:Sales_Operations_UtilityBar": [
+    "CustomApplication:Sales_Operations"
+  ],
+  "FlexiPage:Sales_Leadership_UtilityBar": [
+    "CustomApplication:Sales_Leadership"
+  ],
+  "FlexiPage:ContactCenter_UtilityBar": [
+    "CustomApplication:ContactCenter"
+  ],
+  "FlexiPage:CrisisCenter_UtilityBar": [
+    "CustomApplication:CrisisCenter"
+  ],
+  "FlexiPage:FlowsApp_UtilityBar": [
+    "CustomApplication:FlowsApp"
+  ],
+  "FlexiPage:LightningService_UtilityBar": [
+    "CustomApplication:Service Console"
+  ],
+  "FlexiPage:Integration_UtilityBar": [
+    "CustomApplication:Integration App"
+  ],
+  "FlexiPage:IndustriesEcm_UtilityBar": [
+    "CustomApplication:IndustriesEcm"
+  ],
+  "FlexiPage:MediaAdSalesManagement_UtilityBar": [
+    "CustomApplication:Media Ad Sales Management"
+  ],
+  "FlexiPage:AdvertisingInventoryCalendar_UtilityBar": [
+    "CustomApplication:Advertising Inventory Calendar"
+  ],
+  "FlexiPage:CommandCenterApp_UtilityBar": [
+    "CustomApplication:Command Center"
+  ]
+}

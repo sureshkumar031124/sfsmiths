@@ -33,7 +33,7 @@ risky step waits for **you**.
 
 ```bash
 git clone <your-fork> sfsmiths && cd sfsmiths
-npm ci && npm run build && npm test           # 75 offline tests: state machine, gates, hooks, lifecycle, UI, MCP, scripts, config layers, Run 1 fixes
+npm ci && npm run build && npm test           # 77 offline tests: state machine, gates, hooks, lifecycle, UI, MCP, scripts, config layers, Run 1 fixes
 npm run install:toolkit                       # installs ~/.sfsmiths/bin (hooks call this copy, never the repo)
 export PATH="$HOME/.sfsmiths/bin:$PATH"
 
@@ -75,7 +75,7 @@ Deep dive: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · daily operations: [do
 
 ## Status
 
-**v0.1.0 — complete design implementation, verified offline.** Build, 75 tests (state machine, 15 gates, hook denials,
+**v0.1.0 — complete design implementation, verified offline.** Build, 77 tests (state machine, 15 gates, hook denials,
 full ticket lifecycle incl. rejection and support-agent flows, UI, MCP servers), hardcode-lint and hook latency pass in CI. What still needs *your* orgs is
 listed in [docs/SETUP.md → Phase 0 spikes](docs/SETUP.md#phase-0-spikes) (≈3½ days): sf-skills plugin coexistence,
 read-only-user Tooling rights, email canary result shape, baseline drift patterns, live hook behaviour. Run them before

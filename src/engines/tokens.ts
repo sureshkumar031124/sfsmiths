@@ -146,6 +146,27 @@ export function effortForAgent(agent: string, p: ProjectPaths = projectPaths()):
   return e && e !== "inherit" ? e : undefined;
 }
 
+/**
+ * D-094 migration. A manifest written before `fresh_tokens` existed carries a cache-INFLATED total, so falling
+ * back to it treats ~32M cache-read tokens as fresh and parks a ticket that is actually under budget (DEMO-101:
+ * stored total 31,965,415, true fresh 1,489,752 — under the 1.5M limit). The per-run usage is still on record in
+ * metrics/agent-runs.jsonl, so recompute the truth from it instead of guessing. Returns undefined when there is
+ * genuinely nothing recorded — then the cap stays on the total, because an unknown must not silently become 0.
+ */
+export function backfillTicketBudget(ticket: string, p: ProjectPaths = projectPaths()): { fresh: number; usd: number; runs: number } | undefined {
+  const runs = readAgentRuns(p).filter((r) => r.ticket === ticket);
+  if (!runs.length) return undefined;
+  const prices = loadPrices(p);
+  let fresh = 0;
+  let usd = 0;
+  for (const r of runs) {
+    fresh += r.fresh_tokens ?? freshTokens(r.usage);
+    // pre-D-094 runs recorded usd: 0 because no price table shipped — re-price them now that one does
+    usd += r.usd || (priceFor(r.model, prices) ? estimateUsd(r.model, r.usage, p) ?? 0 : 0);
+  }
+  return { fresh, usd, runs: runs.length };
+}
+
 export function readAgentRuns(p: ProjectPaths = projectPaths()): AgentRun[] {
   const out: AgentRun[] = [];
   for (const l of readLines(path.join(p.metrics, "agent-runs.jsonl"))) {

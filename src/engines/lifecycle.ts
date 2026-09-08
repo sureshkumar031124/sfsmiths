@@ -10,6 +10,7 @@ import { loadManifest, newManifest, saveManifest, stageRecord, tryLoadManifest, 
 import { projectPaths, vaultDir, sanitizeTicket, type ProjectPaths } from "../core/paths.js";
 import { STAGE_BY_ID, STAGES, stageIndex, markStageDone, markAgentEnded } from "../core/state-machine.js";
 import { runStageGates } from "../gates/registry.js";
+import { backfillTicketBudget } from "./tokens.js";
 import { setActiveTicket } from "../core/session.js";
 import { orgDisplay } from "../core/sf.js";
 import { ensureDir, exists, nowIso, readJsonOr, readTextOr, tsCompact, writeJsonAtomic, writeTextAtomic, SfsmithsError } from "../core/util.js";
@@ -173,7 +174,22 @@ export async function resumeTicket(key: string, opts: { restartFrom?: string; p?
   const vault = vaultDir(p, m.ticket);
   const actions: string[] = [];
 
-  // 0. recovery (D-093) — only when the human did not ask for an explicit restart
+  // 0a. budget migration (D-094) — a manifest older than fresh_tokens carries a cache-inflated total; recompute
+  //     the truth from the recorded runs rather than treating cache reads as fresh and parking a healthy ticket.
+  if (m.budget.fresh_tokens === undefined) {
+    const back = backfillTicketBudget(m.ticket, p);
+    if (back) {
+      m.budget.fresh_tokens = back.fresh;
+      if (!m.budget.usd && back.usd) m.budget.usd = back.usd;
+      saveManifest(m, p);
+      actions.push(`budget migrated (D-094): fresh tokens ${back.fresh.toLocaleString()} recomputed from ${back.runs} recorded run(s) — the stored total ${m.budget.tokens.toLocaleString()} includes cache reads${back.usd ? `; cost re-priced to $${back.usd.toFixed(2)}` : ""}`);
+      emitEvent({ ticket: m.ticket, type: "tokens.recorded", stage: m.stage, data: { migrated: true, fresh_tokens: back.fresh, total_tokens: m.budget.tokens, usd: m.budget.usd, runs: back.runs } }, p);
+    } else {
+      actions.push(`budget: this ticket has no recorded runs, so fresh tokens cannot be recomputed — the cap stays on the stored total (${m.budget.tokens.toLocaleString()})`);
+    }
+  }
+
+  // 0b. recovery (D-093) — only when the human did not ask for an explicit restart
   if (!opts.restartFrom) {
     const rec = await recoverFinishedStage(m, p);
     if (rec) {
