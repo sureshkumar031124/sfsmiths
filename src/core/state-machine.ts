@@ -38,7 +38,12 @@ export const STAGES: StageDef[] = [
   // no preprod org configured (flag set by the baseline engine) → nothing to deploy to or test in: both preprod stages are skipped
   { id: "deploy_uat",  title: "Deploy to preprod (human)", kind: "human", gates: [], always_human: true,
     optional: (m) => m.flags["no_preprod"] === true },
-  { id: "qa_uat",      title: "QA (preprod)",    kind: "agent", agent: "a5-qa",            gates: ["assertion-referee", "contract-check"], output: "07-uat-report.md",
+  // D-099: after the human deploys, the toolkit retrieves the same components from preprod (engine keychain) and compares
+  // fingerprints with the dev source — "did everything we built arrive?" is a hash comparison, not anyone's opinion.
+  // A mismatch sends the ticket back to the deploy step with the list; QA in preprod never runs on a partial deploy.
+  { id: "uat_verify",  title: "Preprod parity (toolkit)", kind: "toolkit", gates: [], output: "07a-uat-parity.md",
+    optional: (m) => m.flags["no_preprod"] === true },
+  { id: "qa_uat",      title: "QA (preprod)",    kind: "agent", agent: "a5-qa",            gates: ["uat-parity", "assertion-referee", "contract-check"], output: "07-uat-report.md",
     optional: (m) => m.flags["no_preprod"] === true },
   { id: "deploy_prod", title: "Deploy to production (human)", kind: "human", gates: [], always_human: true },
   { id: "prod_verify", title: "Production verify (read-only)", kind: "toolkit", gates: [], output: "08-prod-verify.md" },
@@ -299,6 +304,7 @@ function toolkitVerb(stage: string): string {
   switch (stage) {
     case "open": return "open";
     case "prod_verify": return "prod-verify";
+    case "uat_verify": return "uat-parity";
     case "learn": return "learn-digest";
     default: return stage;
   }
@@ -328,7 +334,7 @@ function startStage(m: Manifest, cfg: AllConfig, s: StageDef, notes: string[]): 
     m.status = "waiting_human";
     const kind: NonNullable<Manifest["waiting"]>["kind"] = s.id === "remediation" ? "remediation" : "deploy";
     const prompt = s.id === "deploy_uat"
-      ? `Read work/${m.ticket}/06b-deploy-brief.md → deploy to preprod with your deploy tool → then: sfsmiths-human deployed ${m.ticket} --org preprod`
+      ? `Read work/${m.ticket}/06b-deploy-brief.md → deploy exactly the components in work/${m.ticket}/06c-deploy-manifest.md (artifacts/package.xml) to preprod with your deploy tool → then: sfsmiths-human deployed ${m.ticket} --org preprod (the toolkit then verifies the deploy against the dev source before QA runs)`
       : s.id === "deploy_prod"
         ? `Preprod QA passed (07-uat-report.md). Deploy to production (RunLocalTests, window check) → then: sfsmiths-human deployed ${m.ticket} --org production`
         : `Run the reviewed remediation script (work/${m.ticket}/artifacts/remediation/) in production yourself → then: sfsmiths-human verify ${m.ticket} --remediation`;

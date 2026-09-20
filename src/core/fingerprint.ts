@@ -42,6 +42,16 @@ export function componentFingerprint(root: string, files: string[]): string {
   return sha256(parts.join("\n"));
 }
 
+/**
+ * Path-independent component fingerprint: hash over (file basename, normalised content), sorted. Two copies of the same
+ * component retrieved into different directory layouts (org/force-app/main/default/classes/X.cls vs a temp retrieve dir)
+ * compare equal — the UAT parity check (D-099) needs exactly this, where `componentFingerprint` (path-inclusive) would not.
+ */
+export function componentContentFingerprint(root: string, files: string[]): string {
+  const parts = files.map((f) => `${path.basename(f)}\n${fileFingerprint(path.join(root, f))}`).sort();
+  return sha256(parts.join("\n"));
+}
+
 /** Fingerprint a whole directory tree (sorted, normalised). */
 export function treeFingerprint(root: string): { hash: string; files: number } {
   const files = walkFiles(root);

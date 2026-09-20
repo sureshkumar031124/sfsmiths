@@ -10,6 +10,14 @@ metrics/
 *.log
 .DS_Store
 .claude/settings.local.json
+# org map: generated from YOUR org (org id, hostnames, every class/flow name) — never publish it; the README stays
+docs/org-map/*
+!docs/org-map/README.md
+# generated org-convention skills carry your org's comment/naming samples
+.claude/skills/*-comment-conventions/
+.claude/skills/*-naming-rules/
+!.claude/skills/std-comment-conventions/
+!.claude/skills/std-naming-rules/
 tests-ui/.auth/
 tests-ui/storageState*.json
 tests-ui/test-results/
@@ -31,3 +39,6 @@ knowledge/lessons/RETIRED/processed/
 spikes/**/out/
 .mcp.json
 knowledge/lessons/MEMORY-AUDIT-*.md
+
+# your own company names / project keys for scripts/hardcode-lint.mjs (see .hardcode-lint.json.example)
+.hardcode-lint.json

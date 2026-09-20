@@ -19,6 +19,7 @@ export type EventType =
   | "canary.pass" | "canary.fail" | "canary.unknown"
   | "email_guard.blocked"
   | "deploy.dev" | "deploy.marked" | "prod.verified" | "remediation.verified" | "escaped_defect"
+  | "uat.parity_ok" | "uat.parity_failed" | "human.parity_accepted"
   | "budget.exceeded" | "tokens.recorded" | "test.run"
   | "lesson.candidate" | "lesson.approved" | "lesson.rejected" | "lesson.promoted" | "lesson.retired" | "lesson.reverted"
   | "resume.classified" | "tracker.changed";

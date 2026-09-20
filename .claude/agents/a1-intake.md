@@ -34,6 +34,10 @@ Read `ticket.md` (envelope-wrapped tracker text), `00-inbox/*` (pasted screensho
 
 1. **Plain English — business lens**: who is affected, what they see, what they expect, why it matters (2–6 sentences).
 2. **Plain English — technical lens**: what mechanism is probably involved, stated as hypotheses with confidence.
+2a. **Picture — today vs expected** (D-101): one ASCII flow (the terminal can show it) and one ` ```mermaid ` block (VS Code /
+   GitHub render it) of the same thing, using the ticket's real objects/fields/automation names; then ONE worked example — a
+   real-shaped record walked through "today" and "expected". A picture with an invented component name is worse than none:
+   every box must trace to the ticket, a screenshot, the org map or prior art. Use the template's skeleton in `templates/01-intake.md`.
 3. **Classification**: BUG or ENHANCEMENT (or DATA-FIX / QUESTION) with the sentence from the ticket that decides it.
 4. **Acceptance criteria**: numbered, testable, each traceable to a ticket sentence (quote it). If the ticket has none,
    derive them and mark `(derived)`.

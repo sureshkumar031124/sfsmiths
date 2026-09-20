@@ -7,7 +7,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { loadConfig, devOrg, preprodOrg, type AllConfig, type Keychain } from "../core/config.js";
+import { loadConfig, devOrg, preprodOrg, emailDeliveryMode, emailCensusFields, type AllConfig, type Keychain, type EmailDeliveryMode } from "../core/config.js";
 import { emitEvent } from "../core/events.js";
 import { componentKeyFromPath } from "../core/fingerprint.js";
 import { git } from "../core/git.js";
@@ -15,7 +15,7 @@ import { loadManifest } from "../core/manifest.js";
 import { projectPaths, vaultDir, type ProjectPaths } from "../core/paths.js";
 import { apexRunAnonymous, apexRunTests, deployStart, describe, orgDisplay, retrieveStart, sf, soql, type ApexTestResult } from "../core/sf.js";
 import { run, which } from "../core/shell.js";
-import { ensureDir, exists, nowIso, readJsonOr, sha256, tsCompact, uniq, writeJsonAtomic, SfsmithsError } from "../core/util.js";
+import { ensureDir, exists, nowIso, readJsonOr, sha256, tsCompact, uniq, writeJsonAtomic, writeTextAtomic, SfsmithsError } from "../core/util.js";
 import { compareExpected } from "../engines/lifecycle.js";
 import type { AnalyzerResult, TestRunFile } from "../gates/verdicts.js";
 import { notify } from "../engines/notify.js";
@@ -53,7 +53,12 @@ function orgFor(cfg: AllConfig, which: "dev" | "uat"): { alias: string; keychain
 
 /* ---------------- canary (P9 layer 2) ---------------- */
 
-export interface CanaryState { at: string; org: string; result: "pass" | "fail" | "unknown"; detail: string; recipient_masked: string }
+export interface CanaryCensusRow { field: string; non_allowlisted: number | null; note?: string }
+export interface CanaryState {
+  at: string; org: string; result: "pass" | "fail" | "unknown"; detail: string; recipient_masked: string;
+  mode?: EmailDeliveryMode;            // D-102: which containment rule this verdict applied (absent on pre-D-102 files → blocked)
+  census?: CanaryCensusRow[];          // allowlist_only only: addresses outside the allowlist per configured field
+}
 
 export function canaryFile(p: ProjectPaths, alias: string): string {
   return path.join(p.state, "canary", `${alias}.json`);
@@ -76,11 +81,41 @@ export interface CanaryApexResult { success: boolean; errors: { status: string; 
  * NO_MASS_MAIL_PERMISSION. Either is a PASS. success:true means the mail left the org → FAIL. Anything else → unknown (P11).
  */
 export const CANARY_BLOCKED_STATUSES = ["NO_SINGLE_MAIL_PERMISSION", "NO_MASS_MAIL_PERMISSION"];
-export function classifyCanaryResult(res: CanaryApexResult): { result: CanaryState["result"]; detail: string } {
-  if (res.success) return { result: "fail", detail: "email SENT — deliverability is All email (or your address is allowlisted in the org). UNSAFE for test data." };
+export function classifyCanaryResult(res: CanaryApexResult, mode: EmailDeliveryMode = "blocked"): { result: CanaryState["result"]; detail: string } {
   const blocked = res.errors.find((e) => CANARY_BLOCKED_STATUSES.includes(e.status));
+  if (mode === "allowlist_only") {
+    // D-102: delivery ON is acceptable here — the census (run next) is what makes it safe; a blocked org is safe too
+    if (res.success) return { result: "pass", detail: "probe delivered to the canary address — delivery is ON; safe ONLY while the e-mail census finds no address outside the allowlist" };
+    if (blocked) return { result: "pass", detail: `${blocked.status} — the org blocks outbound e-mail anyway (allowlist_only mode, nothing can leave)` };
+    return { result: "unknown", detail: `unexpected: ${res.errors.map((e) => `${e.status}: ${e.message}`).join("; ") || "no errors, not success"}` };
+  }
+  if (res.success) return { result: "fail", detail: "email SENT — deliverability is All email (or your address is allowlisted in the org). UNSAFE for test data in blocked mode: switch the sandbox to System email only, or (Developer sandboxes with team-created data only) set safety.email_delivery: allowlist_only in the UI → Safety screen." };
   if (blocked) return { result: "pass", detail: `${blocked.status} — the org blocks outbound e-mail (System email only / No access) confirmed` };
   return { result: "unknown", detail: `unexpected: ${res.errors.map((e) => `${e.status}: ${e.message}`).join("; ") || "no errors, not success"}` };
+}
+
+/** One SOQL COUNT() per census field: how many records carry an address outside the allowlist. Globs → LIKE patterns. */
+export function censusQuery(field: string, allow: string[]): string {
+  const [obj, fld] = field.split(".");
+  const esc = (s: string) => s.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+  const clauses = allow.map((g) => g.includes("*") ? `(NOT ${fld} LIKE '${esc(g.replace(/%/g, "\\%").replace(/\*/g, "%"))}')` : `${fld} != '${esc(g)}'`);
+  return `SELECT COUNT() FROM ${obj} WHERE ${fld} != null${clauses.length ? " AND " + clauses.join(" AND ") : ""}`;
+}
+
+/** D-102 e-mail census on the development org: every configured field must hold only allowlisted addresses. */
+export async function emailCensus(alias: string, keychain: Keychain, cfg: AllConfig): Promise<{ ok: boolean; rows: CanaryCensusRow[]; detail: string }> {
+  const rows: CanaryCensusRow[] = [];
+  for (const field of emailCensusFields(cfg.safety)) {
+    const r = await soql(censusQuery(field, cfg.safety.allowed_test_emails), alias, { keychain });
+    if (!r.ok || !r.data) { rows.push({ field, non_allowlisted: null, note: `query failed: ${r.error ?? "unknown"} — fix or remove the field from safety.email_census_fields` }); continue; }
+    const n = Number(r.data.totalSize ?? (r.data.records?.[0] as { expr0?: number } | undefined)?.expr0 ?? NaN);
+    rows.push({ field, non_allowlisted: Number.isFinite(n) ? n : null, note: Number.isFinite(n) ? undefined : "unreadable count" });
+  }
+  const unknown = rows.filter((x) => x.non_allowlisted === null);
+  const dirty = rows.filter((x) => (x.non_allowlisted ?? 0) > 0);
+  if (unknown.length) return { ok: false, rows, detail: `census could not read ${unknown.map((x) => x.field).join(", ")} — not safe to assume (P11)` };
+  if (dirty.length) return { ok: false, rows, detail: `census found addresses OUTSIDE the allowlist: ${dirty.map((x) => `${x.field}=${x.non_allowlisted}`).join(", ")} — scrub them (or use blocked mode) before any test data is created` };
+  return { ok: true, rows, detail: `census clean: ${rows.map((x) => `${x.field}=0`).join(", ")}` };
 }
 
 export async function runCanary(alias: string, opts: { p?: ProjectPaths; cfg?: AllConfig } = {}): Promise<CanaryState> {
@@ -124,8 +159,16 @@ System.debug('SFSMITHS_CANARY_RESULT:' + JSON.serialize(new Map<String,Object>{ 
     else if (!m) state = { at: nowIso(), org: org.alias, result: "unknown", detail: "canary marker not found in debug log", recipient_masked: masked };
     else {
       const res = JSON.parse(m[1]) as CanaryApexResult;
-      const c = classifyCanaryResult(res);
-      state = { at: nowIso(), org: org.alias, result: c.result, detail: c.detail, recipient_masked: masked };
+      const mode = emailDeliveryMode(cfg.safety);
+      const c = classifyCanaryResult(res, mode);
+      state = { at: nowIso(), org: org.alias, result: c.result, detail: c.detail, recipient_masked: masked, mode };
+      // D-102: in allowlist_only mode a PASS is conditional on the census — no address outside the allowlist may exist in the org
+      if (mode === "allowlist_only" && c.result === "pass") {
+        const census = await emailCensus(org.alias, org.keychain, cfg);
+        state.census = census.rows;
+        if (!census.ok) { state.result = "fail"; state.detail = `${c.detail}; ${census.detail}`; }
+        else state.detail = `${c.detail}; ${census.detail}`;
+      }
     }
   } finally {
     try { fs.unlinkSync(tmp); } catch { /* ignore */ }
@@ -213,6 +256,105 @@ export async function privilegedRetrieve(which: "dev" | "uat", metadata: string[
   const r = await retrieveStart(org.alias, org.keychain, { metadata, outputDir: outDir, cwd: p.org });
   if (!r.ok) throw new SfsmithsError(`retrieve failed: ${r.error}`, "RETRIEVE_FAILED");
   return r.data;
+}
+
+/* ---------------- preprod parity (D-099) ---------------- */
+
+export type ParityStatus = "MATCH" | "DIFFERENT" | "MISSING_IN_UAT" | "STILL_IN_UAT" | "DELETED_OK" | "ACCEPTED";
+export interface ParityRow { key: string; action: "added" | "modified" | "deleted"; dev_sha: string; uat_sha?: string; status: ParityStatus; uat_files?: string[]; note?: string }
+export interface ParityResult {
+  at: string; ticket: string; org?: string;
+  source: "retrieve" | "human" | "skipped";
+  ok: boolean;
+  skipped?: string;               // no preprod configured
+  unavailable?: string;           // could not retrieve — never counts as ok
+  rows: ParityRow[];
+  files_hash: string;             // the deploy manifest's files_hash this verdict belongs to
+  accepted?: { keys: string[]; reason: string; at: string };
+}
+
+export function parityFile(p: ProjectPaths, ticket: string): string { return path.join(vaultDir(p, ticket), "validations", "uat-parity.json"); }
+
+const PARITY_OK: Set<ParityStatus> = new Set(["MATCH", "DELETED_OK", "ACCEPTED"]);
+
+/**
+ * "Did everything we built in dev actually arrive in preprod?" — the human deploys (P3), the toolkit verifies (P5).
+ * Retrieves the ticket's deploy-manifest components from preprod with the ENGINE keychain (P2: agents never touch it),
+ * fingerprints them path-independently and compares with the dev source. A human-accepted verdict for the same source
+ * hash (sfsmiths-human parity --accept …, reason required, logged) is honoured instead of a retrieve.
+ */
+export async function uatParity(ticket: string, p: ProjectPaths = projectPaths()): Promise<ParityResult> {
+  const cfg = loadConfig(p);
+  const m = loadManifest(ticket, p);
+  const { buildDeployManifest } = await import("../engines/deploy-manifest.js");
+  const mf = await buildDeployManifest(ticket, p);
+  const file = parityFile(p, ticket);
+  const finish = (r: ParityResult) => { writeJsonAtomic(file, r); writeTextAtomic(path.join(vaultDir(p, ticket), "07a-uat-parity.md"), renderParityMd(r)); emitEvent({ ticket, type: r.ok ? "uat.parity_ok" : "uat.parity_failed", stage: "uat_verify", data: { source: r.source, org: r.org, rows: r.rows.length, not_ok: r.rows.filter((x) => !PARITY_OK.has(x.status)).map((x) => `${x.key}:${x.status}`), unavailable: r.unavailable, skipped: r.skipped } }, p); return r; };
+  const pre = preprodOrg(cfg);
+  if (!pre || m.flags["no_preprod"] === true) return finish({ at: nowIso(), ticket, source: "skipped", ok: true, skipped: "no preprod org configured (dev-only run)", rows: [], files_hash: mf.files_hash });
+  // a human decision for exactly this source stands (P-human authority, recorded)
+  const prev = readJsonOr<ParityResult | undefined>(file, undefined);
+  if (prev && prev.source === "human" && prev.files_hash === mf.files_hash && prev.ok) return prev;
+  if (!mf.components.length) return finish({ at: nowIso(), ticket, org: pre.alias, source: "retrieve", ok: true, rows: [], files_hash: mf.files_hash });
+  const tmp = path.join(p.state, "tmp", `parity-${tsCompact()}`);
+  ensureDir(tmp);
+  try {
+    try {
+      await privilegedRetrieve("uat", mf.components.map((c) => c.key), tmp, p);
+    } catch (e) {
+      return finish({ at: nowIso(), ticket, org: pre.alias, source: "retrieve", ok: false, unavailable: `could not retrieve from ${pre.alias}: ${(e as Error).message}`, rows: mf.components.map((c) => ({ key: c.key, action: c.action, dev_sha: c.sha, status: c.action === "deleted" ? "STILL_IN_UAT" : "MISSING_IN_UAT" as ParityStatus, note: "not verified" })), files_hash: mf.files_hash });
+    }
+    const { groupComponents, componentContentFingerprint } = await import("../core/fingerprint.js");
+    const groups = groupComponents(tmp);
+    const rows: ParityRow[] = mf.components.map((c) => {
+      const uatFiles = groups[c.key];
+      if (c.action === "deleted") return { key: c.key, action: c.action, dev_sha: "", uat_files: uatFiles, status: uatFiles?.length ? "STILL_IN_UAT" : "DELETED_OK" };
+      if (!uatFiles?.length) return { key: c.key, action: c.action, dev_sha: c.sha, status: "MISSING_IN_UAT" };
+      const uatSha = componentContentFingerprint(tmp, uatFiles);
+      return { key: c.key, action: c.action, dev_sha: c.sha, uat_sha: uatSha, uat_files: uatFiles, status: uatSha === c.sha ? "MATCH" : "DIFFERENT" };
+    });
+    return finish({ at: nowIso(), ticket, org: pre.alias, source: "retrieve", ok: rows.every((r) => PARITY_OK.has(r.status)), rows, files_hash: mf.files_hash });
+  } finally {
+    try { fs.rmSync(tmp, { recursive: true, force: true }); } catch { /* ignore */ }
+  }
+}
+
+/**
+ * Human verdict on parity: accept named components (or all) that the retrieve reported as not matching, with a reason.
+ * Recorded as source "human" for the CURRENT source hash; a later source change voids it. Never silent: event + reason.
+ */
+export async function parityAccept(ticket: string, opts: { keys?: string[]; all?: boolean; reason: string; p?: ProjectPaths }): Promise<ParityResult> {
+  const p = opts.p ?? projectPaths();
+  if (!opts.reason || opts.reason.trim().length < 8) throw new SfsmithsError("a reason of at least 8 characters is required to accept a parity difference (it is recorded)", "REASON_REQUIRED");
+  const { buildDeployManifest } = await import("../engines/deploy-manifest.js");
+  const mf = await buildDeployManifest(ticket, p);
+  const prev = readJsonOr<ParityResult | undefined>(parityFile(p, ticket), undefined);
+  const base: ParityRow[] = prev && prev.files_hash === mf.files_hash && prev.rows.length ? prev.rows : mf.components.map((c) => ({ key: c.key, action: c.action, dev_sha: c.sha, status: (c.action === "deleted" ? "STILL_IN_UAT" : "MISSING_IN_UAT") as ParityStatus, note: "not verified by retrieve" }));
+  const accept = new Set(opts.all ? base.filter((r) => !PARITY_OK.has(r.status)).map((r) => r.key) : (opts.keys ?? []));
+  const unknown = [...accept].filter((k) => !base.some((r) => r.key === k));
+  if (unknown.length) throw new SfsmithsError(`not in the deploy manifest: ${unknown.join(", ")}`, "UNKNOWN_COMPONENT");
+  const rows = base.map((r) => accept.has(r.key) && !PARITY_OK.has(r.status) ? { ...r, status: "ACCEPTED" as ParityStatus, note: `accepted by human: ${opts.reason}` } : r);
+  const cfg = loadConfig(p);
+  const r: ParityResult = { at: nowIso(), ticket, org: preprodOrg(cfg)?.alias, source: "human", ok: rows.every((x) => PARITY_OK.has(x.status)), rows, files_hash: mf.files_hash, accepted: { keys: [...accept], reason: opts.reason, at: nowIso() } };
+  writeJsonAtomic(parityFile(p, ticket), r);
+  writeTextAtomic(path.join(vaultDir(p, ticket), "07a-uat-parity.md"), renderParityMd(r));
+  emitEvent({ ticket, type: "human.parity_accepted", stage: "uat_verify", data: { keys: [...accept], reason: opts.reason, ok: r.ok } }, p);
+  return r;
+}
+
+export function renderParityMd(r: ParityResult): string {
+  const lines = [`# Preprod parity — ${r.ticket}`, ``];
+  if (r.skipped) lines.push(`_Skipped ${r.at}: ${r.skipped}._`);
+  else {
+    lines.push(`_${r.at} · org **${r.org ?? "?"}** · source: ${r.source === "human" ? "human decision" : "engine retrieve (engine keychain)"} · verdict: **${r.ok ? "OK — every component in preprod matches the dev source" : r.unavailable ? "NOT VERIFIED" : "MISMATCH"}**_`, ``);
+    if (r.unavailable) lines.push(`> ⚠ ${r.unavailable}`, `>`, `> Fix the cause and run \`sfsmiths-human deployed ${r.ticket} --org preprod\` again. If you verified the deployment another way (deploy log), record it: \`sfsmiths-human parity ${r.ticket} --accept-all --reason "…"\`.`, ``);
+    lines.push(`| Component | Action | Status | Dev | Preprod | Note |`, `|---|---|---|---|---|---|`);
+    for (const x of r.rows) lines.push(`| \`${x.key}\` | ${x.action} | ${PARITY_OK.has(x.status) ? "✅" : "❌"} ${x.status} | \`${x.dev_sha ? x.dev_sha.slice(0, 12) : "—"}\` | \`${x.uat_sha ? x.uat_sha.slice(0, 12) : "—"}\` | ${x.note ?? ""} |`);
+    if (r.accepted) lines.push(``, `**Accepted by human** (${r.accepted.at}): ${r.accepted.keys.join(", ") || "—"} — _${r.accepted.reason}_`);
+    if (!r.ok && !r.unavailable) lines.push(``, `Next: fix the deployment set in your deploy tool for the ❌ rows, then \`sfsmiths-human deployed ${r.ticket} --org preprod\` again (the check re-runs). A DIFFERENT that you know is cosmetic (e.g. the deploy tool rewrote the api version) can be accepted with a reason: \`sfsmiths-human parity ${r.ticket} --accept Type:Name --reason "…"\`.`);
+  }
+  lines.push(``, `_Source hash \`${r.files_hash.slice(0, 16)}\` — this verdict is void if a source file changes afterwards._`, ``);
+  return lines.join("\n");
 }
 
 /** Anonymous Apex on the development org only — canary must be fresh (it may create data / fire automation). */

@@ -48,6 +48,19 @@
     "test_tag_prefix": {
       "type": "string"
     },
+    "email_delivery": {
+      "type": "string",
+      "enum": ["blocked", "allowlist_only"],
+      "description": "D-102: blocked = the canary must prove the sandbox refuses to send (default). allowlist_only = delivery may be ON, but the canary's e-mail census must find no address outside allowed_test_emails in email_census_fields."
+    },
+    "email_census_fields": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z][A-Za-z0-9_]*$"
+      },
+      "description": "Object.Field pairs the census counts in allowlist_only mode (default Contact.Email, Lead.Email, User.Email, Case.SuppliedEmail)."
+    },
     "ui": {
       "type": "object",
       "required": [

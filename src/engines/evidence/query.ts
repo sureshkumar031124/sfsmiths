@@ -26,6 +26,10 @@ const AGG_RE = /^(COUNT|COUNT_DISTINCT|SUM|AVG|MIN|MAX)\s*\(\s*([A-Za-z0-9_.]*)\
 
 export function parseSoql(q: string): ParsedSoql {
   const s = q.replace(/\s+/g, " ").trim().replace(/;$/, "");
+  // one statement, read-only: a ';' or any DML keyword anywhere is refused before the query leaves the process (SOQL has no
+  // DML, so this is hygiene against smuggling, but a refusal here is cheaper than a MALFORMED_QUERY round trip to production)
+  if (/;/.test(s)) throw new SfsmithsError("Only one SELECT statement is allowed through the evidence layer (';' refused)", "SOQL_SHAPE");
+  if (/\b(INSERT|UPDATE|DELETE|UPSERT|MERGE|UNDELETE)\b/i.test(s)) throw new SfsmithsError("Only SELECT … FROM <object> [WHERE …] [ORDER BY …] [LIMIT n] queries are allowed — DML keywords are refused (P1)", "SOQL_SHAPE");
   const m = s.match(/^SELECT\s+(.+?)\s+FROM\s+([A-Za-z0-9_]+)(?:\s+(.*))?$/i);
   if (!m) throw new SfsmithsError("Only SELECT … FROM <object> [WHERE …] [ORDER BY …] [LIMIT n] queries are allowed", "SOQL_SHAPE");
   const selectList = m[1];

@@ -80,6 +80,18 @@ export interface BudgetsConfig {
   prices?: Record<string, ModelPrice>;
 }
 
+/**
+ * D-102 — how outbound e-mail from the development sandbox is contained (P9):
+ *   blocked         (default) the canary must prove the org REFUSES to send (System email only / No access). Nothing can
+ *                   reach anyone, whatever data the org holds. Right for Partial/Full Copy sandboxes with real records.
+ *   allowlist_only  delivery may be ON (you need real mails to test), but the canary additionally runs an e-mail census:
+ *                   every address in `email_census_fields` must match `allowed_test_emails`, otherwise the canary FAILS and
+ *                   every data step is refused. Right for a Developer sandbox whose records the team created itself.
+ */
+export type EmailDeliveryMode = "blocked" | "allowlist_only";
+export const EMAIL_DELIVERY_MODES: EmailDeliveryMode[] = ["blocked", "allowlist_only"];
+export const DEFAULT_EMAIL_CENSUS_FIELDS = ["Contact.Email", "Lead.Email", "User.Email", "Case.SuppliedEmail"];
+
 export interface SafetyConfig {
   version: number;
   allowed_test_emails: string[];
@@ -89,8 +101,13 @@ export interface SafetyConfig {
   canary_recipient_env: string;
   test_tag_field: string;
   test_tag_prefix: string;
+  email_delivery?: EmailDeliveryMode;   // absent → "blocked"
+  email_census_fields?: string[];       // absent → DEFAULT_EMAIL_CENSUS_FIELDS
   ui: { prod_refuse: boolean; deny_url_patterns: string[]; uat_test_user_only: boolean };
 }
+
+export function emailDeliveryMode(s: SafetyConfig): EmailDeliveryMode { return s.email_delivery ?? "blocked"; }
+export function emailCensusFields(s: SafetyConfig): string[] { return s.email_census_fields?.length ? s.email_census_fields : DEFAULT_EMAIL_CENSUS_FIELDS; }
 
 export interface NamingRule {
   pattern: string;      // regex the name must match

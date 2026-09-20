@@ -9,8 +9,12 @@ The human deploys; SFsmiths never does (P3). The brief is what makes that deploy
 
 ## Sections (all required; write "none" explicitly)
 1. **Change in one paragraph** — what the user will notice, what the root cause was (link `03-plan.md §1`).
-2. **Components** — prose list grouped by type with API names (`ApexClass CaseEscalationOwnerService (modify)`), and
-   the exact set to include in the Blue Canvas commit (compare with `git diff --name-only <baseline_commit>`).
+2. **Components** — point at the toolkit's manifest: `06c-deploy-manifest.md` (table: type · API name · added/modified/deleted ·
+   files · fingerprint) and `artifacts/package.xml` (+ `destructiveChanges.xml` when something is deleted). It is generated from
+   `git diff <baseline_commit>` by `sfsmiths agent deploy-manifest <KEY>` — run it first, never type the list from memory. In the
+   brief, add only what the table cannot say: the reason each component changed (one line), and anything in it the plan did not
+   name (that is a REQUEST CHANGES finding, not a footnote). After the human deploys, the toolkit checks this exact list against
+   preprod (`07a-uat-parity.md`, stage `uat_verify`) before QA runs there.
 3. **By hand after deploy** — profiles / permission sets / field-level security / page layouts / assignment rules that
    metadata deploy does not (or should not) carry, each with *why* and the click path. If nothing: "none — verified in `04-implementation.json → components`".
 4. **Pre-deploy checks** — preprod dry-run report path (`validations/uat-validate.json`), test level to run

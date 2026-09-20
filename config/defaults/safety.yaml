@@ -13,6 +13,18 @@ canary_max_age_minutes: 30           # canary must be fresher than this before A
 canary_recipient_env: SFSMITHS_CANARY_EMAIL   # your own address for the canary send (env var, not config)
 test_tag_field: Test_Tag__c          # custom text field holding "[SFSMITHS PROJ-123]" on every test record
 test_tag_prefix: "[SFSMITHS"
+# D-102 — how outbound e-mail from the development sandbox is contained (edit in the UI → Safety screen):
+#   blocked         (default) the canary must prove the org REFUSES to send (Deliverability = System email only / No access).
+#                   Safe whatever records the sandbox holds — use it for Partial/Full Copy sandboxes with real data.
+#   allowlist_only  delivery may be ON because some tests need a real mail to arrive. The canary then also runs an e-mail
+#                   CENSUS: every address in email_census_fields must match allowed_test_emails, or the canary FAILS and
+#                   every data step is refused. Use it only for a sandbox whose records your team created itself.
+email_delivery: blocked
+email_census_fields:                 # Object.Field pairs the census counts (allowlist_only mode)
+  - Contact.Email
+  - Lead.Email
+  - User.Email
+  - Case.SuppliedEmail
 ui:
   prod_refuse: true                  # sfsmiths-ui (Playwright) refuses production hosts — hard
   deny_url_patterns:

@@ -95,6 +95,7 @@
     <button data-v="tickets">▤ Tickets</button>
     <button data-v="agents">✦ Agents &amp; models</button>
     <button data-v="orgs">☁ Orgs</button>
+    <button data-v="safety">⛨ Safety</button>
     <button data-v="lessons">★ Lessons &amp; rewards</button>
     <button data-v="config">⚙ Config &amp; doctor</button>
     <div class="foot">127.0.0.1 only · token-protected · this UI edits config and records decisions; it never runs agents or touches Salesforce data.<br><span id="foot-ts"></span></div>
@@ -150,7 +151,7 @@
         <div class="card"><h3>Needs you</h3><div class="kpi">${c.waiting_human + c.escalated + c.parked}<small>waiting ${c.waiting_human} · escalated ${c.escalated} · parked ${c.parked}</small></div></div>
         <div class="card"><h3>Running</h3><div class="kpi">${c.running}<small>of ${c.tickets} tickets · ${c.done} done · ${c.failed} failed · ${c.on_hold} on hold</small></div></div>
         <div class="card"><h3>Today</h3><div class="kpi">${fmt(d.today.tokens)}<small>tokens · ${d.today.runs} agent runs</small></div>
-          <div class="muted" style="margin-top:4px">${usd(d.today.usd)} ${d.today.budget_usd ? 'of ' + usd(d.today.budget_usd) + ' daily budget' : '(no prices.json → cost unknown)'}</div>
+          <div class="muted" style="margin-top:4px">${usd(d.today.usd)} ${d.today.budget_usd ? 'of ' + usd(d.today.budget_usd) + ' daily budget' : '(no daily USD budget set)'}${d.today.prices_source === 'none' ? ' · <b>no price table</b> → cost shows $0 (config/budgets.yaml → prices)' : ' · prices from ' + esc(d.today.prices_source || '')}</div>
           <div class="bar"><i class="${budgetPct >= 100 ? 'over' : ''}" style="width:${budgetPct}%"></i></div></div>
         <div class="card"><h3>Safety</h3><div class="kpi">${d.denials_last_7d}<small>denials in 7 days</small></div>
           <div class="muted" style="margin-top:4px">${Object.entries(d.canary || {}).map(([a, s]) => `<span class="dot ${s.result === 'pass' ? (s.fresh ? 'ok' : 'warn') : s.result === 'never' ? 'warn' : 'bad'}"></span>canary ${esc(a)}: ${esc(s.result || 'unknown')}${s.at ? ' · ' + esc(ago(s.at)) : ''}${s.result === 'pass' && !s.fresh ? ' (stale — agents re-run it before creating data)' : ''}`).join('<br>') || 'no development org configured'}</div></div>
@@ -233,7 +234,7 @@
         <div class="muted">Allowed next agents: <span class="mono">${esc((m.next_allowed_stages || []).join(', ') || '—')}</span> · bounces ${m.bounces.length} · resumes ${m.resumes.length}${m.locks.length ? ' · locks ' + esc(m.locks.join(', ')) : ''}</div></div>
       <div class="grid g2" style="margin-top:14px">
         <div class="card"><h3>Gates (latest result per gate)</h3>${d.stage_defs.filter((s) => gatesFor(s.id).length).map((s) => `<div style="margin-bottom:8px"><b class="mono">${esc(s.id)}</b> ${latest(s.id).map((g) => `<span class="pill ${esc(g.status)}" title="${esc(g.reason || '')}">${esc(g.name)}</span>`).join(' ')}${latest(s.id).filter((g) => g.status !== 'passed').map((g) => `<div class="muted" style="margin-left:8px">↳ ${esc(g.name)}: ${esc((g.reason || '').slice(0, 220))}</div>`).join('')}</div>`).join('') || '<div class="empty">No gate results yet.</div>'}</div>
-        <div class="card"><h3>Tokens by agent</h3>${tokRows.length ? `<table><tr><th>Agent</th><th>Runs</th><th>Tokens</th><th>Cost</th></tr>${tokRows.map(([a, v]) => `<tr><td class="mono">${esc(a)}</td><td>${v.runs}</td><td>${fmt(v.tokens)}</td><td>${usd(v.usd)}</td></tr>`).join('')}</table>` : '<div class="empty">No agent runs recorded yet.</div>'}
+        <div class="card"><h3>Tokens by agent</h3>${tokRows.length ? `<table><tr><th>Agent</th><th>Runs</th><th title="input + output + cache writes — what the per-ticket budget is judged on (D-094)">Fresh</th><th title="includes cache re-reads of the same context">Total</th><th>Cost</th></tr>${tokRows.map(([a, v]) => `<tr><td class="mono">${esc(a)}</td><td>${v.runs}</td><td><b>${fmt(v.fresh)}</b></td><td class="muted">${fmt(v.tokens)}</td><td>${usd(v.usd)}</td></tr>`).join('')}</table><div class="muted" style="margin-top:4px">Budget: fresh ${fmt(m.budget.fresh_tokens ?? 0)} of the per-ticket cap · total incl. cache reads ${fmt(m.budget.tokens)}</div>` : '<div class="empty">No agent runs recorded yet.</div>'}
           <h3 style="margin-top:14px">Approvals</h3>${m.approvals.length ? m.approvals.map((a) => `<div>${pill(a.decision)} <span class="mono">${esc(a.stage)}</span> by ${esc(a.by)} via ${esc(a.origin)} · ${esc(ago(a.at))}${a.answer ? `<div class="muted">“${esc(a.answer)}”</div>` : ''}${a.reason ? `<div class="muted">reason: ${esc(a.reason)}</div>` : ''}</div>`).join('') : '<div class="muted">none yet</div>'}
           ${m.baseline ? `<h3 style="margin-top:14px">Baseline</h3><div class="muted">synced ${esc(ago(m.baseline.synced_at))} · ancestor via ${esc(m.baseline.ancestor_source || '?')} · ${m.baseline.decisions.length} decision(s)</div>` : ''}</div>
       </div>
@@ -293,6 +294,42 @@
     };
   }
 
+  /* ───────── SAFETY (D-102) ───────── */
+  let safetyDraft = null; // the list being edited before Save (per view load)
+  async function renderSafety() {
+    const d = await api('GET', 'safety');
+    if (!safetyDraft || safetyDraft.source !== d.source) safetyDraft = { source: d.source, emails: [...d.allowed_test_emails], mode: d.email_delivery, census: [...d.email_census_fields] };
+    const s = safetyDraft;
+    const canaryRows = Object.entries(d.canary || {});
+    setMain(`<h1>Safety — e-mail containment</h1><div class="sub">Hard rule: <b>no e-mail ever reaches anyone outside this list</b>. Agents create their own test records with these addresses only; every file they touch is scanned; the canary proves the sandbox's delivery setting before any data is created. Saving writes <span class="mono">config/safety.yaml</span> (${esc(d.source === 'personal' ? 'your copy' : 'currently the shipped default — your copy will be created')}).</div>
+      ${d.error ? `<div class="banner">config/safety.yaml is invalid: ${esc(d.error.split('\n')[0])} — fix it in the Config tab first.</div>` : ''}
+      <div class="grid g2">
+        <div class="card"><h3>Allowed test e-mail addresses (${s.emails.length})</h3>
+          <div class="muted">An exact address (<span class="mono">qa.inbox@example.com</span>) or a pattern (<span class="mono">*@example.com</span>, <span class="mono">*.invalid</span>). Salesforce sandboxes append <span class="mono">.invalid</span> to user e-mails on refresh — keep that pattern.</div>
+          <div id="sf-emails" style="margin:10px 0">${s.emails.map((e, i) => `<div class="row" style="margin:4px 0"><span class="mono" style="flex:1">${esc(e)}</span><button class="btn danger" data-rm="${i}" title="remove">✕</button></div>`).join('') || '<div class="empty">empty — the allowlist must have at least one entry</div>'}</div>
+          <div class="row"><input id="sf-new" placeholder="name@example.com or *@example.com" style="flex:1"><button class="btn" id="sf-add">Add</button></div>
+          <h3 style="margin-top:16px">What enforces it</h3><ul class="muted" style="margin:6px 0 0 18px;padding:0">${d.enforcement.map((x) => `<li style="margin:3px 0">${esc(x)}</li>`).join('')}</ul></div>
+        <div class="card"><h3>Delivery mode</h3>
+          <label style="display:flex;gap:8px;align-items:flex-start;margin:8px 0;font-size:14px;color:var(--text)"><input type="radio" name="sf-mode" value="blocked" ${s.mode === 'blocked' ? 'checked' : ''} style="margin-top:3px"><span><b>blocked</b> (default) — the canary must prove the sandbox <i>refuses</i> to send (Deliverability = System email only / No access). Safe whatever records the sandbox holds. Use for Partial/Full Copy sandboxes that contain real customers.</span></label>
+          <label style="display:flex;gap:8px;align-items:flex-start;margin:8px 0;font-size:14px;color:var(--text)"><input type="radio" name="sf-mode" value="allowlist_only" ${s.mode === 'allowlist_only' ? 'checked' : ''} style="margin-top:3px"><span><b>allowlist_only</b> — delivery may be ON because some tests need a real mail to arrive. The canary then also runs an <b>e-mail census</b>: every address in the fields below must match the list above, otherwise the canary FAILS and every data step is refused. Use only for a sandbox whose records your team created.</span></label>
+          <label>Census fields (Object.Field, one per line) — checked in allowlist_only mode</label>
+          <textarea id="sf-census" spellcheck="false" style="min-height:90px">${esc(s.census.join('\n'))}</textarea>
+          <div class="row" style="margin-top:12px"><button class="btn primary" id="sf-save">Save safety settings</button><span class="muted">canary max age ${d.canary_max_age_minutes} min · tag field <span class="mono">${esc(d.test_tag_field || '')}</span> · canary recipient from <span class="mono">${esc(d.canary_recipient_env || '')}</span></span></div></div>
+      </div>
+      <div class="card" style="margin-top:14px"><h3>Last canary per development org</h3>
+        ${canaryRows.length ? canaryRows.map(([alias, c]) => `<div style="margin:8px 0"><span class="dot ${c.result === 'pass' ? (c.fresh ? 'ok' : 'warn') : c.result === 'never' ? 'warn' : 'bad'}"></span><b class="mono">${esc(alias)}</b> · ${esc(c.result)}${c.at ? ' · ' + esc(ago(c.at)) : ''}${c.result === 'pass' && !c.fresh ? ' · <b>stale</b> — data steps will be refused until you rerun' : ''} · mode <span class="mono">${esc(c.mode || 'blocked')}</span><div class="muted" style="margin-left:18px">${esc(c.detail || c.note || '')}</div>
+          ${c.census ? `<table style="margin:6px 0 0 18px;width:auto"><tr><th>Field</th><th>Addresses outside the allowlist</th></tr>${c.census.map((r) => `<tr><td class="mono">${esc(r.field)}</td><td>${r.non_allowlisted === null ? '<span class="pill fail">unreadable</span> ' + esc(r.note || '') : r.non_allowlisted === 0 ? '<span class="pill ok">0</span>' : '<span class="pill fail">' + r.non_allowlisted + '</span>'}</td></tr>`).join('')}</table>` : ''}</div>`).join('') : '<div class="empty">no development org configured</div>'}
+        <div class="muted" style="margin-top:8px">Rerun from a terminal: <span class="mono">sfsmiths agent canary --org &lt;dev alias&gt;</span> — the UI never runs anything against an org.</div></div>`);
+    main.querySelectorAll('[data-rm]').forEach((b) => b.addEventListener('click', () => { s.emails.splice(Number(b.dataset.rm), 1); renderSafety(); }));
+    const add = () => { const v = $('#sf-new').value.trim(); if (!v) return; if (!/^[A-Za-z0-9*._%+-]+@[A-Za-z0-9*.-]+\.[A-Za-z*]{2,}$|^\*\.[A-Za-z]{2,}$/.test(v)) return toast('Not an address or pattern. Examples: qa@example.com · *@example.com · *.invalid', 'bad'); if (!s.emails.includes(v)) s.emails.push(v); renderSafety(); };
+    $('#sf-add').onclick = add; $('#sf-new').addEventListener('keydown', (e) => { if (e.key === 'Enter') add(); });
+    main.querySelectorAll('input[name=sf-mode]').forEach((r) => r.addEventListener('change', () => { s.mode = r.value; }));
+    $('#sf-census').addEventListener('input', () => { s.census = $('#sf-census').value.split('\n').map((x) => x.trim()).filter(Boolean); });
+    $('#sf-save').onclick = async () => {
+      try { const r = await api('PUT', 'safety', { allowed_test_emails: s.emails, email_delivery: s.mode, email_census_fields: s.census }); toast(r.note, 'ok'); safetyDraft = null; renderSafety(); } catch (e) { toast(e.message, 'bad'); }
+    };
+  }
+
   /* ───────── ORGS ───────── */
   async function renderOrgs(fresh) {
     const d = await api('GET', 'orgs' + (fresh ? '?fresh=1' : ''));
@@ -343,7 +380,7 @@
         <div style="flex:1"><div class="muted">by ticket</div>${Object.entries((d.rewards && d.rewards.by_ticket) || {}).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([k, v]) => `<div class="row"><span class="mono" style="width:150px">${esc(k)}</span><b>${v > 0 ? '+' : ''}${v}</b></div>`).join('') || '<span class="muted">–</span>'}</div></div>
         <div class="muted" style="margin-top:8px">Total ${d.rewards ? d.rewards.total : 0} points. Points come only from events (gate results, denials, escalations, human decisions) — never from an agent's self-report. Weights: <span class="mono">config/rewards.yaml</span>.</div></div>
       <div class="card" style="margin-top:14px"><h3>Tokens · last days</h3><div class="sparks">${days.slice(-30).map(([d0, v]) => `<i style="height:${Math.max(3, v / maxD * 100)}%" title="${esc(d0)}: ${fmt(v)}"></i>`).join('') || '<span class="muted">no data</span>'}</div>
-        <div class="muted">${t.total_runs} agent runs recorded · ${t.prices_file ? 'costs from metrics/prices.json' : 'add metrics/prices.json to see costs'}</div></div>
+        <div class="muted">${t.total_runs} agent runs recorded · ${t.prices_source && t.prices_source !== 'none' ? 'costs from ' + esc(t.prices_source) + ' (metrics/prices.json overrides)' : 'no price table → costs show $0; prices live in config/budgets.yaml → prices'}</div></div>
       <div class="grid g2" style="margin-top:14px"><div class="card"><h3>By model</h3>${tbl(t.by_model, 'Model')}</div><div class="card"><h3>By ticket</h3>${tbl(t.by_ticket, 'Ticket')}</div></div>`);
     main.querySelectorAll('[data-decide]').forEach((b) => b.addEventListener('click', async () => {
       const decision = b.dataset.decide; let reason;
@@ -378,7 +415,7 @@
   }
 
   /* ───────── shell ───────── */
-  const VIEWS = { dashboard: renderDashboard, tickets: renderTickets, agents: renderAgents, orgs: renderOrgs, lessons: renderLessons, config: renderConfig };
+  const VIEWS = { dashboard: renderDashboard, tickets: renderTickets, agents: renderAgents, orgs: renderOrgs, safety: renderSafety, lessons: renderLessons, config: renderConfig };
   async function render() {
     if (!TOKEN) return setMain('<div class="banner">No token in the URL. Start the UI with <span class="mono">sfsmiths-human ui</span> and open the exact URL it prints (the part after # is the token).</div>');
     const v = VIEWS[view()] ? view() : 'dashboard';

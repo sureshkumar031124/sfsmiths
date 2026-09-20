@@ -16,7 +16,8 @@ import { openTicket, prodVerify, ticketSummary, configSnapshotForPrompt } from "
 import { runBaseline } from "../engines/baseline.js";
 import { buildPriorArt, rebuildTicketIndex } from "../engines/priorart.js";
 import { evidenceQuery, evidenceTooling, evidenceDescribe } from "../engines/evidence/query.js";
-import { privilegedTest, uatValidate, deployDev, privilegedRetrieve, apexRunDev, runAnalyzer, cacheFreshen, runCanary, canaryFresh } from "../privileged/index.js";
+import { privilegedTest, uatValidate, deployDev, privilegedRetrieve, apexRunDev, runAnalyzer, cacheFreshen, runCanary, canaryFresh, uatParity } from "../privileged/index.js";
+import { buildDeployManifest } from "../engines/deploy-manifest.js";
 import { ticketRetro } from "../engines/learn.js";
 import { notify } from "../engines/notify.js";
 
@@ -41,10 +42,16 @@ function buildPrompt(ticket: string, action: Extract<HandoffAction, { action: "S
   const cfg = loadConfig(p);
   const vault = path.relative(p.root, vaultDir(p, ticket));
   const stage = STAGE_BY_ID[action.stage];
-  // stage-specific template wins (a1-intake.prior_art.md, a5-qa.qa_uat.md), then the agent's generic one; project templates/ before the package's
+  // D-098: the ticket's classification (BUG | ENHANCEMENT | DATA-FIX | QUESTION, from a1-intake's 01-intake.json) picks
+  // a classification-specific template when one exists — an ENHANCEMENT has no bug to prove, so a2-repro's job becomes
+  // "acceptance tests first" (same referee: they FAIL now and PASS after the build). UNKNOWN before intake has run.
+  const intake = readJsonOr<{ classification?: string }>(path.join(vaultDir(p, ticket), "01-intake.json"), {});
+  const classification = String(intake.classification ?? "UNKNOWN").toUpperCase().replace(/[^A-Z-]/g, "") || "UNKNOWN";
+  // template lookup: agent.stage.CLASSIFICATION → agent.stage → agent; project templates/ before the package's
+  const candidates = [`${action.agent}.${action.stage}.${classification}.md`, `${action.agent}.${action.stage}.md`, `${action.agent}.md`];
   const tplPath = [
-    path.join(p.templates, "prompts", `${action.agent}.${action.stage}.md`), path.join(p.templates, "prompts", `${action.agent}.md`),
-    path.join(packageRoot(), "templates", "prompts", `${action.agent}.${action.stage}.md`), path.join(packageRoot(), "templates", "prompts", `${action.agent}.md`),
+    ...candidates.map((f) => path.join(p.templates, "prompts", f)),
+    ...candidates.map((f) => path.join(packageRoot(), "templates", "prompts", f)),
   ].find(exists);
   const note = stageRecord(m, action.stage).note ?? "";
   const rejection = [...m.approvals].reverse().find((x) => x.stage === action.stage && x.decision === "rejected");
@@ -54,6 +61,7 @@ function buildPrompt(ticket: string, action: Extract<HandoffAction, { action: "S
     OUTPUT: stage?.output ?? "", GATES: (stage?.gates ?? []).join(", "), CONFIG: configSnapshotForPrompt(cfg),
     FACTS: readTextOr(path.join(vaultDir(p, ticket), "facts.md"), "").split("\n").filter((l) => l.startsWith("- ")).slice(-10).join("\n"),
     TAG_FIELD: cfg.safety.test_tag_field, TAG: `${cfg.safety.test_tag_prefix} ${ticket}]`, ALLOWED_EMAILS: cfg.safety.allowed_test_emails.join(", "),
+    CLASSIFICATION: classification,
   };
   const tpl = tplPath ? fs.readFileSync(tplPath, "utf8") : `You are ${action.agent} working on ticket {{TICKET}} (stage {{STAGE}}, attempt {{ATTEMPT}}).\nVault: {{VAULT}}. Read manifest.yaml, ticket.md and the previous stage outputs there. Produce {{OUTPUT}} (+ its .json contract). Gates: {{GATES}}.\n{{NOTE}}`;
   return fill(tpl, vars);
@@ -170,6 +178,29 @@ async function runToolkitStage(ticket: string, verb: string, notes: string[]): P
   const rec = stageRecord(m, stage);
   try {
     if (verb === "prod-verify") { const r = await prodVerify(ticket, { p }); notes.push(`prod verify: ${r.results.filter((x) => x.pass).length}/${r.results.length} checks passed`); return; }
+    if (verb === "uat-parity") {
+      // D-099: verify the human's preprod deploy against the dev source before QA runs there
+      const r = await uatParity(ticket, p);
+      if (!r.ok) {
+        const bad = r.rows.filter((x) => !["MATCH", "DELETED_OK", "ACCEPTED"].includes(x.status));
+        const why = r.unavailable ? `parity NOT VERIFIED — ${r.unavailable}` : `parity MISMATCH — ${bad.map((x) => `${x.key}: ${x.status}`).join(", ")}`;
+        // back to the deploy step, waiting on the human, with the list — never on to QA
+        const m2 = loadManifest(ticket, p);
+        stageRecord(m2, "uat_verify").status = "pending";
+        stageRecord(m2, "uat_verify").note = why;
+        const dep = stageRecord(m2, "deploy_uat");
+        dep.status = "pending";
+        m2.bounces.push({ from: "uat_verify", to: "deploy_uat", at: nowIso(), reason: why });
+        m2.stage = "deploy_uat";
+        m2.status = "waiting_human";
+        m2.next_allowed_stages = [];
+        m2.waiting = { kind: "deploy", stage: "deploy_uat", prompt: `${why}. See work/${ticket}/07a-uat-parity.md → fix the deployment set in your deploy tool, then: sfsmiths-human deployed ${ticket} --org preprod (the check re-runs). Verified another way? sfsmiths-human parity ${ticket} --accept-all --reason "…"`, since: nowIso() };
+        saveManifest(m2, p);
+        notes.push(`uat_verify: ${why} → back to deploy_uat (waiting on you)`);
+        return;
+      }
+      notes.push(r.skipped ? `uat parity skipped: ${r.skipped}` : `uat parity: ${r.rows.length} component(s) ${r.source === "human" ? "accepted by human" : "match preprod"}`);
+    }
     if (verb === "learn-digest") { const r = await ticketRetro(ticket, p); notes.push(`retro: ${r.rewards.total} points, ${r.candidates.length} lesson candidate(s)`); }
     const m2 = loadManifest(ticket, p);
     const r2 = stageRecord(m2, stage);
@@ -299,6 +330,14 @@ async function main(): Promise<void> {
     }
     // eslint-disable-next-line no-fallthrough
     case "analyze": { const t = ticketArg(); const r = await runAnalyzer(t, p, a.num("threshold", 3)); say(r.available ? `analyzer: ${r.violations.length} finding(s), ${r.violations.filter((v) => v.severity <= r.threshold).length} at/below severity ${r.threshold} → validations/analyzer.json` : `analyzer unavailable: ${r.reason}`); return; }
+    case "deploy-manifest": {
+      // D-100: the exact component set for the human's deploy tool — from git, never from an agent's memory
+      const t = ticketArg();
+      const r = await buildDeployManifest(t, p);
+      say(`deploy manifest: ${r.components.length} component(s) (${r.components.filter((c) => c.action === "added").length} added, ${r.components.filter((c) => c.action === "modified").length} modified, ${r.components.filter((c) => c.action === "deleted").length} deleted) → work/${t}/06c-deploy-manifest.md · ${r.package_xml}${r.destructive_xml ? ` · ${r.destructive_xml}` : ""}`);
+      for (const c of r.components) say(`  ${c.action.padEnd(8)} ${c.key}`);
+      return;
+    }
     case "cache": {
       if (a.positional[1] !== "freshen") fail("cache freshen [KEY | --ticket KEY] [--objects Case,Account] [--types ApexClass,Flow]");
       const ticketOpt = a.str("ticket") ?? (a.positional[2] ? sanitizeTicket(a.positional[2]) : undefined);
@@ -332,6 +371,7 @@ async function main(): Promise<void> {
   privileged test <KEY> --phase repro|dev|uat [--class X] | uat-validate <KEY> | deploy-dev <KEY> | retrieve --org uat --metadata T:N --out dir | apex-run <KEY> --file x.apex
   canary [--org ALIAS] [--check]      email deliverability probe (must PASS before creating data)
   analyze <KEY> [--threshold 3]       Code Analyzer on changed files
+  deploy-manifest <KEY>               changed components from git → 06c-deploy-manifest.md + artifacts/package.xml (D-100)
   cache freshen [--ticket KEY] [--objects ...] [--types ...]   oracle caches for plan-lint/semantic-check
   feedback-note <KEY> "text"          leave an unverified note for the coach
   learn-digest <KEY>                  rewards + lesson candidates for this ticket`);

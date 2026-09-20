@@ -3,6 +3,7 @@
  * (editable). Every download is verified (size > 1000 bytes, looks like text/markdown) — a 200 with an empty body
  * is a known trap. knowledge/mirror is never published (.gitignore in export).
  */
+import fs from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
 import { projectPaths, type ProjectPaths } from "../core/paths.js";
@@ -16,8 +17,42 @@ export const DEFAULT_SOURCES: MirrorSource[] = [
   { name: "llms-lwc.txt", url: "https://developer.salesforce.com/docs/llms-lwc.txt", kind: "lwc", min_bytes: 1000 },
 ];
 
+/**
+ * P12 (D-103): the ONLY hosts the docs mirror may fetch from — Salesforce's own documentation properties. Anything an
+ * agent later cites as `L2` came from here or from knowledge/curated/ (human-added, with provenance). Extend the list in
+ * knowledge/mirror/sources.yaml → trusted_domains only for another Salesforce-owned host; expert (MVP / veteran) writing
+ * is never mirrored automatically — a human reads it and files it under knowledge/curated/ with author and URL.
+ */
+export const DEFAULT_TRUSTED_DOMAINS = [
+  "developer.salesforce.com", "help.salesforce.com", "architect.salesforce.com", "trailhead.salesforce.com",
+  "admin.salesforce.com", "engineering.salesforce.com", "release.salesforce.com", "www.salesforce.com", "salesforce.com",
+  "github.com/forcedotcom", "github.com/salesforcecli", "github.com/salesforce",
+];
+
 export function sourcesFile(p: ProjectPaths): string {
   return path.join(p.knowledge, "mirror", "sources.yaml");
+}
+
+export function loadTrustedDomains(p: ProjectPaths): string[] {
+  const f = sourcesFile(p);
+  if (!exists(f)) return DEFAULT_TRUSTED_DOMAINS;
+  try { const d = (YAML.parse(readText(f)) as { trusted_domains?: string[] }).trusted_domains; return d?.length ? d : DEFAULT_TRUSTED_DOMAINS; } catch { return DEFAULT_TRUSTED_DOMAINS; }
+}
+
+/** A source is trusted when its https host equals a trusted domain (or is a subdomain of one) and, for github.com entries, its path starts with the listed org. */
+export function sourceTrusted(url: string, trusted: string[] = DEFAULT_TRUSTED_DOMAINS): { ok: boolean; reason: string } {
+  let u: URL;
+  try { u = new URL(url); } catch { return { ok: false, reason: `not a URL: ${url}` }; }
+  if (u.protocol !== "https:") return { ok: false, reason: `only https sources are mirrored: ${url}` };
+  const host = u.hostname.toLowerCase();
+  for (const t of trusted) {
+    const [tHost, ...tPath] = t.toLowerCase().split("/");
+    const hostOk = host === tHost || host.endsWith(`.${tHost}`);
+    if (!hostOk) continue;
+    if (tPath.length && !u.pathname.toLowerCase().startsWith(`/${tPath.join("/")}/`) && u.pathname.toLowerCase() !== `/${tPath.join("/")}`) continue;
+    return { ok: true, reason: `trusted: ${t}` };
+  }
+  return { ok: false, reason: `host ${host} is not a Salesforce documentation domain (P12) — expert articles go to knowledge/curated/ with author + URL, never into the mirror` };
 }
 
 export function loadSources(p: ProjectPaths): MirrorSource[] {
@@ -31,12 +66,15 @@ export async function mirrorRefresh(opts: { p?: ProjectPaths; log?: (s: string) 
   const log = opts.log ?? (() => {});
   const dir = path.join(p.knowledge, "mirror");
   ensureDir(dir);
-  if (!exists(sourcesFile(p))) writeTextAtomic(sourcesFile(p), `# knowledge/mirror/sources.yaml — official documentation mirrors (grounding layer L2). Edit to add/remove.\nsources:\n${DEFAULT_SOURCES.map((s) => `  - { name: ${s.name}, url: ${s.url}, kind: ${s.kind}, min_bytes: ${s.min_bytes ?? 1000} }`).join("\n")}\n`);
+  if (!exists(sourcesFile(p))) writeTextAtomic(sourcesFile(p), `# knowledge/mirror/sources.yaml — official documentation mirrors (grounding layer L2). Edit to add/remove.\n# P12: only hosts in trusted_domains are fetched (Salesforce-owned documentation). Expert articles → knowledge/curated/ with provenance.\ntrusted_domains:\n${DEFAULT_TRUSTED_DOMAINS.map((d) => `  - ${d}`).join("\n")}\nsources:\n${DEFAULT_SOURCES.map((s) => `  - { name: ${s.name}, url: ${s.url}, kind: ${s.kind}, min_bytes: ${s.min_bytes ?? 1000} }`).join("\n")}\n`);
   const ok: string[] = [];
   const failed: { name: string; reason: string }[] = [];
   const manifest: Record<string, { url: string; bytes: number; fetched_at: string; sha256?: string }> = {};
+  const trusted = loadTrustedDomains(p);
   for (const s of loadSources(p)) {
     try {
+      const t = sourceTrusted(s.url, trusted);
+      if (!t.ok) throw new Error(`REFUSED (P12): ${t.reason}`);
       log(`fetching ${s.name}…`);
       const res = await fetch(s.url, { headers: { "User-Agent": "sfsmiths-mirror/1.0" } });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -52,6 +90,34 @@ export async function mirrorRefresh(opts: { p?: ProjectPaths; log?: (s: string) 
   }
   writeJsonAtomic(path.join(dir, "MANIFEST.json"), { refreshed_at: nowIso(), files: manifest, failed });
   return { ok, failed };
+}
+
+/**
+ * P12 (D-103): knowledge/curated/*.md is the only place non-official knowledge enters the system, and every file must say
+ * where it came from. Required frontmatter: source_url (https), author, trust (official | mvp | veteran | internal),
+ * retrieved (YYYY-MM-DD), added_by. Files without it are listed so a human fixes them; agents are told (skill) to cite only
+ * curated notes that carry provenance.
+ */
+export const CURATED_TRUST_LEVELS = ["official", "mvp", "veteran", "internal"] as const;
+
+export function curatedLint(p: ProjectPaths): { ok: boolean; files: number; problems: string[] } {
+  const dir = path.join(p.knowledge, "curated");
+  const problems: string[] = [];
+  if (!exists(dir)) return { ok: true, files: 0, problems };
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith(".md") && f !== "README.md");
+  for (const f of files) {
+    const text = readText(path.join(dir, f));
+    const fm = /^---\n([\s\S]*?)\n---/.exec(text)?.[1];
+    if (!fm) { problems.push(`${f}: no frontmatter (source_url, author, trust, retrieved, added_by required)`); continue; }
+    let meta: Record<string, unknown> = {};
+    try { meta = (YAML.parse(fm) as Record<string, unknown>) ?? {}; } catch (e) { problems.push(`${f}: frontmatter is not valid YAML — ${(e as Error).message}`); continue; }
+    for (const k of ["source_url", "author", "trust", "retrieved", "added_by"]) if (!meta[k]) problems.push(`${f}: missing ${k}`);
+    if (meta.source_url && !/^https:\/\//.test(String(meta.source_url))) problems.push(`${f}: source_url must be https`);
+    if (meta.trust && !CURATED_TRUST_LEVELS.includes(String(meta.trust) as never)) problems.push(`${f}: trust must be one of ${CURATED_TRUST_LEVELS.join("|")}`);
+    if (meta.retrieved && !/^\d{4}-\d{2}-\d{2}$/.test(String(meta.retrieved))) problems.push(`${f}: retrieved must be YYYY-MM-DD`);
+    if (meta.trust === "official" && meta.source_url && !sourceTrusted(String(meta.source_url)).ok) problems.push(`${f}: trust "official" but source_url is not a Salesforce documentation domain — use mvp/veteran/internal`);
+  }
+  return { ok: problems.length === 0, files: files.length, problems };
 }
 
 /** grep the product-docs mirror for a term (used by agents through the plan-grounding skill's instructions). */

@@ -18,8 +18,8 @@ conductor's turn before the stage could be judged — the agent-gate hook denies
 
 ```
 open ─ prior_art(a1) ─ intake(a1)·gate ─ baseline(a0b) ─ cartography(a0) ─ repro(a2) ─ plan(a3)·gate ─ develop(a4)
-     ─ qa_dev(a5) ─ review(a6)·gate ─ comms(a9) ─ deploy_uat(HUMAN) ─ qa_uat(a5) ─ deploy_prod(HUMAN)
-     ─ prod_verify(toolkit) ─ remediation(HUMAN, optional) ─ learn(a7 coach) ─ done
+     ─ qa_dev(a5) ─ review(a6)·gate ─ comms(a9) ─ deploy_uat(HUMAN) ─ uat_verify(toolkit, D-099) ─ qa_uat(a5) ─ deploy_prod(HUMAN)
+     ─ prod_verify(toolkit) ─ remediation(HUMAN, optional) ─ learn(a7 coach) ─ done            (19 stages)
 ```
 
 Every stage has `gates[]` (mechanical, run by the SubagentStop hook), optionally a `human_gate` key (looked up in
@@ -37,7 +37,11 @@ agent up to 3 times per attempt; then the stage is marked failed and handoff bou
 genuinely ends (gates passed, or the block cap reached); while a `running` stage carries no stamp the handoff answers
 `WAIT_AGENT`, bounded by `AGENT_WAIT_CAP` (8) and then handed to the normal bounce ladder. `/resume` **recovers** a failed
 agent stage by re-running its gates: all passing means the work really was finished, so the stage is marked done without
-re-running the agent. **Budget**: over the per-ticket **fresh** tokens (input + output + cache_creation — cache reads are
+re-running the agent. **Preprod parity** (D-099): `uat_verify` is a toolkit stage — it retrieves the deploy-manifest components from preprod with the
+engine keychain, fingerprints them path-independently and compares with the dev source; MISSING / DIFFERENT / STILL_IN_UAT or a
+retrieve that could not run sends the ticket back to `deploy_uat` as `waiting_human (deploy)` with the list (a bounce
+`uat_verify → deploy_uat`). A human may accept named differences with a reason (`sfsmiths-human parity`), valid for the same source
+hash only. **Budget**: over the per-ticket **fresh** tokens (input + output + cache_creation — cache reads are
 re-reads of context already paid for and are never counted, D-094) or USD → `parked` (resumable). **Human gates**: `waiting_human` with a typed `waiting.kind`
 (approval | deploy | remediation | question | budget | baseline | canary).
 
@@ -56,6 +60,7 @@ re-reads of context already paid for and are never counted, D-094) or USD → `p
 | checklist | plan `checklist_answers` vs `knowledge/checklists/*.yaml` | every applicable item answered (n/a needs a note) |
 | comment-lint | changed `.cls/.trigger/*-meta.xml/lwc` | header doc, method docs, mod-log with ticket, `<description>` |
 | deploy-report | `validations/deploy-dev.json`, `uat-validate.json` | succeeded, 0 errors, file hashes still current |
+| uat-parity | `validations/uat-parity.json` vs the current deploy-manifest files hash | every changed component MATCH (or DELETED_OK / human-ACCEPTED) in preprod; not verified → failed; source changed since → failed; no preprod configured → passed by config (D-099) |
 | test-quality | changed test classes + report | assertion in every method, no SeeAllData |
 | security | changed Apex + `06-review.json` | ruleset clean; crud_fls + sharing stated |
 | comms-lint | `10-comms/*.md` | audience header; no forbidden terms/secrets/envelopes in client drafts |
@@ -70,7 +75,7 @@ Outcomes are `passed | failed | unavailable`; **unavailable is never passed**. E
 | Event | Hook | Behaviour |
 |---|---|---|
 | PreToolUse Agent | `agent-gate` (fast, ≤50 ms) | deny agents not in `next_allowed_stages`, denied names, when waiting/on hold/parked/done, **and any background spawn** (`run_in_background` and every other spelling — D-093) |
-| PreToolUse Bash | `policy` (fast) | R1 human verbs · R2 HOME/SF_* / engine home · R3 git push / Blue Canvas · R4 nested claude · R5 direct HTTP to Salesforce · R6 protected paths (write targets only) · R7 sf targets (any explicit target that is not a configured development alias is denied — reads included, bare usernames included; preprod/prod get specific messages; writes need an explicit dev target; org login deny) |
+| PreToolUse Bash | `policy` (fast) | R1 human verbs · R2 HOME/SF_* / engine home · R2b `sf config set` / `sf alias set` / `sf org login` (re-pointing an alias or the default org) · R3 git push / Blue Canvas · R4 nested claude · R5 direct HTTP to Salesforce · R6 protected paths (write targets only) · R7 sf targets (any explicit target that is not a configured development alias is denied — reads included, bare usernames included; preprod/prod get specific messages; writes need an explicit dev target; org login deny) |
 | PreToolUse Edit/Write/… | `write-guard` (fast) | write areas only; own ticket vault; own agent memory; role exceptions (a0 → docs/org-map, a7 → lessons/PENDING) |
 | PreToolUse mcp__sf-dev__.* | `data-guard` (fast) | side-effect tools need a fresh PASS email canary |
 | PostToolUse Agent | `tokens` | per agent/model/ticket accounting (payload shape defensive; transcript fallback) |
@@ -95,10 +100,15 @@ no decision in Claude Code, so speed is safety and the hard cases are duplicated
   human decisions via `sfsmiths-human baseline decide` or `/approve … --answer "keep-dev:… take-uat:…"`.
 - **evidence** — SOQL parser (SELECT-only, no subqueries), allowlist + field-type refusal, row cap, masking, logging to
   `.sfsmiths/evidence.log.jsonl`, vault copies; Tooling allowlist; describe.
-- **privileged** — canary (`Messaging.sendEmail(allOrNothing=false)` → pass only on `NO_SINGLE_MAIL_PERMISSION` / `NO_MASS_MAIL_PERMISSION`), test runs
+- **privileged** — canary (`Messaging.sendEmail(allOrNothing=false)`; in `blocked` mode pass only on `NO_SINGLE_MAIL_PERMISSION` / `NO_MASS_MAIL_PERMISSION`, in `allowlist_only` mode pass also when delivered **and** the e-mail census finds no address outside `safety.allowed_test_emails` — D-102), preprod parity (`uatParity`, `parityAccept` — D-099), test runs
   (Apex + SOQL assertions + Flow tests) with hashes, preprod dry-run (engine), dev deploy, anonymous Apex with email scan,
   Code Analyzer, oracle cache refresh.
-- **priorart, learn, tokens, approvals, notify, sync, setup, orgmap, mirror, conventions, golden, pipeline** — see the
+- **deploy-manifest** (D-100) — `git diff --name-status <baseline_commit>` + untracked → component rows (added / modified / deleted,
+  path-independent content fingerprint) → `06c-deploy-manifest.md/.json`, `artifacts/package.xml`, `destructiveChanges.xml`.
+- **mirror** — official docs mirror from `knowledge/mirror/sources.yaml`, fetched only from `trusted_domains` (P12, D-103);
+  `curatedLint` checks provenance frontmatter on `knowledge/curated/*.md`.
+- **sync** — also wires generated `<prefix>-*` convention skills into the agents that list the matching `std-*` skill (D-096).
+- **priorart, learn, tokens, approvals, notify, setup, orgmap, conventions, golden, pipeline** — see the
   file headers; each is a plain module with no LLM calls.
 
 ## 6. Two keychains, one direction
@@ -116,7 +126,7 @@ Direction of metadata is always preprod → dev (baseline) and dev → (human) �
 ## 7. Data flow of a ticket vault (`work/<KEY>/`)
 
 `ticket.json/.md` · `00-inbox/` · `00b-baseline.*` · `00c-prior-art.*` · `00d-cartography.*` · `01-intake.*` · `02-repro.*`
-· `03-plan.*` · `04-implementation.*` · `05-test-report.*` · `06-review.*` + `06b-deploy-brief.md` · `07-uat-report.*`
+· `03-plan.*` · `04-implementation.*` · `05-test-report.*` · `06-review.*` + `06b-deploy-brief.md` + `06c-deploy-manifest.*` · `07a-uat-parity.md` · `07-uat-report.*`
 · `08-prod-verify.md` · `09-retro.*` · `10-comms/` · `artifacts/` · `evidence/` · `ui/` · `validations/` · `approvals/`
 · `events.jsonl` · `facts.md` · `manifest.yaml` · `.state.json` · `history/`.
 Toolkit-owned: manifest, state, events, validations, approvals. Agents own the rest of their ticket's vault.
@@ -130,7 +140,9 @@ Golden Ticket Replay (`benchmarks/`) guards against drift after model/plugin/pro
 
 ## 9. Configuration is the product surface
 
-Everything a team would change lives in `config/` (14 YAML files, schemas in `schemas/config/`). `models.yaml` carries both
+Everything a team would change lives in `config/` (14 YAML files, schemas in `schemas/config/`). `safety.yaml` carries the
+allowed test e-mail list and the delivery containment mode (`blocked` | `allowlist_only`, D-102) — edited in the UI's Safety
+screen as a form, not raw YAML. `models.yaml` carries both
 the model **and the reasoning effort** per agent (D-095: `effort: low|medium|high|xhigh|max|inherit`, synced into the
 `effort:` line of each agent file — note that `CLAUDE_CODE_EFFORT_LEVEL` in the environment beats agent frontmatter, so
 doctor warns when it is set), and `budgets.yaml` carries the model **prices** (D-094) so cost is never silently zero.

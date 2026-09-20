@@ -6,6 +6,24 @@
 ## 2. Plain English — technical lens (hypotheses with confidence)
 - H1 (70%): …
 
+## 2a. Picture — what happens today vs what should happen
+<!-- D-101: one ASCII flow (readable in the terminal) + one mermaid block (renders in VS Code / GitHub). Keep both to the
+     ticket's real objects and fields; every box names something that exists in the org map or the ticket. -->
+```
+TODAY                                          EXPECTED
+[<record> created] --> [<automation>]          [<record> created] --> [<automation>]
+      |                    |                          |                    |
+      v                    v                          v                    v
+  <field> = <value>   <branch not reached>       <field> = <value>   <branch reached> --> <outcome>
+```
+```mermaid
+flowchart LR
+  A["<record> created"] --> B{"<decision / rule>"}
+  B -- "today: <value>" --> C["<what happens now>"]
+  B -- "expected: <value>" --> D["<what should happen>"]
+```
+**Worked example (one real-shaped record):** a <record> with <field>=<value> … → today: … → expected: …
+
 ## 3. Classification
 **BUG** — because: "<quoted ticket sentence>"
 

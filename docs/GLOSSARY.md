@@ -33,3 +33,9 @@
 | **Effort** | Claude Code's reasoning level per agent: `low | medium | high | xhigh | max` (or `inherit`), set in `config/models.yaml → effort` and synced into each agent file. `CLAUDE_CODE_EFFORT_LEVEL` in the environment overrides it — doctor warns when that is set (D-095). |
 | **Recovery** | `/resume` re-runs a failed agent stage's gates; all passing means the work really was finished, so the stage is marked done without re-running the agent (D-093). |
 | **Write areas** | Where agents may write: `org/force-app/`, `tests-ui/`, their ticket's vault, their own `agent-memory`; a0 also `docs/org-map/`, a7 also `knowledge/lessons/PENDING/`. |
+- **Deploy manifest** — `06c-deploy-manifest.md/.json` + `artifacts/package.xml`: the exact components a ticket changed, generated from git by the toolkit (D-100). The human's checklist in the deploy tool; the parity check's input.
+- **Preprod parity / `uat_verify`** — toolkit stage after the human's preprod deploy: retrieve the manifest components from preprod (engine keychain), fingerprint, compare with dev. MATCH / DIFFERENT / MISSING_IN_UAT / STILL_IN_UAT / DELETED_OK / ACCEPTED (D-099).
+- **E-mail census** — in `allowlist_only` delivery mode, `SELECT COUNT()` per configured `Object.Field` of addresses outside `allowed_test_emails`; any non-zero count fails the canary (D-102).
+- **Delivery mode** — `blocked` (canary must prove the org refuses to send) or `allowlist_only` (delivery may be ON, census must be clean). Chosen in the UI → Safety screen.
+- **Trusted domains** — the only hosts the docs mirror fetches from (Salesforce documentation properties). Expert writing goes to `knowledge/curated/` with provenance (P12, D-103).
+- **Classification** — BUG / ENHANCEMENT / DATA-FIX / QUESTION from intake; picks classification-specific stage prompts (D-098). An ENHANCEMENT's "repro" is acceptance tests first.

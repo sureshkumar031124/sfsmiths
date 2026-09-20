@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import fs from "node:fs";
 import { execFileSync } from "node:child_process";
-import { makeProject, cleanup, runHook, agentCli, humanCli, writeJson, write } from "./helpers.mjs";
+import { makeProject, cleanup, runHook, agentCli, humanCli, writeJson, write, readJson } from "./helpers.mjs";
 import { projectPaths } from "../dist/core/paths.js";
 import { loadManifest } from "../dist/core/manifest.js";
 import { buildContext } from "../dist/gates/registry.js";
@@ -136,7 +136,22 @@ test("DEMO-101 travels open → prior_art → intake → baseline → cartograph
 
     // human deploys to preprod via Blue Canvas, marks it
     r = humanCli(root, ["deployed", T, "--org", "preprod"]); assert.equal(r.code, 0, r.stderr);
-    out = handoff(); expectSpawn(out, "a5-qa", "qa_uat");
+    // D-099 (deliberate change to this simulation, 20 Sept 2026): the toolkit now verifies the deploy before QA runs in
+    // preprod — uat_verify retrieves the changed components from preprod and compares fingerprints. Offline there is no
+    // sf CLI, so the verdict is NOT VERIFIED and the ticket goes back to the deploy step, waiting on the human — never on
+    // to QA. The human then records what they verified themselves (reason required, logged) and marks the deploy again.
+    out = handoff(); assert.match(out, /WAIT_HUMAN \(deploy\) at stage "deploy_uat"/, out); assert.match(out, /parity NOT VERIFIED/);
+    assert.ok(fs.existsSync(path.join(vault, "06c-deploy-manifest.md")), "deploy manifest written from git (D-100)");
+    assert.ok(fs.existsSync(path.join(vault, "artifacts", "package.xml")), "package.xml written (D-100)");
+    assert.match(fs.readFileSync(path.join(vault, "artifacts", "package.xml"), "utf8"), /<members>CaseEscalationOwnerService<\/members>/);
+    assert.ok(fs.existsSync(path.join(vault, "07a-uat-parity.md")), "parity report written even when not verified");
+    assert.ok(runHook(root, "agent-gate", { hook_event_name: "PreToolUse", tool_name: "Agent", tool_input: { subagent_type: "a5-qa" } }).denied, "QA (preprod) may not start on an unverified deploy");
+    r = humanCli(root, ["parity", T, "--accept-all"]); assert.notEqual(r.code, 0, "acceptance without a reason is refused");
+    r = humanCli(root, ["parity", T, "--accept-all", "--reason", "verified the component list in the deploy tool's log (offline simulation)"]); assert.equal(r.code, 0, r.stderr); assert.match(r.stdout, /parity OK/);
+    r = humanCli(root, ["deployed", T, "--org", "preprod"]); assert.equal(r.code, 0, r.stderr);
+    out = handoff(); expectSpawn(out, "a5-qa", "qa_uat"); assert.match(out, /uat parity: \d+ component\(s\) accepted by human/);
+    assert.ok(readJson(path.join(vault, "06c-deploy-manifest.json")).components.some((c) => c.key === "ApexClass:CaseEscalationOwnerService"), "the changed class is in the deploy manifest");
+    assert.equal(loadManifest(T, p).stages.uat_verify.status, "done", "uat_verify toolkit stage completed on the human-accepted verdict");
     writeJson(path.join(vault, "validations", "tests-uat.json"), { apex: { tests: [{ FullName: "CaseEscalationOwnerAssignmentTest.ownerIsAssignedWhenPriorityBecomesCritical", Outcome: "Pass" }, { FullName: "CaseEscalationOwnerAssignmentTest.nonCriticalCasesKeepTheirOwner", Outcome: "Pass" }] }, soql_assertions: [{ description: "no Critical case owned by a user", expected: "0", actual: "0", pass: true }] });
     write(path.join(vault, "07-uat-report.md"), "# uat\n");
     writeJson(path.join(vault, "07-uat-report.json"), { phase: "uat", tests: [{ name: "CaseEscalationOwnerAssignmentTest.ownerIsAssignedWhenPriorityBecomesCritical", layer: "apex", outcome: "Pass", run_file: "validations/tests-uat.json" }], defects: [], verdict: "pass", evidence: [{ source: "vault", ref: "validations/tests-uat.json" }] });
@@ -159,9 +174,10 @@ test("DEMO-101 travels open → prior_art → intake → baseline → cartograph
     assert.ok(!runHook(root, "agent-gate", { hook_event_name: "PreToolUse", tool_name: "Agent", tool_input: { subagent_type: "a7-coach" } }).denied, "maintenance agent allowed after the ticket is done");
     assert.equal(m.approvals.length, 3, "intake, plan, review approvals");
     assert.ok(m.approvals.every((a) => a.origin === "user_prompt_submit"), "all approvals came from the human's typed prompt");
-    assert.equal(m.bounces.length, 1);
+    assert.equal(m.bounces.length, 2, "qa_dev → develop, and uat_verify → deploy_uat (D-099: the unverified deploy came back to the human)");
+    assert.deepEqual(m.bounces.map((b) => `${b.from}→${b.to}`), ["qa_dev→develop", "uat_verify→deploy_uat"]);
     const types = readAllEvents(p).map((e) => e.type);
-    for (const t of ["ticket.opened", "stage.started", "stage.blocked", "stage.done", "stage.bounced", "human.approved", "deploy.marked", "prod.verified", "ticket.done"]) assert.ok(types.includes(t), `event ${t} recorded`);
+    for (const t of ["ticket.opened", "stage.started", "stage.blocked", "stage.done", "stage.bounced", "human.approved", "deploy.marked", "uat.parity_failed", "human.parity_accepted", "prod.verified", "ticket.done"]) assert.ok(types.includes(t), `event ${t} recorded`);
     // and the agent-gate refuses anything now
     assert.ok(runHook(root, "agent-gate", { hook_event_name: "PreToolUse", tool_name: "Agent", tool_input: { subagent_type: "a4-developer" } }).denied);
   } finally { cleanup(root); }

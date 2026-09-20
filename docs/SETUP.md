@@ -43,7 +43,7 @@ such; add the other orgs later with `sfsmiths-human org add` + `org login` (or t
 |---|---|
 | `orgs.yaml` | your three orgs (development / preprod / evidence), aliases, keychains, the read-only user; add more with `sfsmiths-human org add` or the UI |
 | `tracker.yaml` | `jira` (read-only token via env `SFSMITHS_JIRA_EMAIL` / `SFSMITHS_JIRA_TOKEN`, base URL, project key, prior-art JQL) or `file` (inbox/) |
-| `safety.yaml` | allowed test email domains, test tag field, canary recipient env (`SFSMITHS_CANARY_EMAIL` = **your** address), UI refusals |
+| `safety.yaml` | **allowed test e-mail addresses / patterns** and the **delivery containment mode** (`blocked` default · `allowlist_only` with census — D-102; edit both in the UI → ⛨ Safety), test tag field, canary recipient env (`SFSMITHS_CANARY_EMAIL` = **your** address), UI refusals |
 | `models.yaml` | model alias per agent (opus/sonnet/haiku/fable/inherit) **and reasoning effort per agent** (`effort:` low/medium/high/xhigh/max/inherit — D-095). Note: `CLAUDE_CODE_EFFORT_LEVEL` in your environment overrides these; doctor #15 warns if it is set |
 | `autonomy.yaml` | tier matrix (which stages ask you) + per-agent ask/auto |
 | `budgets.yaml` | per-ticket tokens (judged on **fresh** tokens — cache reads excluded, D-094)/USD/minutes, daily USD, pipeline budget, and the model **prices** used for cost (review them against your plan) |
@@ -112,7 +112,9 @@ the coach confirms them).
 preprod NOT there · preprod in the engine keychain · read-only identity (no create/edit/delete) · no admin prod login ·
 no Blue Canvas remote reachable by agents · `.mcp.json` consistent · hooks wired + installed copy version · canary fresh
 (when requested) · hook latency · FLS mirrors masking · oracle cache · package assets · per-agent effort and the
-`CLAUDE_CODE_EFFORT_LEVEL` override (#15) · model prices for the USD budgets (#16).
+`CLAUDE_CODE_EFFORT_LEVEL` override (#15) · model prices for the USD budgets (#16) · knowledge sources on trusted domains and curated
+notes with provenance (#17, P12) · e-mail containment mode (#18). Check #10 marks a canary PASS older than `canary_max_age_minutes`
+as WARN — the data-guard hook will deny data steps until you rerun it (D-097).
 
 ## 7. First run — the demo ticket
 
@@ -123,8 +125,19 @@ sfsmiths-human start
 > /ticket DEMO-101
 ```
 
-Follow the conductor; approve at the gates; when it says deploy, deploy with your tool and mark it
-(`sfsmiths-human deployed DEMO-101 --org preprod`). `sfsmiths-human ui` shows everything.
+Follow the conductor; approve at the gates; when it says deploy, select exactly the components in `work/DEMO-101/06c-deploy-manifest.md`
+in your tool, deploy, and mark it (`sfsmiths-human deployed DEMO-101 --org preprod`) — the toolkit then verifies the deploy
+against the dev source before QA runs in preprod (`07a-uat-parity.md`, D-099). `sfsmiths-human ui` shows everything.
+
+## 8. Before you publish a fork or share the repo
+
+Everything generated from **your** org is gitignored: `docs/org-map/*` (org id, hostname, every component name), the
+`<prefix>-*` convention skills (your code samples), `config/*.yaml`, `work/`, `.sfsmiths/`, `metrics/`. `npm run lint:hardcode`
+scans the **tracked** files for real-looking ticket keys, addresses, org ids and instance hostnames, and fails if a generated
+org file is tracked. Put your own company names and project keys in `.hardcode-lint.json` (gitignored; see
+`.hardcode-lint.json.example`) so the lint protects your clone without publishing those names. If such files were ever
+committed, they are in the history: publish from a fresh repository (one clean initial commit) rather than flipping the old
+one to public.
 
 ## Phase 0 spikes
 

@@ -46,6 +46,10 @@ and the human approves — so it must be **grounded** (every name exists), **com
    New names must follow `config/naming.yaml` (and the org's `<prefix>-naming-rules` skill if present).
 3. **Order of execution & side effects** — where the change sits (before-save flow / trigger / VR / after / async), what
    else fires, what could recurse, email/notification side effects (tie to EML checklist).
+   **3a. Picture — before → after** (D-101): the same record's journey through the order of execution before and after the
+   fix, as an ASCII flow (terminal) and a ` ```mermaid ` block (VS Code / GitHub), naming the real components (`Type:ApiName`,
+   all resolvable — plan-lint reads the prose too); then ONE worked example the human can check in two minutes, ending with
+   which repro test flips FAIL → PASS and why. Skeleton in `templates/03-plan.md`.
 4. **Consumers & blast radius** — who calls/depends on each component (dependency graph), reports, integrations, LWC.
 5. **Bulk & limits** — 200-record behaviour, SOQL/DML counts in loops, CPU, async needs, selective queries.
 6. **Tests** — which existing tests, which new (`Class.method`), Flow tests, SOQL distribution assertions, UI checks; the

@@ -14,7 +14,7 @@ import { exists, nowIso, readJsonOr } from "../core/util.js";
 import { recordApproval } from "../engines/approvals.js";
 import { holdTicket, resumeTicket, markDeployed, prodVerify, ticketSummary } from "../engines/lifecycle.js";
 import { loadDecisions, saveDecisions, type Decision } from "../engines/baseline.js";
-import { syncAll, ensureRuntimeDirs } from "../engines/sync.js";
+import { syncAll, syncAgentSkills, ensureRuntimeDirs } from "../engines/sync.js";
 import { doctor, formatChecks } from "../doctor/index.js";
 import { learnDaily, learnSync, allLessons, decideLesson, memoryAudit, lessonFromHumanFeedback, computeRewards, type LessonType } from "../engines/learn.js";
 import { readAllEvents } from "../core/events.js";
@@ -25,7 +25,7 @@ import { orgmapBuild } from "../engines/orgmap.js";
 import { mirrorRefresh } from "../engines/mirror.js";
 import { conventionsBuild } from "../engines/conventions.js";
 import { goldenAdd, goldenList, goldenScore } from "../engines/golden.js";
-import { runCanary } from "../privileged/index.js";
+import { runCanary, uatParity, parityAccept } from "../privileged/index.js";
 import { startUi } from "../ui/server.js";
 
 const a = parseArgs(process.argv.slice(2));
@@ -81,6 +81,18 @@ async function main(): Promise<void> {
       return;
     }
     case "verify": { const t = ticketArg(); const r = await prodVerify(t, { remediation: a.bool("remediation"), p }); say(`${t}: ${r.results.filter((x) => x.pass).length}/${r.results.length} checks passed`); for (const x of r.results) say(`  ${x.pass ? "✅" : "❌"} ${x.description}: expected ${x.expected}, actual ${x.actual ?? x.note ?? "—"}`); return; }
+    case "parity": {
+      // D-099: preprod parity — run it, or record a human acceptance (reason required, logged)
+      const t = ticketArg();
+      const accept = a.list("accept").flatMap((x) => x.split(",")).map((x) => x.trim()).filter(Boolean);
+      const r = accept.length || a.bool("accept-all")
+        ? await parityAccept(t, { keys: accept, all: a.bool("accept-all"), reason: a.str("reason") ?? "", p })
+        : await uatParity(t, p);
+      say(`${t}: parity ${r.ok ? "OK" : r.unavailable ? "NOT VERIFIED" : "MISMATCH"}${r.skipped ? ` (${r.skipped})` : ""}${r.unavailable ? ` — ${r.unavailable}` : ""} · source ${r.source} · work/${t}/07a-uat-parity.md`);
+      for (const x of r.rows) say(`  ${["MATCH", "DELETED_OK", "ACCEPTED"].includes(x.status) ? "✅" : "❌"} ${x.key} ${x.status}${x.note ? ` — ${x.note}` : ""}`);
+      if (!r.ok) process.exit(1);
+      return;
+    }
     case "baseline": {
       if (a.positional[1] !== "decide") fail("baseline decide <KEY> --keep-dev Type:Name --take-uat Type:Name --exclude Type:Name [--all-take-uat]");
       const t = ticketArg(2);
@@ -200,7 +212,19 @@ async function main(): Promise<void> {
     }
     case "orgmap": { const r = await orgmapBuild({ objects: a.list("objects").flatMap((x) => x.split(",")).filter(Boolean), p, log: (s) => say(`· ${s}`) }); say(`org-map: ${r.objects.length} object page(s), ${r.dependencies} dependency edge(s), ${r.conventions_sampled} class(es) sampled → docs/org-map/`); for (const w of r.warnings) say(`⚠ ${w}`); return; }
     case "mirror": { const r = await mirrorRefresh({ p, log: (s) => say(`· ${s}`) }); say(`mirror: ${r.ok.join(", ") || "nothing fetched"}`); for (const f of r.failed) say(`❌ ${f.name}: ${f.reason}`); return; }
-    case "conventions": { const r = conventionsBuild({ prefix: a.str("prefix"), p }); say(`written: ${r.written.join(", ") || "nothing"}`); for (const w of r.warnings) say(`⚠ ${w}`); if (r.written.length) say(`add the new skills to the agents' \`skills:\` lists (a2, a3, a4, a5, a6) — or run sync if already listed`); return; }
+    case "conventions": {
+      const r = conventionsBuild({ prefix: a.str("prefix"), p });
+      say(`written: ${r.written.join(", ") || "nothing"}`);
+      for (const w of r.warnings) say(`⚠ ${w}`);
+      if (r.written.length) {
+        // D-096: wire the generated skills into every agent that lists the matching std-* skill (was a manual step nobody did)
+        const warnings: string[] = [];
+        const wired = syncAgentSkills(p, warnings);
+        say(wired.length ? `wired into agents: ${wired.join("; ")} — takes effect in the next Claude Code session` : `agents already list these skills — nothing to wire`);
+        for (const w of warnings) say(`⚠ ${w}`);
+      }
+      return;
+    }
     case "golden": {
       const sub = a.positional[1];
       if (sub === "add") { const g = goldenAdd(ticketArg(2), p); say(`sealed ${g.key}: ${g.scope.length} component(s), ${g.failing_tests.length} failing test(s)`); return; }
@@ -219,6 +243,7 @@ async function main(): Promise<void> {
   reject <KEY> --reason "..."
   hold <KEY> --reason "..." | resume <KEY> [--restart-from stage] [--allow-budget]
   deployed <KEY> --org preprod|production [--id 0Af…]
+  parity <KEY> [--accept T:N,… | --accept-all] [--reason "…"]   preprod parity check (D-099); acceptance is recorded
   verify <KEY> [--remediation]
   baseline decide <KEY> --keep-dev T:N --take-uat T:N --exclude T:N [--all-take-uat]
   sync                                      config → agents/.mcp.json/policy/lessons skills

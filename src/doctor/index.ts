@@ -11,9 +11,11 @@ import { remotes } from "../core/git.js";
 import { run, which } from "../core/shell.js";
 import { exists, readJsonOr, readText, readTextOr } from "../core/util.js";
 import { AGENT_NAMES } from "../core/state-machine.js";
-import { runCanary } from "../privileged/index.js";
+import { runCanary, canaryFresh } from "../privileged/index.js";
 import { evidenceDescribe } from "../engines/evidence/query.js";
 import { SF_MCP_VERSION, keychainDenyRules, KEYCHAIN_DENY_RE } from "../engines/sync.js";
+import { loadSources, loadTrustedDomains, sourceTrusted, curatedLint } from "../engines/mirror.js";
+import { emailDeliveryMode, emailCensusFields } from "../core/config.js";
 
 export type Level = "ok" | "warn" | "fail" | "skip";
 export interface Check { id: string; title: string; level: Level; detail: string }
@@ -143,8 +145,16 @@ export async function doctor(opts: DoctorOptions = {}): Promise<{ checks: Check[
       catch (e) { add(`10-${o.alias}`, `email canary on ${o.alias}`, "fail", (e as Error).message); }
     }
   } else if (dev) {
-    const st = readJsonOr<{ at: string; result: string } | undefined>(path.join(p.state, "canary", `${dev.alias}.json`), undefined);
-    add("10", "email canary (last result)", st?.result === "pass" ? "ok" : "warn", st ? `${st.result} at ${st.at}` : "never run — sfsmiths-human doctor --email-canary");
+    // D-097: judge the last result the way the data-guard hook will — a PASS older than canary_max_age_minutes is
+    // stale and the first data step of a2-repro will be DENIED, so a green here would be a lie (same defect D-092
+    // fixed in the UI card; the doctor was missed)
+    const st = readJsonOr<{ at: string; result: string; detail?: string } | undefined>(path.join(p.state, "canary", `${dev.alias}.json`), undefined);
+    if (!st) add("10", "email canary (last result)", "warn", "never run — sfsmiths agent canary --org " + dev.alias + " (data-guard will deny data steps until a fresh PASS exists)");
+    else if (cfg.safety) {
+      const f = canaryFresh(cfg, p, dev.alias);
+      const ageMin = Math.round((Date.now() - new Date(st.at).getTime()) / 60_000);
+      add("10", "email canary (last result)", f.fresh ? "ok" : "warn", f.fresh ? `pass ${ageMin} min ago (fresh, max ${cfg.safety.canary_max_age_minutes})` : `${f.reason} — data-guard will DENY a2/a5 data steps until you rerun: sfsmiths agent canary --org ${dev.alias}`);
+    } else add("10", "email canary (last result)", st.result === "pass" ? "ok" : "warn", `${st.result} at ${st.at}`);
   }
 
   // 11 hooks latency
@@ -208,6 +218,26 @@ export async function doctor(opts: DoctorOptions = {}): Promise<{ checks: Check[
         : !priced.length ? "no prices configured — every run records usd: 0, so the daily/per-ticket USD budgets never fire and the dashboard reads $0. Add config/budgets.yaml → prices."
         : unpriced.length ? `no price entry matches: ${unpriced.join(", ")} — those runs record no cost. Add a key to config/budgets.yaml → prices (matched as a substring of the model id).`
         : `${priced.length} price key(s) from config/budgets.yaml: ${priced.join(", ")} — review them against your own plan`);
+  }
+
+  // 17 P12 — knowledge provenance: mirror sources on trusted domains only; curated notes carry source/author/trust
+  {
+    const trusted = loadTrustedDomains(p);
+    const badSources = loadSources(p).filter((s) => !sourceTrusted(s.url, trusted).ok);
+    const cur = curatedLint(p);
+    add("17", "knowledge sources (P12: official docs + curated with provenance)",
+      badSources.length ? "fail" : cur.ok ? "ok" : "warn",
+      badSources.length ? `${badSources.length} mirror source(s) on a non-Salesforce host — remove from knowledge/mirror/sources.yaml: ${badSources.map((s) => s.url).join(", ")}`
+        : cur.ok ? `${loadSources(p).length} mirror source(s) on trusted domains · ${cur.files} curated note(s) with provenance · agents cannot browse (repo-checks #7)`
+        : `${cur.problems.length} curated note(s) without provenance — agents must not cite them: ${cur.problems.slice(0, 4).join("; ")}`);
+  }
+  // 18 D-102 — e-mail containment mode
+  if (cfg.safety) {
+    const mode = emailDeliveryMode(cfg.safety);
+    add("18", "e-mail containment (P9 / D-102)", "ok",
+      mode === "blocked"
+        ? `mode blocked — the canary must prove the development org refuses to send; allowlist: ${cfg.safety.allowed_test_emails.join(", ")}`
+        : `mode allowlist_only — delivery may be ON; the canary runs an e-mail census over ${emailCensusFields(cfg.safety).join(", ")} and FAILS on any address outside: ${cfg.safety.allowed_test_emails.join(", ")}`);
   }
 
   const ok = !checks.some((c) => c.level === "fail");

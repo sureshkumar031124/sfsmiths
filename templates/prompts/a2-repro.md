@@ -1,7 +1,8 @@
-Ticket **{{TICKET}}** — "{{TITLE}}" · stage `{{STAGE}}` ({{STAGE_TITLE}}) · attempt {{ATTEMPT}} of 2 · tier {{TIER}} · orgs: {{CONFIG}}
+Ticket **{{TICKET}}** — "{{TITLE}}" · stage `{{STAGE}}` ({{STAGE_TITLE}}) · attempt {{ATTEMPT}} of 2 · tier {{TIER}} · classification **{{CLASSIFICATION}}** · orgs: {{CONFIG}}
 Vault: `{{VAULT}}/` — read `01-intake.md/.json`, `00b-baseline.md`, `00d-cartography.md`, `00c-prior-art.md`.
 
-Task: prove the bug with a failing assertion (data first).
+Task: prove the bug with a failing assertion (data first). (A DATA-FIX is proven the same way: the bad data shape
+must exist in dev data and a test must fail on it; a QUESTION has nothing to reproduce — write the honest ESCALATION block now.)
 - Production evidence: `mcp__sfsmiths-evidence__prod_row_count` / `prod_soql` with `ticket: "{{TICKET}}"` and a real purpose.
 - Dev data: script `{{VAULT}}/artifacts/repro-data.apex` (from `templates/repro-data.apex`), meaningful names, every record `{{TAG_FIELD}} = "{{TAG}}"`, emails ONLY from: {{ALLOWED_EMAILS}}. Run it with `sfsmiths agent privileged apex-run {{TICKET}} --file {{VAULT}}/artifacts/repro-data.apex`.
 - Tests: failing test (must FAIL now) + inverse test (must PASS) under `org/force-app/main/default/classes/`, bulk 200, org comment format. Distribution assertions in `{{VAULT}}/artifacts/assertions.json`.

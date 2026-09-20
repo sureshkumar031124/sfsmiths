@@ -29,7 +29,7 @@ const ticketArg = z.string().regex(/^[A-Z][A-Z0-9_]{0,15}-\d{1,8}$/, "ticket key
 const purposeArg = z.string().min(8).max(300).describe("Why you need this data (logged with the query; ≥ 8 chars)");
 
 export async function main(): Promise<void> {
-  const server = new McpServer({ name: "sfsmiths-evidence", version: "0.1.0" }, {
+  const server = new McpServer({ name: "sfsmiths-evidence", version: "0.2.0" }, {
     instructions: "Masked, read-only production evidence. SELECT-only SOQL against allowlisted objects/fields (config/masking.yaml). Rows are capped and masked; every call is logged. Never ask this server to write, and never paste raw record values into comms — cite the evidence file instead (source: L3).",
   });
 

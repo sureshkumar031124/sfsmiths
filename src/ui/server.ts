@@ -16,7 +16,7 @@ import path from "node:path";
 import fs from "node:fs";
 import { spawn } from "node:child_process";
 import YAML from "yaml";
-import { CONFIG_FILES, configFilePath, loadConfig, loadConfigFile, tryLoadConfig, writeConfigFile, EFFORT_LEVELS, type AllConfig, type OrgsConfig } from "../core/config.js";
+import { CONFIG_FILES, configFilePath, loadConfig, loadConfigFile, tryLoadConfig, writeConfigFile, EFFORT_LEVELS, EMAIL_DELIVERY_MODES, DEFAULT_EMAIL_CENSUS_FIELDS, emailDeliveryMode, emailCensusFields, type AllConfig, type OrgsConfig } from "../core/config.js";
 import { readAllEvents, readEvents, emitEvent } from "../core/events.js";
 import { listTickets, loadManifest, tryLoadManifest, type Manifest } from "../core/manifest.js";
 import { homePaths, packageRoot, projectPaths, sanitizeTicket, vaultDir, type ProjectPaths } from "../core/paths.js";
@@ -28,7 +28,7 @@ import { doctor } from "../doctor/index.js";
 import { allLessons, computeRewards, decideLesson, learnSync, type LessonType } from "../engines/learn.js";
 import { holdTicket } from "../engines/lifecycle.js";
 import { syncAll } from "../engines/sync.js";
-import { readAgentRuns } from "../engines/tokens.js";
+import { readAgentRuns, freshTokens } from "../engines/tokens.js";
 
 export interface UiOptions { p?: ProjectPaths; port?: number; open?: boolean; log?: (s: string) => void }
 
@@ -163,6 +163,13 @@ async function route(method: string, url: URL, body: Record<string, unknown> | u
     throw new HttpError(405, "method not allowed");
   }
 
+  // D-102: the Safety screen — allowed test e-mails + delivery containment mode, edited as a form (not raw YAML)
+  if (root === "safety") {
+    if (method === "GET") return safetyView(p);
+    if (method === "PUT") return safetySave(p, b);
+    throw new HttpError(405, "method not allowed");
+  }
+
   if (root === "doctor" && method === "POST") {
     const r = await doctor({ p, quick: b.quick !== false });
     return { at: nowIso(), ok: r.ok, checks: r.checks };
@@ -192,8 +199,9 @@ function ticketDetail(p: ProjectPaths, key: string) {
   const vault = vaultDir(p, key);
   const files = listFiles(vault).map((f) => path.basename(f)).filter((n) => !n.startsWith(".")).sort();
   const runs = readAgentRuns(p).filter((r) => r.ticket === key);
-  const byAgent: Record<string, { tokens: number; runs: number; usd: number }> = {};
-  for (const r of runs) { const a = (byAgent[r.agent] ??= { tokens: 0, runs: 0, usd: 0 }); a.tokens += r.total_tokens; a.runs++; a.usd += r.usd ?? 0; }
+  // D-094: the budget is judged on FRESH tokens (input + output + cache writes); the total includes cache re-reads — show both
+  const byAgent: Record<string, { tokens: number; fresh: number; runs: number; usd: number }> = {};
+  for (const r of runs) { const a = (byAgent[r.agent] ??= { tokens: 0, fresh: 0, runs: 0, usd: 0 }); a.tokens += r.total_tokens; a.fresh += r.fresh_tokens ?? freshTokens(r.usage); a.runs++; a.usd += r.usd ?? 0; }
   return { manifest: m, files, stage_defs: STAGES.map((s) => ({ id: s.id, agent: s.agent, kind: s.kind, gates: s.gates, human_gate: s.human_gate, optional: s.optional })), tokens_by_agent: byAgent, events_tail: readEvents(key, p).slice(-40) };
 }
 
@@ -222,7 +230,9 @@ function dashboard(p: ProjectPaths) {
       failed: rows.filter((r) => r.status === "failed").length,
     },
     needs_you: rows.filter((r) => r.status === "waiting_human" || r.status === "escalated" || r.status === "parked"),
-    today: { tokens: todayRuns.reduce((s, r) => s + r.total_tokens, 0), usd: todayRuns.reduce((s, r) => s + (r.usd ?? 0), 0), runs: todayRuns.length, budget_usd: cfg.budgets?.daily_usd },
+    today: { tokens: todayRuns.reduce((s, r) => s + r.total_tokens, 0), usd: todayRuns.reduce((s, r) => s + (r.usd ?? 0), 0), runs: todayRuns.length, budget_usd: cfg.budgets?.daily_usd,
+      // D-094 shipped prices in config/budgets.yaml; the card used to say "no prices.json" regardless (C8 housekeeping)
+      prices_source: exists(path.join(p.metrics, "prices.json")) ? "metrics/prices.json" : Object.keys(cfg.budgets?.prices ?? {}).length ? "config/budgets.yaml" : "none" },
     rewards: { total: rewards?.total ?? 0, by_agent: rewards?.by_agent ?? {} },
     lessons: { pending: lessons.filter((l) => l.status === "pending").length, active: lessons.filter((l) => ["approved", "auto", "promoted"].includes(l.status)).length },
     denials_last_7d: denials.filter((e) => Date.now() - Date.parse(e.ts) < 7 * 86400_000).length,
@@ -384,16 +394,68 @@ function rewardsSummary(p: ProjectPaths): { total: number; by_agent: Record<stri
 
 /** Canary state per development org, in the shape `runCanary` writes (`result`, `at`, `detail`) plus freshness for the data-guard. */
 function readCanaryState(p: ProjectPaths, orgs?: OrgsConfig, maxAgeMinutes = 30) {
-  const out: Record<string, { result: string; at?: string; detail?: string; fresh: boolean; note?: string }> = {};
+  const out: Record<string, { result: string; at?: string; detail?: string; fresh: boolean; note?: string; mode?: string; census?: { field: string; non_allowlisted: number | null; note?: string }[] }> = {};
   for (const o of orgs?.orgs ?? []) {
     if (o.role !== "development") continue;
     const f = path.join(p.state, "canary", `${o.alias}.json`);
-    const st = readJsonOr<{ result?: string; at?: string; detail?: string } | undefined>(f, undefined);
+    const st = readJsonOr<{ result?: string; at?: string; detail?: string; mode?: string; census?: { field: string; non_allowlisted: number | null; note?: string }[] } | undefined>(f, undefined);
     if (!st) { out[o.alias] = { result: "never", fresh: false, note: "run: sfsmiths agent canary --org " + o.alias }; continue; }
     const ageMin = st.at ? (Date.now() - Date.parse(st.at)) / 60_000 : Infinity;
-    out[o.alias] = { result: st.result ?? "unknown", at: st.at, detail: st.detail, fresh: st.result === "pass" && ageMin <= maxAgeMinutes };
+    out[o.alias] = { result: st.result ?? "unknown", at: st.at, detail: st.detail, fresh: st.result === "pass" && ageMin <= maxAgeMinutes, mode: st.mode ?? "blocked", census: st.census };
   }
   return out;
+}
+
+/* ───────────────────────── safety (D-102) ───────────────────────── */
+
+function safetyView(p: ProjectPaths) {
+  const { cfg, errors } = tryLoadConfig(p);
+  const s = cfg.safety;
+  const { source } = configFilePath("safety", p);
+  return {
+    source, error: errors.safety,
+    allowed_test_emails: s?.allowed_test_emails ?? [],
+    email_delivery: s ? emailDeliveryMode(s) : "blocked",
+    email_census_fields: s ? emailCensusFields(s) : DEFAULT_EMAIL_CENSUS_FIELDS,
+    canary_max_age_minutes: s?.canary_max_age_minutes ?? 30,
+    canary_recipient_env: s?.canary_recipient_env,
+    test_tag_field: s?.test_tag_field,
+    modes: EMAIL_DELIVERY_MODES,
+    canary: readCanaryState(p, cfg.orgs, s?.canary_max_age_minutes ?? 30),
+    enforcement: [
+      "email-guard gate: every file an agent touched (test data, scripts, tests, specs) is scanned — one address outside the list fails the stage",
+      "apex-run: a repro-data script with a non-allowlisted address is refused before it runs",
+      "comms-lint: client drafts may contain no address at all; internal drafts only allowlisted ones",
+      "canary recipient: the probe goes only to your own address (SFSMITHS_CANARY_EMAIL), which must be in this list",
+      "data-guard hook: no data-creating tool runs without a fresh canary PASS (max age below)",
+    ],
+  };
+}
+
+const EMAIL_OR_GLOB_RE = /^[A-Za-z0-9*._%+-]+@[A-Za-z0-9*.-]+\.[A-Za-z*]{2,}$|^\*\.[A-Za-z]{2,}$|^\*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+function safetySave(p: ProjectPaths, b: Record<string, unknown>) {
+  const current = loadConfigFile("safety", p);
+  const next = { ...current };
+  if (Array.isArray(b.allowed_test_emails)) {
+    const list = (b.allowed_test_emails as unknown[]).map((x) => String(x).trim()).filter(Boolean);
+    const bad = list.filter((x) => !EMAIL_OR_GLOB_RE.test(x));
+    if (bad.length) throw new HttpError(400, `not an address or pattern: ${bad.join(", ")} (use name@example.com, *@example.com or *.invalid)`);
+    if (!list.length) throw new HttpError(400, "the allowlist cannot be empty — every test address must match something");
+    next.allowed_test_emails = [...new Set(list)];
+  }
+  if (typeof b.email_delivery === "string") {
+    if (!EMAIL_DELIVERY_MODES.includes(b.email_delivery as never)) throw new HttpError(400, `email_delivery must be one of ${EMAIL_DELIVERY_MODES.join("|")}`);
+    next.email_delivery = b.email_delivery as (typeof EMAIL_DELIVERY_MODES)[number];
+  }
+  if (Array.isArray(b.email_census_fields)) {
+    const fields = (b.email_census_fields as unknown[]).map((x) => String(x).trim()).filter(Boolean);
+    const bad = fields.filter((f) => !/^[A-Za-z][A-Za-z0-9_]*\.[A-Za-z][A-Za-z0-9_]*$/.test(f));
+    if (bad.length) throw new HttpError(400, `census fields must be Object.Field: ${bad.join(", ")}`);
+    next.email_census_fields = fields;
+  }
+  writeConfigFile("safety", next, p); // schema-validated; throws → nothing written
+  return { ok: true, note: `Saved config/safety.yaml. Agents read the allowlist on their next data step; the canary applies the delivery mode on its next run (sfsmiths agent canary --org <dev>).${next.email_delivery === "allowlist_only" ? " allowlist_only: the next canary will run the e-mail census — it FAILS if any configured field holds an address outside the list." : ""}` };
 }
 
 /* ───────────────────────── plumbing ───────────────────────── */

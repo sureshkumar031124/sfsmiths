@@ -1,4 +1,20 @@
 # knowledge/mirror/sources.yaml — official documentation mirrors (grounding layer L2). Edit to add/remove.
+# P12: `sfsmiths-human mirror` fetches ONLY from trusted_domains (Salesforce-owned documentation properties); a source on
+# any other host is refused and reported. Expert writing (Salesforce MVPs, long-time practitioners) is never mirrored
+# automatically — a human reads it, judges it, and files it under knowledge/curated/ with source_url + author + trust.
+trusted_domains:
+  - developer.salesforce.com
+  - help.salesforce.com
+  - architect.salesforce.com
+  - trailhead.salesforce.com
+  - admin.salesforce.com
+  - engineering.salesforce.com
+  - release.salesforce.com
+  - www.salesforce.com
+  - salesforce.com
+  - github.com/forcedotcom
+  - github.com/salesforcecli
+  - github.com/salesforce
 sources:
   - { name: llms.txt, url: https://developer.salesforce.com/docs/llms.txt, kind: llms-index, min_bytes: 1000 }
   - { name: llms-product-docs.txt, url: https://developer.salesforce.com/docs/llms-product-docs.txt, kind: product-docs, min_bytes: 100000 }

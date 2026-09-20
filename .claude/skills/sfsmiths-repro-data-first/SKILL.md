@@ -36,9 +36,13 @@ The toolkit refuses if the email canary is missing/stale/failed (P9 layer 1), sc
 addresses (layer 2), runs it in the development sandbox only (layer 3), and logs the result under `validations/`.
 Print the created ids at the end of the script (`System.debug(JSON.serialize(ids))`) and copy them into `02-repro.md`.
 
-## 4. Prove the bug
+## 4. Prove the bug — or, for an ENHANCEMENT, define the target
 Write the failing Apex test (see `sfsmiths-bulk-test-authoring`) and run
 `sfsmiths agent privileged test <KEY> --phase repro`. `assertion-referee` expects: failing test → **Fail**, inverse → **Pass**.
+
+When the ticket is classified **ENHANCEMENT** (your stage prompt says so), the "failing test" is an **acceptance test**:
+one method per acceptance criterion, asserting the new behaviour, failing now only because the behaviour does not exist.
+Same referee, same files, same discipline — the data you shape is the data the new behaviour will meet in production.
 
 ## What never happens
 - Creating data by hand in the UI without a script (not repeatable, not scannable).

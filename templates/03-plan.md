@@ -10,6 +10,26 @@ Mechanism … · Evidence: 02-repro.md, evidence/… · Confidence: xx%
 ## 3. Order of execution & side effects
 …
 
+### 3a. Picture — before → after the fix
+<!-- D-101: the same record's journey through the order of execution, before and after, in ASCII (terminal) and mermaid
+     (VS Code / GitHub). Name the real components (Type:ApiName). Then one worked example the human can check in two minutes. -->
+```
+BEFORE                                                  AFTER
+before-save: <Flow A> --> <rule false> --> (skip)       before-save: <Flow A> --> <rule true> --> <element> sets <field>
+before trigger: <Trigger> --> <Handler>                 before trigger: (unchanged)
+after-save:  <Flow B> --> …                             after-save:  <Flow B> --> …
+```
+```mermaid
+flowchart TD
+  subgraph before[Before]
+    A1["<Flow A>"] --> B1{"<rule>"} -- false --> C1["branch skipped"]
+  end
+  subgraph after[After]
+    A2["<Flow A>"] --> B2{"<rule (changed)>"} -- true --> C2["<element> → <field> = <value>"]
+  end
+```
+**Worked example:** record <shape> → before the fix: … → after the fix: … → the repro test `Class.method` flips FAIL → PASS because …
+
 ## 4. Consumers & blast radius
 …
 

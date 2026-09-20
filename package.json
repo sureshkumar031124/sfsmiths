@@ -1,10 +1,12 @@
 {
   "name": "sfsmiths",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "SFsmiths — AI craftsmen for your Salesforce org, running inside Claude Code. They forge, test and temper; you approve.",
   "license": "MIT",
   "type": "module",
-  "engines": { "node": ">=20.10" },
+  "engines": {
+    "node": ">=20.10"
+  },
   "bin": {
     "sfsmiths": "bin/sfsmiths.js",
     "sfsmiths-human": "bin/sfsmiths-human.js",
@@ -12,7 +14,13 @@
     "sfsmiths-mcp-evidence": "bin/sfsmiths-mcp-evidence.js",
     "sfsmiths-mcp-ui": "bin/sfsmiths-mcp-ui.js"
   },
-  "files": ["bin", "dist", "schemas", "templates", "src/ui/static"],
+  "files": [
+    "bin",
+    "dist",
+    "schemas",
+    "templates",
+    "src/ui/static"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist",
@@ -38,6 +46,8 @@
     "playwright": ">=1.50"
   },
   "peerDependenciesMeta": {
-    "playwright": { "optional": true }
+    "playwright": {
+      "optional": true
+    }
   }
 }

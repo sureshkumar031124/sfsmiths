@@ -24,11 +24,12 @@ function devOnly(root) {
   fs.writeFileSync(file, lines.slice(0, cut).join("\n") + "\n");
 }
 
-test("no_preprod skips BOTH preprod stages: comms → deploy_prod (deploy_uat and qa_uat marked skipped)", () => {
+test("no_preprod skips ALL preprod stages: comms → deploy_prod (deploy_uat, uat_verify and qa_uat marked skipped)", () => {
   const m = newManifest(T, "file");
   m.flags["no_preprod"] = true;
   assert.equal(nextStageId(m, "comms"), "deploy_prod");
   assert.equal(stageRecord(m, "deploy_uat").status, "skipped");
+  assert.equal(stageRecord(m, "uat_verify").status, "skipped", "D-099 parity stage is preprod-only too");
   assert.equal(stageRecord(m, "qa_uat").status, "skipped");
   // with a preprod org the human deploy stage is next, as before
   const m2 = newManifest("DEMO-102", "file");

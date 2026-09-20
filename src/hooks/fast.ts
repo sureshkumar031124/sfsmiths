@@ -221,6 +221,8 @@ export function decidePolicy(input: HookInput, root: string, policy: CompiledPol
   if (/(?:^|[\s;&|])HOME=|\bUSERPROFILE=|\bexport HOME\b|\bunset HOME\b/.test(full)) return deny("changing HOME would switch sf keychains", "R2-home-override");
   if (/(?:^|[\s;&|])(SF_[A-Z_]+|SFDX_[A-Z_]+)=|\bexport (SF_|SFDX_)/.test(full)) return deny("SF_*/SFDX_* env overrides are not allowed for agents", "R2-sf-env");
   if (lower.includes(".sfsmiths/engine") || lower.includes(policy.engine_home.toLowerCase())) return deny("the engine keychain (preprod auth) is not accessible to agents", "R2-engine-home");
+  // R2b — re-pointing what an alias or the default org means is the same trick as switching keychains (hard-rule red-team, 20 Sept 2026)
+  if (/\bsf\s+(config\s+(set|unset)|alias\s+(set|unset)|auth\s+|org\s+login|org\s+logout|force:config:set|force:alias:set|force:auth:)/.test(lower)) return deny("changing the default target-org, an alias or an auth entry is the human's business — agents only ever name the development alias explicitly", "R2-target-config");
   // R3 — Blue Canvas / any git push
   if (/\bgit\s+push\b/.test(lower) || /\bgit\s+remote\s+(add|set-url)\b/.test(lower)) {
     if (policy.bluecanvas_patterns.some((p) => lower.includes(p))) return deny("git push to a Blue Canvas remote — the human deploys", "R3-bluecanvas");

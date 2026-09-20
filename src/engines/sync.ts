@@ -25,6 +25,7 @@ export function syncAll(p: ProjectPaths = projectPaths(), opts: { skipSkills?: b
   const cfg = loadConfig(p, { fresh: true });
   const warnings: string[] = [];
   const agents_updated = syncAgentModels(p, cfg, warnings);
+  agents_updated.push(...syncAgentSkills(p, warnings));
   const mcp_written = writeMcpJson(p, cfg, warnings);
   const policy_written = writeCompiledPolicy(p, cfg);
   syncSettingsDenies(p, cfg, warnings);
@@ -61,6 +62,60 @@ function setFrontmatterKey(fm: string, key: string, value: string, after?: strin
 /** Remove a top-level frontmatter key and its line (effort `inherit` → no line → the session level applies). */
 function removeFrontmatterKey(fm: string, key: string): string {
   return fm.replace(new RegExp(`^${key}:[ \\t]*.*$\\n?`, "m"), "");
+}
+
+/**
+ * D-096: generated org-convention skills (`<prefix>-comment-conventions`, `<prefix>-naming-rules`, written by
+ * `sfsmiths-human conventions build`) are wired into every agent that lists the matching generic `std-<suffix>` skill.
+ * Before this, the skills were written but no agent loaded them, so agents silently stayed on the generic style — P10
+ * ("comments in the org's existing format") was a promise, not a mechanism. The overlay line goes directly under the
+ * `std-<suffix>` line so precedence (org conventions before std-*) is visible in the file; nothing else is touched.
+ */
+export const CONVENTION_SKILL_SUFFIXES = ["comment-conventions", "naming-rules"] as const;
+
+export function generatedConventionSkills(p: ProjectPaths): { prefix: string; suffix: string; name: string }[] {
+  if (!exists(p.skills)) return [];
+  const out: { prefix: string; suffix: string; name: string }[] = [];
+  for (const d of fs.readdirSync(p.skills, { withFileTypes: true })) {
+    if (!d.isDirectory()) continue;
+    const m = new RegExp(`^([a-z0-9]+)-(${CONVENTION_SKILL_SUFFIXES.join("|")})$`).exec(d.name);
+    if (!m || m[1] === "std") continue;
+    if (!exists(path.join(p.skills, d.name, "SKILL.md"))) continue;
+    out.push({ prefix: m[1], suffix: m[2], name: d.name });
+  }
+  return out.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/** Add `skillName` to a frontmatter `skills:` block right after the `- std-<suffix>` line; no-op when present or when the agent has no std-<suffix>. */
+export function addSkillAfter(fm: string, stdSkill: string, skillName: string): string {
+  if (new RegExp(`^\\s*-\\s+${skillName}\\s*$`, "m").test(fm)) return fm;
+  const re = new RegExp(`^(\\s*-\\s+)${stdSkill}\\s*$`, "m");
+  const m = re.exec(fm);
+  if (!m) return fm;
+  return fm.replace(re, `$1${stdSkill}\n$1${skillName}`);
+}
+
+export function syncAgentSkills(p: ProjectPaths, warnings: string[]): string[] {
+  const generated = generatedConventionSkills(p);
+  if (!generated.length) return [];
+  const updated: string[] = [];
+  for (const agent of AGENT_NAMES) {
+    const f = path.join(p.agents, `${agent}.md`);
+    if (!exists(f)) continue;
+    const txt = readText(f);
+    const m = txt.match(/^---\n([\s\S]*?)\n---/);
+    if (!m) { warnings.push(`${agent}.md has no frontmatter`); continue; }
+    let fm = m[1];
+    const added: string[] = [];
+    for (const g of generated) {
+      const next = addSkillAfter(fm, `std-${g.suffix}`, g.name);
+      if (next !== fm) { fm = next; added.push(g.name); }
+    }
+    if (!added.length) continue;
+    writeTextAtomic(f, txt.replace(m[0], `---\n${fm.replace(/\n$/, "")}\n---`));
+    updated.push(`${agent} + skills ${added.join(", ")}`);
+  }
+  return updated;
 }
 
 /**

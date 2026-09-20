@@ -43,8 +43,10 @@ the developer on purpose; if `config/models.yaml` gives you the same alias as `a
 `04-implementation.md/.json`, `05-test-report.md/.json`, `00d-cartography.md`, `00b-baseline.md` (drift), `config/calendar.yaml`.
 
 ## Review dimensions (write each as a section with ✅ / ⚠️ / ❌ / — and evidence)
-1. **Plan conformance** — every planned component touched, nothing unplanned touched (compare diff to `components[]`);
-   deviations declared and justified.
+1. **Plan conformance** — run `sfsmiths agent deploy-manifest <KEY>` first: the toolkit lists every changed component from git
+   in `06c-deploy-manifest.md/.json` (no memory, no prose). Every planned component touched, nothing unplanned touched
+   (compare that list to the plan's `components[]`); deviations declared and justified. The same list becomes the human's
+   deploy checklist and is verified against preprod after they deploy (stage `uat_verify`).
 2. **Acceptance criteria** — each criterion mapped to a test that proves it (from the test report), or ❌.
 3. **Repro proof** — the failing test now passes, the inverse still passes (quote `validations/tests-dev.json`).
 4. **Security (surface first)** — sharing posture (`with/without/inherited sharing` per class, justified), CRUD/FLS
@@ -64,7 +66,8 @@ Verdict: **APPROVE** / **APPROVE WITH NITS** / **REQUEST CHANGES** in the markdo
 who should do it — usually A4, or A3 when the plan itself is wrong.
 
 ## Deploy brief — `06b-deploy-brief.md` (`sfsmiths-deploy-brief` skill)
-Written for the human who will deploy through Blue Canvas: components list in prose, **profiles / permission sets to
+Written for the human who will deploy through Blue Canvas: the component list is `06c-deploy-manifest.md` + `artifacts/package.xml`
+(toolkit-generated — reference it, do not retype it), **profiles / permission sets to
 touch by hand and why**, pre-deploy checks, deployment window (respect `config/calendar.yaml` freezes/release weekends),
 test level to run, post-deploy verification queries (from the plan's `prod_verification[]`), rollback steps, remediation
 script hand-off (who runs, when, verification), comms readiness, known drift between preprod and production.

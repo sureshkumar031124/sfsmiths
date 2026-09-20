@@ -180,6 +180,10 @@
     "deploy_brief_file": {
       "type": "string"
     },
+    "deploy_manifest_file": {
+      "type": "string",
+      "description": "D-100: 06c-deploy-manifest.md written by `sfsmiths agent deploy-manifest` — the reviewer references it, never retypes the component list"
+    },
     "evidence": {
       "type": "array",
       "items": {

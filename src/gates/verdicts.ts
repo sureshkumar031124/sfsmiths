@@ -41,6 +41,29 @@ export const baselineCheck: Gate = {
   },
 };
 
+/* ---------------- uat-parity (D-099) ---------------- */
+
+interface ParityFile { ok: boolean; source: string; skipped?: string; unavailable?: string; files_hash: string; rows: { key: string; status: string }[]; at: string }
+
+export const uatParityGate: Gate = {
+  name: "uat-parity",
+  description: "Before QA runs in preprod: the toolkit's parity verdict (validations/uat-parity.json) says every component the ticket changed is present in preprod with the same normalised content as the dev source (or a human accepted the difference with a reason), and the source has not changed since.",
+  async run(ctx) {
+    const preprod = ctx.cfg.orgs.orgs.find((o) => o.role === "preprod");
+    if (!preprod || ctx.manifest.flags["no_preprod"] === true) return passed("uat-parity", "no preprod org configured — parity skipped by config");
+    const f = readVaultJson<ParityFile>(ctx, "validations/uat-parity.json");
+    if (!f) return unavailable("uat-parity", "validations/uat-parity.json missing — the uat_verify stage has not run (sfsmiths-human deployed <KEY> --org preprod)");
+    if (f.unavailable) return failed("uat-parity", `preprod parity was not verified: ${f.unavailable}`);
+    const bad = (f.rows ?? []).filter((r) => !["MATCH", "DELETED_OK", "ACCEPTED"].includes(r.status));
+    if (!f.ok || bad.length) return failed("uat-parity", `${bad.length} component(s) not matching preprod: ${bad.slice(0, 6).map((r) => `${r.key} ${r.status}`).join(", ")}`, { details: { rows: f.rows } });
+    // void if the source moved on after the verdict (same rule as deploy-report)
+    const { computeDeployFilesHash } = await import("../engines/deploy-manifest.js");
+    const current = await computeDeployFilesHash(ctx.p, ctx.ticket);
+    if (f.files_hash && f.files_hash !== current) return failed("uat-parity", "source changed after the parity verdict — deploy again and re-run sfsmiths-human deployed <KEY> --org preprod");
+    return passed("uat-parity", `${(f.rows ?? []).length} component(s) verified in ${preprod.alias} (${f.source === "human" ? "accepted by human" : "retrieve + fingerprint"})`, { artifact_hash: current });
+  },
+};
+
 /* ---------------- deploy-report ---------------- */
 
 export const deployReport: Gate = {
